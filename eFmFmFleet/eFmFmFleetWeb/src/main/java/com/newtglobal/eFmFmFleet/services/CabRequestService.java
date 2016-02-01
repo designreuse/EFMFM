@@ -78,16 +78,7 @@ public class CabRequestService {
 
 	private static Log log = LogFactory.getLog(CabRequestService.class);	
 
-	/**
-	 * The employeeTravelRequstDetails method implemented.
-	 * for getting the list of travel request from employeeTravelREquestTable.   
-	 *
-	 * @author  Rajan R
-	 * 
-	 * @since   2015-05-13 
-	 * 
-	 * @return Employee Travel Desk Module.
-	 */	
+	
 	private static  byte[] key;
 	private static String keyString ="ZkcB7U7OSeKArCiA0rBuEdQSIGM=";  
 	@POST
