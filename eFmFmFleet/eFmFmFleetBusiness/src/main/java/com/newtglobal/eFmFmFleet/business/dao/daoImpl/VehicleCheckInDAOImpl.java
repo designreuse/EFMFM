@@ -1538,5 +1538,16 @@ public class VehicleCheckInDAOImpl implements IVehicleCheckInDAO {
 		}
 		return vehicleMasterPO;
 	}
+	@Override
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRED)
+	public List<EFmFmVehicleCheckInPO> getCheckedInVehicleDetailsFromChecInAndBranchId(
+			int checkInId,int branchId) {
+		List<EFmFmVehicleCheckInPO> vehicleCheckIn = new ArrayList<EFmFmVehicleCheckInPO>();
+		Query query = entityManager
+				.createQuery("SELECT b FROM EFmFmVehicleCheckInPO b JOIN b.efmFmVehicleMaster d JOIN d.efmFmVendorMaster f JOIN f.eFmFmClientBranchPO c where b.checkInId='"
+						+ checkInId + "' AND c.branchId='"+branchId+"' ");
+		vehicleCheckIn = query.getResultList();
+		return vehicleCheckIn;
+	}
 	
 }

@@ -159,13 +159,34 @@ var importEmployeeRequestCtrl = function($scope, $modalInstance, $state, $http, 
  	       contentType: false,
  	       success: function (data,textStatus, jqXHR) {
  	     },
- 	    complete: function() {
-	    	$scope.showalertMessageModal('Employee request data imported successfully.', '');
-	        $timeout(function() {$modalInstance.dismiss('cancel')}, 3000);
+ 	    complete: function(data) {
+ 	    	var response=data.responseText;
+ 	    	var splitedResponce=response.split('-');
+ 	    	if(splitedResponce[0]=='backDateRequest'){
+ 	    		alert(splitedResponce[1]+'-Sorry you can not upload a back date request.Excel quite from same employee');
+ 	    		$modalInstance.dismiss('cancel');
+ 	    		// 		    	$scope.showalertMessageModal(splitedResponce[1]+ '-Sorry you can not upload a back date request.Excel quite from same employee', '');
+ //		        $timeout(function() {$modalInstance.dismiss('cancel')}, 5000);
+ 	    	}
+ 	    	else if(splitedResponce[0]=='empIdNotExist'){
+ 	    		alert(splitedResponce[1]+'-This Employee Id Not exists in system please add it first.Excel quite from same employee');
+ 	    		$modalInstance.dismiss('cancel');
+ 	    		//		    	$scope.showalertMessageModal(splitedResponce[1]+'-This Employee Id Not exists in system please add it first.Excel quite from same employee', '');
+ //		        $timeout(function() {$modalInstance.dismiss('cancel')}, 3000);
+ 	    	}
+ 	    	else if(splitedResponce[0]=='routeNotExist'){
+ 	    		alert(splitedResponce[1]+'-This RouteName Not exists in system please confirm it from all route name tab.Excel quite from same routename');
+ 	    		$modalInstance.dismiss('cancel');
+ 	    		//	    	$scope.showalertMessageModal(splitedResponce[1]+ '-This RouteName Not exists in system please confirm it from all route name tab.Excel quite from same routename', '');
+ 	//	        $timeout(function() {$modalInstance.dismiss('cancel')}, 3000);
+ 	    	}
+ 	    	else{
+ 		    	$scope.showalertMessageModal('Employee request data imported successfully.', '');
+ 		        $timeout(function() {$modalInstance.dismiss('cancel')}, 3000);
+ 	    	}
        } 	        
  	       });
-            //write the code of import file over here
-        };       
+        };              
         
         //CLOSE BUTTON FUNCTION
         $scope.cancel = function () {

@@ -78,7 +78,16 @@ public class CabRequestService {
 
 	private static Log log = LogFactory.getLog(CabRequestService.class);	
 
-	
+	/**
+	 * The employeeTravelRequstDetails method implemented.
+	 * for getting the list of travel request from employeeTravelREquestTable.   
+	 *
+	 * @author  Rajan R
+	 * 
+	 * @since   2015-05-13 
+	 * 
+	 * @return Employee Travel Desk Module.
+	 */	
 	private static  byte[] key;
 	private static String keyString ="ZkcB7U7OSeKArCiA0rBuEdQSIGM=";  
 	@POST
@@ -146,6 +155,7 @@ public class CabRequestService {
 				requestList.put("employeeWaypoints", allTravelRequest.geteFmFmEmployeeRequestMaster().getEfmFmUserMaster().getLatitudeLongitude());							
 				travelRequestList.add(requestList);
 			}									
+
 		}
 		responce.put("shifts", shitTimings);
 		responce.put("requests", travelRequestList);
@@ -368,7 +378,6 @@ public class CabRequestService {
 		String shiftDate=shiftTimingDetail.getTime();
 		Date shift  = (Date) shiftFormate.parse(shiftDate);				 
 		java.sql.Time shiftTime = new java.sql.Time(shift.getTime());
-		
 		List<EFmFmTripTimingMasterPO> shiftTimeDetail=iCabRequestBO.getParticularShiftTimeDetailByTripType(shiftTimingDetail.geteFmFmClientBranchPO().getBranchId(), shiftTime,shiftTimingDetail.getTripType());
 		if((!(shiftTimeDetail.isEmpty())) || shiftTimeDetail.size() !=0){
 			responce.put("status", "fail");
@@ -396,8 +405,8 @@ public class CabRequestService {
 		IEmployeeDetailBO iEmployeeDetailBO = (IEmployeeDetailBO) ContextLoader.getContext().getBean("IEmployeeDetailBO");
 		IUserMasterBO userMasterBO = (IUserMasterBO) ContextLoader.getContext().getBean("IUserMasterBO");
 		Map<String, Object>  responce = new HashMap<String,Object>();
-		List<EFmFmUserMasterPO> requestEmployeeIdExitCheck=iEmployeeDetailBO.getParticularEmpDetailsFromEmployeeIdForGuest(travelRequest.getEmployeeId(), travelRequest.getEfmFmUserMaster().geteFmFmClientBranchPO().getBranchId());
-		if((!(requestEmployeeIdExitCheck.isEmpty())) || requestEmployeeIdExitCheck.size() !=0){
+//		List<EFmFmUserMasterPO> requestEmployeeIdExitCheck=iEmployeeDetailBO.getParticularEmpDetailsFromEmployeeIdForGuest(travelRequest.getEmployeeId(), travelRequest.getEfmFmUserMaster().geteFmFmClientBranchPO().getBranchId());
+		/*if((!(requestEmployeeIdExitCheck.isEmpty())) || requestEmployeeIdExitCheck.size() !=0){
 			responce.put("status", "empExist");
 			return Response.ok(responce, MediaType.APPLICATION_JSON).build();
 		}
@@ -405,8 +414,8 @@ public class CabRequestService {
 		if((!(mobileNumCheck.isEmpty())) || mobileNumCheck.size() !=0){
 			responce.put("status", "mobileExist");
 			return Response.ok(responce, MediaType.APPLICATION_JSON).build();
-		}
-		List<EFmFmUserMasterPO> guestIdExistsCheck=iEmployeeDetailBO.getParticularGuestDetailsFromEmployeeId(travelRequest.getEmployeeId(), travelRequest.getEfmFmUserMaster().geteFmFmClientBranchPO().getBranchId());
+		}*/
+		List<EFmFmUserMasterPO> guestIdExistsCheck=iEmployeeDetailBO.getParticularEmpDetailsFromEmployeeId(travelRequest.getEmployeeId(), travelRequest.getEfmFmUserMaster().geteFmFmClientBranchPO().getBranchId());
 		EFmFmRouteAreaMappingPO routeAreaDetails =new EFmFmRouteAreaMappingPO();			
 		try{
 			DateFormat timeformate = new SimpleDateFormat("dd-MM-yyyy HH:mm");
@@ -1040,17 +1049,55 @@ public class CabRequestService {
 		return Response.ok(responce, MediaType.APPLICATION_JSON).build();
 	}
 
-	/**
-	 * The requestRemoved method implemented.
-	 * for removing the Trip request from employeeTravelReqest table.   
-	 *
-	 * @author  Rajan R
-	 * @throws ParseException 
-	 * 
-	 * @since   2015-05-15 
-	 * 
-	 * @@return Status or Failure.
-	 */	
+	@POST
+	@Path("/deleteRequestTravelDesk")
+	public Response requestRemovedFromTravelDesk(EFmFmEmployeeTravelRequestPO eFmFmEmployeeTravelRequestPO) throws ParseException{		
+		ICabRequestBO iCabRequestBO = (ICabRequestBO) ContextLoader.getContext().getBean("ICabRequestBO");			
+		eFmFmEmployeeTravelRequestPO.setRequestDate(new Date());
+		Map<String, Object>  responce = new HashMap<String,Object>();
+		List<EFmFmEmployeeTravelRequestPO> cabRequest=iCabRequestBO.getparticularRequestDetail(eFmFmEmployeeTravelRequestPO);
+		if(cabRequest.get(0).getRequestType().equalsIgnoreCase("normal")){
+		iCabRequestBO.deleteParticularRequest(eFmFmEmployeeTravelRequestPO.getRequestId());						
+		responce.put("status", "success");
+		return Response.ok(responce, MediaType.APPLICATION_JSON).build();
+	     }
+		eFmFmEmployeeTravelRequestPO.setRequestDate(new Date());
+		EFmFmUserMasterPO efmFmUserMaster=new EFmFmUserMasterPO();
+		efmFmUserMaster.setUserId(cabRequest.get(0).getEfmFmUserMaster().getUserId());
+		EFmFmClientBranchPO eFmFmClientBranchPO=new EFmFmClientBranchPO();
+		eFmFmClientBranchPO.setBranchId(eFmFmEmployeeTravelRequestPO.getEfmFmUserMaster().geteFmFmClientBranchPO().getBranchId());
+		efmFmUserMaster.seteFmFmClientBranchPO(eFmFmClientBranchPO);
+		eFmFmEmployeeTravelRequestPO.setEfmFmUserMaster(efmFmUserMaster);
+		if(cabRequest.get(0).getTripType().equalsIgnoreCase("PICKUP")){
+			eFmFmEmployeeTravelRequestPO.setTripType("DROP");
+		}
+		else{
+			eFmFmEmployeeTravelRequestPO.setTripType("PICKUP");
+		}
+		eFmFmEmployeeTravelRequestPO.setRequestType(cabRequest.get(0).getRequestType());
+		DateFormat shiftFormate = new SimpleDateFormat("HH:mm");
+		String shiftTime="23:50:00";
+		Date shift  = (Date) shiftFormate.parse(shiftTime);				 
+		java.sql.Time dateShiftTime = new java.sql.Time(shift.getTime());
+
+		List<EFmFmEmployeeTravelRequestPO> anotherCabRequest=iCabRequestBO.getAnotherActiveRequestDetail(eFmFmEmployeeTravelRequestPO);
+		if(anotherCabRequest.size()!=0 || (!(anotherCabRequest.isEmpty()))){
+			anotherCabRequest.get(0).setShiftTime(dateShiftTime);
+			iCabRequestBO.update(anotherCabRequest.get(0));
+		}
+		cabRequest.get(0).setShiftTime(dateShiftTime);
+		iCabRequestBO.update(cabRequest.get(0));				
+		responce.put("status", "success");
+		return Response.ok(responce, MediaType.APPLICATION_JSON).build();
+	
+		
+		
+		
+		
+	}
+	
+	
+	
 	@POST
 	@Path("/requestdelete")
 	public Response requestRemoved(EFmFmEmployeeTravelRequestPO eFmFmEmployeeTravelRequestPO) throws ParseException{		
@@ -1086,16 +1133,7 @@ public class CabRequestService {
 		responce.put("status", "success");
 		return Response.ok(responce, MediaType.APPLICATION_JSON).build();
 	}
-	/**
-	 * The tripRequestVerified method implemented.
-	 * for verifying the particular trip request by authorized person.   
-	 *
-	 * @author  Rajan R
-	 * 
-	 * @since   2015-05-15 
-	 * 
-	 * @return Status or Failure.
-	 */
+	
 	@POST
 	@Path("/tripRequestVerified")
 	public Response tripRequestVerified(EFmFmEmployeeTravelRequestPO eFmFmEmployeeTravelRequestPO){		
@@ -1285,7 +1323,7 @@ public class CabRequestService {
 							try {
 								String text="";
 								MessagingService messaging=new MessagingService();
-								text="Dear employee your cab\n"+empDetails.get(0).getEfmFmAssignRoute().getEfmFmVehicleCheckIn().getEfmFmVehicleMaster().getVehicleNumber()+"\n has left at your pickup point.";		
+								text="Dear employee your cab\n"+empDetails.get(0).getEfmFmAssignRoute().getEfmFmVehicleCheckIn().getEfmFmVehicleMaster().getVehicleNumber()+"\n has left at your "+empDetails.get(0).geteFmFmEmployeeTravelRequest().getTripType()+" point.";		
 								messaging.cabHasLeftMessageForSch(empDetails.get(0).geteFmFmEmployeeTravelRequest().getEfmFmUserMaster().getMobileNumber(),text,empDetails.get(0).geteFmFmEmployeeTravelRequest().getRequestType());
 								Thread.currentThread().stop();
 								log.debug("Time taken by cab left message from gate way and button click for trip Id: "+empDetails.get(0).getEmpTripId());

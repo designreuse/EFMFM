@@ -156,5 +156,18 @@ public class IRouteDetailBOImpl implements IRouteDetailBO {
 		return iRouteDetailDAO.getParticularRouteDetailByClient(branchId, routeName);
 	}
 
+	@Override
+	public List<EFmFmRouteAreaMappingPO> getRouteAreaIdFromAreaNameAndZoneNameForExcelUpload(
+			String areaName, int branchId, String zoneName) {
+		// TODO Auto-generated method stub
+		return iRouteDetailDAO.getRouteAreaIdFromAreaNameAndZoneNameForExcelUpload(areaName, branchId, zoneName);
+	}
+
+	@Override
+	public List<EFmFmAreaMasterPO> getParticularAreaNameDetails(String areaName) {
+		// TODO Auto-generated method stub
+		return iRouteDetailDAO.getParticularAreaNameDetails(areaName);
+	}
+
 	
 }

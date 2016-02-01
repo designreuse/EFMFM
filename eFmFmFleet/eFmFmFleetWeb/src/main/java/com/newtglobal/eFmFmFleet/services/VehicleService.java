@@ -760,7 +760,7 @@ public class VehicleService {
 	 */
 
 	@POST
-	@Path("/checkOut")
+	@Path("/driverCheckOut")
 	public Response driverCheckOutFromDevice(
 			EFmFmVehicleCheckInPO eFmFmVehicleCheckInPO) {
 		IVehicleCheckInBO vehicleCheckInBO = (IVehicleCheckInBO) ContextLoader
@@ -768,7 +768,7 @@ public class VehicleService {
 		Map<String, Object> responce = new HashMap<String, Object>();
 		eFmFmVehicleCheckInPO.setCheckInTime(new Date());
 		List<EFmFmVehicleCheckInPO> vehicleCheckInPO = vehicleCheckInBO
-				.getParticulaCheckedInVehicleDetails(eFmFmVehicleCheckInPO);
+				.getCheckedInVehicleDetailsFromChecInAndBranchId(eFmFmVehicleCheckInPO.getCheckInId(), eFmFmVehicleCheckInPO.getBranchId());
 		vehicleCheckInPO.get(vehicleCheckInPO.size() - 1).setStatus("N");
 		vehicleCheckInPO.get(vehicleCheckInPO.size() - 1).setCheckOutTime(
 				new Date());

@@ -656,12 +656,13 @@
        $scope.checkoutVehicle = function(vehicle){
     	   var data = {
         		   checkInId:vehicle.checkInId,
+        		   branchId:branchId
                    };
-               $http.post('services/vehicle/checkOut/',data).
+               $http.post('services/vehicle/driverCheckOut/',data).
                    success(function(data, status, headers, config) {
-                   	if(data.status='success'){                  
-                   		$scope.showalertMessage("Driver checkout successfully", "");
+                   	if(data.status='success'){  
                    		$('.vehicle'+vehicle.checkInId).hide();
+                   		$scope.showalertMessage("Driver checkout successfully", "");                  		
                    	}
                     }).
                    error(function(data, status, headers, config) {
@@ -801,11 +802,20 @@
             });
        };
        
+       //Escort CheckOut Funtion
        $scope.checkoutEscort = function(escort){
-           console.log(escort);
-           //There is no Checkiin Id coming with the ESCORT JSON. 
-//           alert(escort.escortId);
-//           alert(escort.checkInId);
+           var data = {
+        		   branchId:branchId,
+				   escortCheckInId:escort.escortCheckId,
+			};
+		   $http.post('services/escort/checkOutEscort/',data).
+				    success(function(data, status, headers, config) {
+				    	 $('.escort'+escort.escortId).hide('slow');
+				    	$scope.showalertMessage("Escort Checkout Successfully", "");
+				    }).
+				    error(function(data, status, headers, config) {
+				      // log error
+				    });             
        };
        
 //***********************************************************DEVICE DETAIL TAB **********************************************************

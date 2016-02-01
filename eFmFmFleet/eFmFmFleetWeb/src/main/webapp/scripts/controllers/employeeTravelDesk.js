@@ -164,20 +164,19 @@
      };
 
      //BUTTON ACTION :: DELETE SINGLE EMPLOYEE   
-     $scope.deleteEmployee = function(post){ 
-         
+     $scope.deleteEmployee = function(post){          
       $confirm({text: 'Are you sure you want to delete this row?', title: 'Delete Confirmation', ok: 'Yes', cancel: 'No'})
         .then(function() {              
               var dataObj = {
                      efmFmUserMaster:{eFmFmClientBranchPO:{branchId:branchId}},
                        requestId:post.requestId
                 };	
-               $http.post('services/trip/requestdelete/',dataObj).
+               $http.post('services/trip/deleteRequestTravelDesk/',dataObj).
                         success(function(data, status, headers, config) {
                             if(data.status=="success"){	                            	
                                 $('.employee'+post.employeeId+post.requestId).hide('slow');
                                 post.tripTime = '23:50:00';
-                                $scope.showalertMessage(post.employeeName + ' has been changed successfully', '');
+                                $scope.showalertMessage(post.employeeName + ' has been deleted successfully', '');
                                 post.checkBoxFlag = false; 
                             }
                         }).

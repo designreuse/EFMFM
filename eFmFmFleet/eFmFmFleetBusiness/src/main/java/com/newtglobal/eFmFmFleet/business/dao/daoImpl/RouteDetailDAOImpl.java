@@ -326,6 +326,23 @@ public class RouteDetailDAOImpl implements IRouteDetailDAO {
 	  vehicleDetail=query.getResultList();  
 	  return vehicleDetail;
 	 }
+
+	 @Override
+	 @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
+	 public  List <EFmFmRouteAreaMappingPO> getRouteAreaIdFromAreaNameAndZoneNameForExcelUpload(String areaName,int branchId,String zoneName) {
+	  List <EFmFmRouteAreaMappingPO> routeAreaMapping = new ArrayList<EFmFmRouteAreaMappingPO>();
+	     Query query=entityManager.createQuery("SELECT r FROM EFmFmRouteAreaMappingPO r JOIN r.efmFmAreaMaster a JOIN r.eFmFmZoneMaster m JOIN m.efmFmClientRouteMappings c JOIN c.eFmFmClientBranchPO f where a.areaName='"+areaName+"' and m.zoneName='"+zoneName+"' and f.branchId='"+branchId+"'");
+	     routeAreaMapping=query.getResultList();
+	     return routeAreaMapping; 
+	 }
 	 
+	 @Override
+	 @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
+	 public List<EFmFmAreaMasterPO> getParticularAreaNameDetails(String areaName) {
+	  List<EFmFmAreaMasterPO> areaMasterPO=new ArrayList<EFmFmAreaMasterPO>();
+	  Query query =entityManager.createQuery("SELECT b FROM EFmFmAreaMasterPO as b where b.areaName='"+areaName+"'");
+	  areaMasterPO=query.getResultList();
+	  return areaMasterPO;
+	 }
 	 
 }

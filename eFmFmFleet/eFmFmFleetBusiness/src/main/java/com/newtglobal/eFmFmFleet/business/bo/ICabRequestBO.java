@@ -217,4 +217,6 @@ public interface ICabRequestBO {
 	public List<EFmFmEmployeeTravelRequestPO> getparticularEmployeeRequest(String todaysDate, String employeeId,String tripType, int branchId, String shiftTime);
 	public EFmFmEmployeeTripDetailPO ParticularTripDetail(int empTripId);
 	public List<EFmFmEmployeeTripDetailPO> getparticularEmployeeTripDetails(String todaysDate, String employeeId,String tripType, int branchId, String shiftTime);
+	public List<EFmFmEmployeeRequestMasterPO> getParticularRequestDetailFromUserIdAndTripType(
+			int userId, int branchId, String tripType);
 }

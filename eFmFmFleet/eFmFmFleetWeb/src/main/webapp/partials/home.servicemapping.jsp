@@ -230,6 +230,7 @@
                                       <th>Area</th>
 <!--                                      <th>Pick/Drop</th>-->
                                       <th ng-show = "route.tripType == 'PICKUP'">Pick-up Time</th>
+                                       <th ng-show = "route.tripType == 'DROP'">Drop Sequence</th>
 <!--                                      <th>Shift Time</th>-->
                                       <th>Move To</th>
                                       <th>Move To</th>
@@ -261,8 +262,8 @@
 		                             <td class = "col-md-1"><span>{{employee.tripType}}</span>
                                      </td>
 -->
-                                     <td  class = 'col-md-1' ng-show = "route.tripType == 'PICKUP'">
-                                         {{employee.pickUpTime}}
+                                     <td  class = 'col-md-1'><span> {{employee.pickUpTime}}</span>
+                                        
                                      </td>
 <!--                                     <td>{{route.shiftTime}}</td>-->
                                      <td class = "col-md-1">                                          

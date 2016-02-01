@@ -274,10 +274,9 @@
                         </div>
                     </tab>
                 
-<!--                 
+                 
                     <tab ng-click = "getAvailableVehicle()">
                     <tab-heading>Available Driver</tab-heading>
-                   <tab-heading>Available Vehicle</tab-heading>
                     	<div class = "availableVehicleTabContent row">
                             <div class = "row firstRowActionDiv">
                                 <div class = "floatLeft">
@@ -333,7 +332,7 @@
 		                         </tbody>
                             </table>
                         </div>
-                    </tab> -->                 
+                    </tab>                 
                 
                    <tab ng-click = "getEscortCheckIn()">
                       <tab-heading>Escort Check-In</tab-heading>
@@ -431,7 +430,7 @@
                                     </tr>
                                 </tbody>
                                 <tbody ng-show = "escortAvailableData.length>0">
-		                           <tr ng-repeat = "post in escortAvailableData |limitTo: numberofRecords | filter:escortAvailable">
+		                           <tr  class = "escort{{post.escortId}}"  ng-repeat = "post in escortAvailableData |limitTo: numberofRecords | filter:escortAvailable">
 		                                <td>{{post.escortId}}</td>
 		                                 <td>{{post.escortName}}</td>                                        
 		                                 <td>{{post.escortAddress}}</td>

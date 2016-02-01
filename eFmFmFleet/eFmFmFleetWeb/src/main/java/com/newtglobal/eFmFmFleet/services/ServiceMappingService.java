@@ -130,9 +130,13 @@ public class ServiceMappingService  {
 					employeeDetails.put("latLongi", employeeTripDetail.geteFmFmEmployeeTravelRequest().getEfmFmUserMaster().getLatitudeLongitude());
 					if(assignRoutes.getTripType().equalsIgnoreCase("PICKUP")){
 						employeeDetails.put("pickUpTime", employeeTripDetail.geteFmFmEmployeeTravelRequest().getPickUpTime());
-					}                    
+					} 
+					else{
+						employeeDetails.put("pickUpTime", employeeTripDetail.geteFmFmEmployeeTravelRequest().getDropSequence()	);
+					}
                     tripAllDetails.add(employeeDetails);
 			     }	
+				
 			   if(tripAllDetails.size()!=0 || (!(tripAllDetails.isEmpty()))){
 	                	for(int i=0;i<=tripAllDetails.size()-1;i++){
 						waypoints.append(tripAllDetails.get(i).get("latLongi")+"|");

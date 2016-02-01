@@ -733,6 +733,13 @@ public class ICabRequestBOImpl implements ICabRequestBO{
 		return iCabRequestDAO.getParticularShiftTimeDetailByTripType(branchId, shiftTime, tripType);
 	}
 
+	@Override
+	public List<EFmFmEmployeeRequestMasterPO> getParticularRequestDetailFromUserIdAndTripType(
+			int userId, int branchId, String tripType) {
+		// TODO Auto-generated method stub
+		return iCabRequestDAO.getParticularRequestDetailFromUserIdAndTripType(userId, branchId, tripType);
+	}
+
 	
 	
 }

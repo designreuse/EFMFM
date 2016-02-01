@@ -316,7 +316,7 @@ public class EscortService {
 	@Path("/checkInEscort")
 	@Consumes("application/json")
 	@Produces("application/json")	
-	public Response addingVendorDetails(EFmFmEscortMasterPO eFmFmEscortMasterPO){
+	public Response escortCheckIn(EFmFmEscortMasterPO eFmFmEscortMasterPO){
 		IVehicleCheckInBO iVehicleCheckInBO = (IVehicleCheckInBO) ContextLoader.getContext().getBean("IVehicleCheckInBO");		
 		EFmFmEscortCheckInPO eFmFmEscortCheckInPO=new EFmFmEscortCheckInPO();		
 		eFmFmEscortCheckInPO.setEscortCheckInTime(new Date());
@@ -330,15 +330,24 @@ public class EscortService {
 	
 	
 	/**
-	* The escortCheckInDetails method implemented.
-	* for getting the escort details based on the escortId.   
-	*
-	* @author  Rajan R
-	* 
-	* @since   2015-05-25 
-	* 
-	* @return escort details.
-	*/	
+	 * 
+	 * @param eFmFmEscortMasterPO
+	 * 
+	 * @return Success after checkout the Escort
+	 */
+	@POST
+	@Path("/checkOutEscort")
+	@Consumes("application/json")
+	@Produces("application/json")	
+	public Response escortCheckOutFunction(EFmFmEscortMasterPO eFmFmEscortMasterPO){
+		IVehicleCheckInBO iVehicleCheckInBO = (IVehicleCheckInBO) ContextLoader.getContext().getBean("IVehicleCheckInBO");	
+		List<EFmFmEscortCheckInPO> checkInDetails=iVehicleCheckInBO.getParticulaEscortDetailFromEscortId(eFmFmEscortMasterPO.getBranchId(), eFmFmEscortMasterPO.getEscortCheckInId());
+		checkInDetails.get(0).setStatus("N");
+		checkInDetails.get(0).setEscortCheckOutTime(new Date());
+		iVehicleCheckInBO.update(checkInDetails.get(0));
+		return Response.ok("Success", MediaType.APPLICATION_JSON).build();
+	}
+	
 	@POST
 	@Path("/availableEscortDetails")
 	@Consumes("application/json")
@@ -351,6 +360,7 @@ public class EscortService {
 			for(EFmFmEscortCheckInPO escortDetails:listOfEscort){				
 					Map<String, Object>  escortList= new HashMap<String, Object>();					
 					escortList.put("escortId",escortDetails.geteFmFmEscortMaster().getEscortId());
+					escortList.put("escortCheckId",escortDetails.getEscortCheckInId());
 					escortList.put("escortName",escortDetails.geteFmFmEscortMaster().getFirstName());					
 					escortList.put("escortMobileNumber",escortDetails.geteFmFmEscortMaster().getMobileNumber());
 					escortList.put("escortAddress",escortDetails.geteFmFmEscortMaster().getAddress());

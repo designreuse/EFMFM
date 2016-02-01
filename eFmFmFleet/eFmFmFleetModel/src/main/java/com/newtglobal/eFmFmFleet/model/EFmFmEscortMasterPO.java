@@ -98,7 +98,11 @@ public class EFmFmEscortMasterPO implements Serializable {
     @Transient
 	private String vendorName;
 	
+	@Transient
+	int branchId;
 	
+	@Transient
+	int escortCheckInId;
 	
 	@Column(name="EscortEmployeeId", length=10)
 	private String escortEmployeeId;
@@ -323,9 +327,21 @@ public class EFmFmEscortMasterPO implements Serializable {
 		this.efmFmVendorMaster = efmFmVendorMaster;
 	}
 
-	
-	
+	public int getBranchId() {
+		return branchId;
+	}
 
-	
+	public void setBranchId(int branchId) {
+		this.branchId = branchId;
+	}
 
+	public int getEscortCheckInId() {
+		return escortCheckInId;
+	}
+
+	public void setEscortCheckInId(int escortCheckInId) {
+		this.escortCheckInId = escortCheckInId;
+	}
+	
+	
 }

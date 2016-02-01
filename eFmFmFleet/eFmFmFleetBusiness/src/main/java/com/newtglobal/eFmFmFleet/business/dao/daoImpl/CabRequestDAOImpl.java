@@ -1065,6 +1065,13 @@ public class CabRequestDAOImpl implements ICabRequestDAO{
 				employeeTravelRequestPO=query.getResultList();		
 				return employeeTravelRequestPO;
 			}
-			
+			@Override
+			@Transactional(readOnly = false, propagation = Propagation.REQUIRED)
+			public List<EFmFmEmployeeRequestMasterPO> getParticularRequestDetailFromUserIdAndTripType(int userId,int branchId,String tripType) {
+				List <EFmFmEmployeeRequestMasterPO> employeeRequestPO = new ArrayList<EFmFmEmployeeRequestMasterPO>(); 
+		    	Query query=entityManager.createQuery("SELECT b FROM EFmFmEmployeeRequestMasterPO b JOIN b.efmFmUserMaster u JOIN u.eFmFmClientBranchPO c  where u.userId='"+userId+"'  AND c.branchId='"+branchId+"' AND b.tripType='"+tripType+"' ");
+		    	employeeRequestPO=query.getResultList();
+		       return employeeRequestPO;
+			}			
 		  
 }

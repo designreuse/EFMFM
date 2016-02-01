@@ -13,8 +13,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -31,6 +33,8 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.DateUtil;
 import org.apache.poi.ss.usermodel.Row;
@@ -51,6 +55,7 @@ import com.newtglobal.eFmFmFleet.model.EFmFmClientProjectDetailsPO;
 import com.newtglobal.eFmFmFleet.model.EFmFmClientRouteMappingPO;
 import com.newtglobal.eFmFmFleet.model.EFmFmClientUserRolePO;
 import com.newtglobal.eFmFmFleet.model.EFmFmEmployeeRequestMasterPO;
+import com.newtglobal.eFmFmFleet.model.EFmFmEmployeeTravelRequestPO;
 import com.newtglobal.eFmFmFleet.model.EFmFmRoleMasterPO;
 import com.newtglobal.eFmFmFleet.model.EFmFmRouteAreaMappingPO;
 import com.newtglobal.eFmFmFleet.model.EFmFmUserMasterPO;
@@ -66,6 +71,8 @@ public class EmployeeImportExcel {
 	 * @author  Rajan R
 	 * @since   2015-05-12 
 	 */
+	private static Log log = LogFactory.getLog(EmployeeImportExcel.class);	
+
 	@POST
 	@Path("/employeeRecord")
 	@Consumes(MediaType.MULTIPART_FORM_DATA)
@@ -141,9 +148,11 @@ public class EmployeeImportExcel {
 			@QueryParam("branchId") int branchId,
 			@QueryParam("profileId") int profileId,
 			@QueryParam("userRole") String userRole,
-			@Context HttpServletRequest request) throws ParseException, IOException {		
+			@Context HttpServletRequest request) throws ParseException, IOException {	
+		    String status="success-";
 		try {					
 			XSSFWorkbook workbook = new XSSFWorkbook(uploadedInputStream);
+			
 			XSSFSheet sheet = workbook.getSheetAt(0);
 			Iterator<Row> rowIterator = sheet.iterator();
 			rowIterator.next();			
@@ -182,8 +191,119 @@ public class EmployeeImportExcel {
 					}
 				}
 				columnValue.removeAll(Arrays.asList(null,""));
-				if(columnValue.size()>1){					
-					employeeTravelTripDetails(columnValue,branchId,userRole,profileId);
+				
+				if(columnValue.size()>1){
+					IEmployeeDetailBO iEmployeeDetailBO = (IEmployeeDetailBO) ContextLoader	.getContext().getBean("IEmployeeDetailBO");
+					ICabRequestBO iCabRequestBO=(ICabRequestBO) ContextLoader.getContext().getBean("ICabRequestBO");
+					IRouteDetailBO iRouteDetailBO = (IRouteDetailBO) ContextLoader.getContext().getBean("IRouteDetailBO");
+		 			DateFormat dateTimeFormate = new SimpleDateFormat("dd-MM-yyyy HH:mm");
+					DateFormat dateHypenFormat = new SimpleDateFormat("dd-MM-yyyy");
+
+					DateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
+					DateFormat  shifTimeFormate = new SimpleDateFormat("HH:mm");	
+                    String shiftTimeInDateTimeFormate=columnValue.get(9).toString();
+					 String  shifTimeSplit[]=shiftTimeInDateTimeFormate.split("\\s+"); 
+					 java.sql.Time shiftTime = new java.sql.Time(shifTimeFormate.parse(shifTimeSplit[1]).getTime());		 
+					 Date requestDate  = (Date) dateFormat.parse(columnValue.get(8).toString());					
+                    log.info("Date"+requestDate);
+                    log.info("shiftTime"+shiftTime);
+                    log.info("CurrentTime"+new Date());
+                    String reqDate=dateHypenFormat.format(requestDate)+" "+shifTimeFormate.format(shiftTime);
+                   log.info("reqDatereqDate"+reqDate);
+					log.info(requestDate.getTime()+shiftTime.getTime()+"ColumnValue:-"+columnValue);
+					log.info("reqq time.."+dateTimeFormate.parse(reqDate).getTime());
+					if(dateTimeFormate.parse(reqDate).getTime()<= new Date().getTime()){
+			        	 status="backDateRequest-"+columnValue.get(8).toString()+"EmpId "+columnValue.get(0).toString();
+			  		 	return Response.ok(status, MediaType.APPLICATION_JSON).build(); 
+					}
+
+					 List<EFmFmUserMasterPO> employeeDetails=iEmployeeDetailBO.getParticularEmpDetailsFromEmployeeId(columnValue.get(0).toString(),branchId);				
+			         if(employeeDetails.isEmpty() || employeeDetails.size()==0){
+			        	 status="empIdNotExist-"+columnValue.get(0).toString();
+			  		 	return Response.ok(status, MediaType.APPLICATION_JSON).build(); 
+			         }
+			 		List<EFmFmClientRouteMappingPO> routeExistDetail=iRouteDetailBO.getParticularRouteDetailByClient(branchId, columnValue.get(7).toString().trim());
+			 		if(routeExistDetail.isEmpty() || routeExistDetail.size()==0){
+			        	 status="routeNotExist-"+columnValue.get(7).toString().trim();
+			  		 	return Response.ok(status, MediaType.APPLICATION_JSON).build(); 
+			 		}
+			 		
+			 		List<EFmFmRouteAreaMappingPO> routeAreaId=iRouteDetailBO.getRouteAreaIdFromAreaNameAndZoneNameForExcelUpload(columnValue.get(4).toString().trim(), branchId, columnValue.get(7).toString().trim());
+			 		if(routeAreaId.isEmpty() || routeAreaId.size()==0){
+			 			List<EFmFmZoneMasterPO> routeId=iRouteDetailBO.getAllRouteName(columnValue.get(7).toString().trim());
+			 			List<EFmFmAreaMasterPO> areaId=iRouteDetailBO.getParticularAreaNameDetails(columnValue.get(4).toString().trim());
+				 		if(areaId.isEmpty() || areaId.size()==0){
+			 			EFmFmAreaMasterPO efmFmAreaMaster=new EFmFmAreaMasterPO();
+			 			efmFmAreaMaster.setAreaDescription(columnValue.get(4).toString().trim());
+			 			efmFmAreaMaster.setAreaName(columnValue.get(4).toString().trim());
+			 			iRouteDetailBO.saveAreaRecord(efmFmAreaMaster);
+			 			areaId=iRouteDetailBO.getParticularAreaNameDetails(columnValue.get(4).toString().trim());
+				 		}
+			 			EFmFmRouteAreaMappingPO routeAreaMappingPO=new EFmFmRouteAreaMappingPO();
+			 			routeAreaMappingPO.setEfmFmAreaMaster(areaId.get(0));
+			 			routeAreaMappingPO.seteFmFmZoneMaster(routeId.get(0));
+			 			iRouteDetailBO.saveRouteMappingDetails(routeAreaMappingPO);	
+				 		routeAreaId=iRouteDetailBO.getRouteAreaIdFromAreaNameAndZoneNameForExcelUpload(columnValue.get(4).toString().trim(), branchId, columnValue.get(7).toString().trim());
+			        }
+			 		 
+			 		List<EFmFmEmployeeRequestMasterPO> employeeRequestMasterPO=iCabRequestBO.getParticularRequestDetailFromUserIdAndTripType(employeeDetails.get(0).getUserId(), branchId, columnValue.get(6).toString());					 
+			 		EFmFmUserMasterPO userMaster = new EFmFmUserMasterPO();
+			 		userMaster.setUserId(employeeDetails.get(0).getUserId());
+					
+			 		if(employeeRequestMasterPO.isEmpty() || employeeRequestMasterPO.size()==0){
+			        	 EFmFmEmployeeRequestMasterPO eFmFmEmployeeRequestMasterPO=new EFmFmEmployeeRequestMasterPO();
+			 			 Date endDate  = (Date) dateTimeFormate.parse(requestDate+" "+"23:59");
+			 			if(columnValue.get(6).toString().trim().equalsIgnoreCase("PICKUP")){
+							 String shiftPickUpTime=columnValue.get(5).toString();
+							 String  shifPickUpTimeSplit[]=shiftPickUpTime.split("\\s+"); 						
+							 java.sql.Time pickUpTime = new java.sql.Time(shifTimeFormate.parse(shifPickUpTimeSplit[1]).getTime());	
+				        	 eFmFmEmployeeRequestMasterPO.setPickUpTime(pickUpTime);
+
+							}
+			        	 eFmFmEmployeeRequestMasterPO.setReadFlg("N");
+			        	 eFmFmEmployeeRequestMasterPO.setRequestDate(requestDate);
+			        	 eFmFmEmployeeRequestMasterPO.setRequestFrom("E");
+			        	 eFmFmEmployeeRequestMasterPO.setRequestType("normal");
+			        	 eFmFmEmployeeRequestMasterPO.setShiftTime(shiftTime);
+			        	 eFmFmEmployeeRequestMasterPO.setStatus("N");
+			        	 eFmFmEmployeeRequestMasterPO.setTripRequestStartDate(requestDate);
+			        	 eFmFmEmployeeRequestMasterPO.setTripRequestEndDate(endDate);
+			        	 eFmFmEmployeeRequestMasterPO.setTripType(columnValue.get(6).toString().trim());
+			        	 eFmFmEmployeeRequestMasterPO.setEfmFmUserMaster(userMaster);
+			        	 if(columnValue.get(6).toString().trim().equalsIgnoreCase("DROP")){
+			        	 eFmFmEmployeeRequestMasterPO.setDropSequence(Integer.parseInt(columnValue.get(5).toString().trim()));				
+			        	 }
+			        	 iCabRequestBO.save(eFmFmEmployeeRequestMasterPO); 
+					 		employeeRequestMasterPO=iCabRequestBO.getParticularRequestDetailFromUserIdAndTripType(employeeDetails.get(0).getUserId(), branchId, columnValue.get(6).toString());
+			         }
+			 		List<EFmFmEmployeeTravelRequestPO> travelRequestDetails=iCabRequestBO.getEmplyeeRequestsForSameDateAndShiftTimeFromTravelReq(requestDate, shiftTime, branchId, employeeDetails.get(0).getUserId(), columnValue.get(6).toString());
+			 		if(travelRequestDetails.isEmpty() || travelRequestDetails.size()==0){
+			 		EFmFmEmployeeTravelRequestPO travelRequestPO = new EFmFmEmployeeTravelRequestPO(); 
+			 		travelRequestPO.setApproveStatus("Y");
+					 travelRequestPO.setIsActive("Y");
+					 travelRequestPO.setReadFlg("Y");
+					 travelRequestPO.setRequestDate(requestDate);
+					 travelRequestPO.setRequestStatus("E");
+					 travelRequestPO.setRequestType("normal");
+					 travelRequestPO.setShiftTime(shiftTime);
+					 travelRequestPO.seteFmFmEmployeeRequestMaster(employeeRequestMasterPO.get(0));
+					 travelRequestPO.setEfmFmUserMaster(userMaster);
+					 if(columnValue.get(6).toString().trim().equalsIgnoreCase("PICKUP")){
+						 String shiftPickUpTime=columnValue.get(5).toString();
+						 String  shifPickUpTimeSplit[]=shiftPickUpTime.split("\\s+"); 						
+						 java.sql.Time pickUpTime = new java.sql.Time(shifTimeFormate.parse(shifPickUpTimeSplit[1]).getTime());	
+						 travelRequestPO.setPickUpTime(pickUpTime);
+
+						}
+					 travelRequestPO.seteFmFmRouteAreaMapping(routeAreaId.get(0));		 
+					 travelRequestPO.setTripType(columnValue.get(6).toString().trim());
+					 travelRequestPO.setCompletionStatus("N");
+					if(columnValue.get(6).toString().trim().equalsIgnoreCase("DROP")){
+					 travelRequestPO.setDropSequence(Integer.parseInt(columnValue.get(5).toString().trim()));				
+					 }
+					iCabRequestBO.save(travelRequestPO);
+			 		}
+					
 				}
 					
 			}
@@ -191,7 +311,7 @@ public class EmployeeImportExcel {
 		}catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} 
-		return Response.ok("SUCCEES", MediaType.APPLICATION_JSON).build();
+		 	return Response.ok(status, MediaType.APPLICATION_JSON).build(); 
 	}
 	
 	
@@ -256,7 +376,7 @@ public class EmployeeImportExcel {
 		return Response.ok("SUCCEES", MediaType.APPLICATION_JSON).build();
 		
 	}
-	
+		
 	/*
 	 * @xl utility row values are inserted into employeeTravelrequest table table. 
 	 * validation also be handle here.
@@ -311,8 +431,6 @@ public class EmployeeImportExcel {
 				 	employeeRequestPO.setReadFlg("Y");
 				 	employeeRequestPO.setRequestFrom("E");
 				 	employeeRequestPO.setRequestType("normal");
-				 	
-
 				    /*
 					 * getting latitute and Longitute based on the employee address.
 					 */

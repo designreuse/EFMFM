@@ -653,6 +653,13 @@ public class IVehicleCheckInBOImpl implements IVehicleCheckInBO  {
 		return iVehicleCheckInDAO.getAllVehicleModel(branchId);
 	}
 
+	@Override
+	public List<EFmFmVehicleCheckInPO> getCheckedInVehicleDetailsFromChecInAndBranchId(
+			int checkInId, int branchId) {
+		// TODO Auto-generated method stub
+		return iVehicleCheckInDAO.getCheckedInVehicleDetailsFromChecInAndBranchId(checkInId, branchId);
+	}
+
 
 
 }

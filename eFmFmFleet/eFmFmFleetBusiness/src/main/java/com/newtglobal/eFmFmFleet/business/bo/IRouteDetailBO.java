@@ -164,5 +164,9 @@ public interface IRouteDetailBO {
 			int checInId);
 	public List<EFmFmClientRouteMappingPO> getParticularRouteDetailByClient(
 			int branchId, String routeName);
+	public List<EFmFmRouteAreaMappingPO> getRouteAreaIdFromAreaNameAndZoneNameForExcelUpload(
+			String areaName, int branchId, String zoneName);
+	public List<EFmFmAreaMasterPO> getParticularAreaNameDetails(String areaName);
+	
 	
 }
