@@ -1,4 +1,4 @@
-package com.newtglobal.eFmFmRouter.clustering; //Ver 10
+package com.newtglobal.eFmFmRouter.clustering;
 
 import java.util.*;
 
