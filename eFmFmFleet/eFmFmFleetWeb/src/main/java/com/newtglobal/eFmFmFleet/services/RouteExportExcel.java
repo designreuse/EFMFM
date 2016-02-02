@@ -8,6 +8,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.lang.reflect.Array;
 import java.net.URISyntaxException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
@@ -17,6 +18,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -45,7 +47,8 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
 
 import org.apache.commons.io.IOUtils;
-
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.DateUtil;
@@ -96,6 +99,7 @@ import com.newtglobal.eFmFmFleet.web.ContextLoader;
 @Component
 @Path("/xlEmployeeExport")
 public class RouteExportExcel {
+	private static Log RouteExportExcel_log = LogFactory.getLog(RouteExportExcel.class);
 	private static final String SERVER_UPLOAD_WINDOWS_LOCATION_FOLDER = "C:/ExcelExport/";
 	private static final String SERVER_UPLOAD_LINUX_LOCATION_FOLDER = "/home/tripDownloadDocs/";
 	/*
@@ -103,8 +107,7 @@ public class RouteExportExcel {
 	 * @Stored all the values on Arraylist.
 	 * @author  Rajan R
 	 * @since   2015-05-12 
-	 */
-	
+	 */	
 	@POST
 	@Path("/exportRoute")
 	@Consumes("application/json")
@@ -114,6 +117,7 @@ public class RouteExportExcel {
 		IApprovalBO approvalBO = (IApprovalBO) ContextLoader.getContext().getBean("IApprovalBO");
 		IAssignRouteBO iAssignRouteBO = (IAssignRouteBO) ContextLoader.getContext().getBean("IAssignRouteBO");
 		IVehicleCheckInBO iVehicleCheckInBO = (IVehicleCheckInBO) ContextLoader.getContext().getBean("IVehicleCheckInBO");
+		 List<EFmFmEmployeeTripDetailPO> employeeTripList=null;
 		String name="os.name",filePath="";		 	
 		boolean  OsName =System.getProperty(name).startsWith("Windows");		
 		if(OsName){			
@@ -209,8 +213,11 @@ public class RouteExportExcel {
 			     empAddress.setCellValue("EmployeeAddress");
 			     empAddress.setCellStyle(style);
 			     /*outSide Heading End*/
-			     
-				List<EFmFmEmployeeTripDetailPO> employeeTripList=iCabRequestBO.getDropTripByAlgoRouteSortedEmployees(activeRouteList.getAssignRouteId());
+			     if(travelRequestPO.getTripType().equalsIgnoreCase("DROP")){			    	 
+			    	 employeeTripList=iCabRequestBO.getNonDropTripAllSortedEmployees(activeRouteList.getAssignRouteId());
+			     }else{
+			    	 employeeTripList=iCabRequestBO.getParticularTripAllEmployees(activeRouteList.getAssignRouteId());
+			     }				
 				if(employeeTripList.size()>0){
 					int rowNum=1;
 					for(EFmFmEmployeeTripDetailPO employeeList:employeeTripList){
@@ -227,8 +234,11 @@ public class RouteExportExcel {
 						if(employeeList.geteFmFmEmployeeTravelRequest().getEfmFmUserMaster().getGender() instanceof String) 
 						employeeGender.setCellValue((String) employeeList.geteFmFmEmployeeTravelRequest().getEfmFmUserMaster().getGender());						
 						Cell pickupTime = insideRow.createCell(4);
-						if(employeeList.geteFmFmEmployeeTravelRequest().getPickUpTime() instanceof Date) 
-							pickupTime.setCellValue((String) shiftTimeFormate.format(employeeList.geteFmFmEmployeeTravelRequest().getPickUpTime()));						
+						if(employeeList.geteFmFmEmployeeTravelRequest().getPickUpTime() instanceof Date) {
+							pickupTime.setCellValue((String) shiftTimeFormate.format(employeeList.geteFmFmEmployeeTravelRequest().getPickUpTime()));
+						}else{
+							pickupTime.setCellValue((String)"00:00");
+						}
 						Cell employeeAreaName = insideRow.createCell(5);
 						if(employeeList.geteFmFmEmployeeTravelRequest().getEfmFmUserMaster().geteFmFmRouteAreaMapping().getEfmFmAreaMaster().getAreaName() instanceof String) 
 							employeeAreaName.setCellValue((String) employeeList.geteFmFmEmployeeTravelRequest().getEfmFmUserMaster().geteFmFmRouteAreaMapping().getEfmFmAreaMaster().getAreaName());						
@@ -316,29 +326,42 @@ public class RouteExportExcel {
 	@Produces("application/json")
 	public Response listOfFileNames(EFmFmEmployeeTravelRequestPO travelRequestPO) throws ParseException{	
 		List<Map<String, Object>> availableFileDetails= new ArrayList<Map<String, Object>>();
-		String name="os.name",filePath="";		 	
-		boolean  OsName =System.getProperty(name).startsWith("Windows");
+		String name="os.name",filePath="";
+		SimpleDateFormat dateFormat=new SimpleDateFormat("dd-MM-yyyy");
+		Date TodayDate=new Date();
 		
+		boolean  OsName =System.getProperty(name).startsWith("Windows");		
 		if(OsName){			
 			filePath =SERVER_UPLOAD_WINDOWS_LOCATION_FOLDER;			
 		}else{
 			filePath =SERVER_UPLOAD_LINUX_LOCATION_FOLDER;			
 		}
-		File folder = new File(filePath);
-		File[] listOfFiles = folder.listFiles();		
-		if(listOfFiles.length>0){			
-			 for (int fileCount = 0; fileCount < listOfFiles.length; fileCount++) {
-				Map<String, Object>  fileDetails= new HashMap<String, Object>();				
-				 if (listOfFiles[fileCount].isFile()) {				       				        
-				        fileDetails.put("reportName",listOfFiles[fileCount].getName());
-				     }				
-				 availableFileDetails.add(fileDetails);
-			}				
-		}			
-		return Response.ok(availableFileDetails, MediaType.APPLICATION_JSON).build();
-	}
+		
+		try {
+			File folder = new File(filePath);
+			File[] listOfFiles = folder.listFiles();
+			Arrays.asList(listOfFiles);
+			List listFile = Arrays.asList(listOfFiles);
+			Collections.sort(listFile, Collections.reverseOrder());
+			if (listOfFiles.length > 0) {
+				for (int fileCount = 0; fileCount < listOfFiles.length; fileCount++) {
+					Map<String, Object> fileDetails = new HashMap<String, Object>();
+					if (listOfFiles[fileCount].isFile()) {
+						if (listOfFiles[fileCount].getName().contains(dateFormat.format(TodayDate))) {
+							fileDetails.put("reportName", listOfFiles[fileCount].getName());
+							availableFileDetails.add(fileDetails);
+						} else {
+							(new File(listOfFiles[fileCount].getName())).delete();					
+						}
+					}
 
-	
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return Response.ok(availableFileDetails, MediaType.APPLICATION_JSON).build();
+	}	
 	@POST
 	@Path("/readCreatedRoute")
 	@Consumes(MediaType.MULTIPART_FORM_DATA)
@@ -374,7 +397,7 @@ public class RouteExportExcel {
 					case Cell.CELL_TYPE_NUMERIC:
 						if (DateUtil.isCellDateFormatted(cell)) {
 							Date date = DateUtil.getJavaDate((double) cell.getNumericCellValue());
-							SimpleDateFormat df = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
+							SimpleDateFormat df = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
 							columnValue.add(df.format(date));
 						}else {
 							cell.setCellType(Cell.CELL_TYPE_STRING);
@@ -409,80 +432,105 @@ public class RouteExportExcel {
 		return Response.ok("SUCCEES", MediaType.APPLICATION_JSON).build();
 	}	
 	
-	public void extractRecord(Map<Integer, Object> vehicleDetails,int branchId) throws ParseException{	
-		IVehicleCheckInBO iVehicleCheckInBO = (IVehicleCheckInBO) ContextLoader.getContext().getBean("IVehicleCheckInBO");
+	public void extractRecord(Map<Integer, Object> vehicleDetails, int branchId) throws ParseException {
+		IVehicleCheckInBO iVehicleCheckInBO = (IVehicleCheckInBO) ContextLoader.getContext()
+				.getBean("IVehicleCheckInBO");
 		ICabRequestBO iCabRequestBO = (ICabRequestBO) ContextLoader.getContext().getBean("ICabRequestBO");
-		EFmFmClientBranchPO eFmFmClientBranchPO=new EFmFmClientBranchPO();
+		SimpleDateFormat date_format = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+		DateFormat shiftFormate = new SimpleDateFormat("HH:mm:ss");
+		EFmFmClientBranchPO eFmFmClientBranchPO = new EFmFmClientBranchPO();
 		eFmFmClientBranchPO.setBranchId(branchId);
-		int routeId=0,empCount=0,avaiable_seat=0,seq_count=0,loop_Count=vehicleDetails.size();
-		boolean route_executed=false,escort_req=false;
-		String shiftTime="",tripType="",requestDate="";
-		for (Entry<Integer, Object> entry : vehicleDetails.entrySet()){  
-			ArrayList xlvalues = (ArrayList)  entry.getValue();
-			loop_Count--;
-		    if("RouteId".equalsIgnoreCase(xlvalues.get(1).toString().trim())){ 
-		    		seq_count=0;
-		    		if(route_executed){		    					    			
-		    			vehicleAllocation(routeId,escort_req,empCount,tripType,avaiable_seat,eFmFmClientBranchPO,shiftTime);    			
-		    		}		    	
-		    		int assignId=Integer.parseInt(xlvalues.get(2).toString().replace(".0"," ").trim());
-		    		System.out.println("routeId"+assignId);
-		    		List<EFmFmEmployeeTripDetailPO>  noOfEmp=iCabRequestBO.getParticularTripAllEmployees(assignId);		    		
-		    		if(noOfEmp.size()>0){		    			
-		    			for(EFmFmEmployeeTripDetailPO tripDetails:noOfEmp){
-		    				EFmFmEmployeeTravelRequestPO eFmFmEmployeeTravelRequestPO=new EFmFmEmployeeTravelRequestPO();
-		    				eFmFmEmployeeTravelRequestPO.setBranchId(branchId);
-		    				eFmFmEmployeeTravelRequestPO.setRequestId(tripDetails.geteFmFmEmployeeTravelRequest().getRequestId());
-		    				List<EFmFmEmployeeTravelRequestPO> cabRequests = null;
-		    				cabRequests = iCabRequestBO.getparticularRequestwithShiftTime(eFmFmEmployeeTravelRequestPO);
-		    				cabRequests.get(0).setReadFlg("Y");
-		    				iCabRequestBO.update(cabRequests.get(0));	
-		    			}		    			
-		    			avaiable_seat=noOfEmp.get(0).getEfmFmAssignRoute().getEfmFmVehicleCheckIn().getEfmFmVehicleMaster().getCapacity();		    			
-		    			routeId=assignId;
-		    			tripType=noOfEmp.get(0).geteFmFmEmployeeTravelRequest().getTripType();
-		    			shiftTime=xlvalues.get(6).toString().trim();
-		    			iCabRequestBO.deleteParticularTripDetailByRouteId(routeId);
-		    			route_executed=true;
-		    			escort_req=false;
-		    			empCount=0;
-		    			
-		    		}else{
-		    			EFmFmAssignRoutePO assignRoutePO=new EFmFmAssignRoutePO();
-		    			assignRoutePO.setAssignRouteId(assignId);
-		    			assignRoutePO.seteFmFmClientBranchPO(eFmFmClientBranchPO);		    			
-		    			List<EFmFmAssignRoutePO>  assignCount =iCabRequestBO.getParticularDriverAssignTripDetail(assignRoutePO);
-		    			if(assignCount.size() >0){
-		    				routeId=assignId;
-			    			tripType=assignCount.get(0).getTripType();
-			    			shiftTime=xlvalues.get(6).toString().trim();
-			    			avaiable_seat=assignCount.get(0).getEfmFmVehicleCheckIn().getEfmFmVehicleMaster().getCapacity();
-			    		}
-		    		}
-		    }else{
-		    	if(!xlvalues.get(1).toString().equalsIgnoreCase("EmployeeId") && routeId !=0){		    		
-			    	String employeeId=xlvalues.get(1).toString().replace(".0","").trim();
-			    	String gender=xlvalues.get(3).toString().trim();
-			    	String pickupTime=xlvalues.get(4).toString().trim().concat(":00");
-			    	System.out.println("value -"+employeeId +" -- "+gender+" -- "+pickupTime);			    	
-			    	employeeAllocate(routeId, employeeId, tripType, branchId, pickupTime,shiftTime,seq_count++);			    	
-			    	empCount++;
-		    		if(tripType.equalsIgnoreCase("PICKUP") && empCount ==1 && gender.equalsIgnoreCase("FEMALE")){
-		    			escort_req=true;
-		    		}else if(tripType.equalsIgnoreCase("DROP") && gender.equalsIgnoreCase("FEMALE")){
-		    			escort_req=true;
-		    		}else{
-		    			escort_req=false;
-		    		}		    	
-			    	
-		    	}
-		    	if(loop_Count==0){
-		    		vehicleAllocation(routeId,escort_req,empCount,tripType,avaiable_seat,eFmFmClientBranchPO,shiftTime);
-		    	}
-		    	
-		    }		    
+		int routeId = 0, empCount = 0, avaiable_seat = 0, seq_count = 0, loop_Count = vehicleDetails.size();
+		boolean route_executed = false,escort_req = false,update_route=false;
+		String shiftTime = "", tripType = "";
+		try {
+			for (Entry<Integer, Object> entry : vehicleDetails.entrySet()) {
+				ArrayList xlvalues = (ArrayList) entry.getValue();
+				loop_Count--;
+				if ("RouteId".equalsIgnoreCase(xlvalues.get(1).toString().trim())) {
+					seq_count = 0;
+					if (route_executed) {
+						vehicleAllocation(routeId, escort_req, empCount, tripType, avaiable_seat, eFmFmClientBranchPO,
+								shiftTime);
+						routeId=0;
+					}
+					if (!xlvalues.get(2).toString().replace(".0", " ").trim().equalsIgnoreCase("")) {
+						int assignId = Integer.parseInt(xlvalues.get(2).toString().replace(".0", " ").trim());
+						System.out.println("routeId" + assignId);
+						List<EFmFmEmployeeTripDetailPO> noOfEmp = iCabRequestBO.getParticularTripAllEmployees(assignId);
+						if (noOfEmp.size() > 0) {
+							for (EFmFmEmployeeTripDetailPO tripDetails : noOfEmp) {
+								EFmFmEmployeeTravelRequestPO eFmFmEmployeeTravelRequestPO = new EFmFmEmployeeTravelRequestPO();
+								eFmFmEmployeeTravelRequestPO.setBranchId(branchId);
+								eFmFmEmployeeTravelRequestPO
+										.setRequestId(tripDetails.geteFmFmEmployeeTravelRequest().getRequestId());
+								List<EFmFmEmployeeTravelRequestPO> cabRequests = null;
+								cabRequests = iCabRequestBO
+										.getparticularRequestwithShiftTime(eFmFmEmployeeTravelRequestPO);
+								cabRequests.get(0).setReadFlg("Y");
+								iCabRequestBO.update(cabRequests.get(0));
+							}
+							avaiable_seat = noOfEmp.get(0).getEfmFmAssignRoute().getEfmFmVehicleCheckIn()
+									.getEfmFmVehicleMaster().getCapacity();
+							tripType = noOfEmp.get(0).geteFmFmEmployeeTravelRequest().getTripType();
+							routeId = assignId;
+							shiftTime = xlvalues.get(6).toString().trim();
+							iCabRequestBO.deleteParticularTripDetailByRouteId(routeId);
+							route_executed = true;
+							escort_req = false;
+							empCount = 0;
+
+						} else {
+							EFmFmAssignRoutePO assignRoutePO = new EFmFmAssignRoutePO();
+							assignRoutePO.setAssignRouteId(assignId);
+							assignRoutePO.seteFmFmClientBranchPO(eFmFmClientBranchPO);
+							List<EFmFmAssignRoutePO> assignCount = iCabRequestBO
+									.getParticularDriverAssignTripDetail(assignRoutePO);
+							if (assignCount.size() > 0) {
+								routeId = assignId;
+								tripType = assignCount.get(0).getTripType();
+								shiftTime = xlvalues.get(6).toString().trim();
+								avaiable_seat = assignCount.get(0).getEfmFmVehicleCheckIn().getEfmFmVehicleMaster()
+										.getCapacity();
+							}
+						}
+					}
+				} else {
+					if (!xlvalues.get(1).toString().equalsIgnoreCase("EmployeeId") && routeId != 0) {
+						String employeeId = xlvalues.get(1).toString().replace(".0", "").trim();
+						String gender = xlvalues.get(3).toString().trim();
+						String pickupTime = "";
+						if (xlvalues.get(4).toString().trim().length() == 5) {
+							pickupTime = xlvalues.get(4).toString().trim().concat(":00");
+						} else {
+							System.out.println("value" + xlvalues.get(4).toString().trim());
+							pickupTime = shiftFormate.format(date_format.parse(xlvalues.get(4).toString()));
+						}
+						System.out.println("value -" + employeeId + " -- " + gender + " -- " + pickupTime);
+						employeeAllocate(routeId, employeeId, tripType, branchId, pickupTime, shiftTime, seq_count++);
+						empCount++;
+						if (tripType.equalsIgnoreCase("PICKUP") && empCount == 1 && gender.equalsIgnoreCase("FEMALE")) {
+							escort_req = true;
+						} else if (tripType.equalsIgnoreCase("DROP") && gender.equalsIgnoreCase("FEMALE")) {
+							escort_req = true;
+						} else {
+							escort_req = false;
+						}
+
+					}
+					if (loop_Count == 0 && routeId != 0) {
+						vehicleAllocation(routeId, escort_req, empCount, tripType, avaiable_seat, eFmFmClientBranchPO,
+								shiftTime);
+						routeId=0;
+					}
+
+				}
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
-		
+
 	}
 	
 	public void employeeAllocate(int routeId, String employeeId, String tripType,int branchId,String pickupTime,String shiftTime,int seq_count) throws ParseException {
@@ -494,6 +542,7 @@ public class RouteExportExcel {
 		eFmFmEmployeeTravelRequestPO.setBranchId(branchId);		
 		List<EFmFmEmployeeTravelRequestPO> cabRequests = null;				
 		DateFormat dateTime = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+		try {
         Date  shiftReq_Date= dateTime.parse(shiftTime);     		 
 		DateFormat outputFormat = new SimpleDateFormat("yyyy-MM-dd");
 		Date date = shiftDateFormate.parse(shiftDateFormate.format(shiftReq_Date));		
@@ -529,12 +578,16 @@ public class RouteExportExcel {
 				iCabRequestBO.update(employeeTripDetailPO);
 				cabRequests.get(0).setReadFlg("R");
 				cabRequests.get(0).setDropSequence(seq_count);
-				//System.out.println("pickupTime"+shiftFormate.format(pickupTime));
-				java.sql.Time myTime = java.sql.Time.valueOf(pickupTime);				
-				cabRequests.get(0).setPickUpTime(myTime);
+				//System.out.println("pickupTime"+shiftFormate.format(pickupTime));				
+				java.sql.Time myTime = java.sql.Time.valueOf(pickupTime);
+				cabRequests.get(0).setPickUpTime(myTime);				
 				iCabRequestBO.update(cabRequests.get(0));
+					}
+				}catch(Exception e){
+					System.out.println("exception-Pcikup time xl sheet column Need to format the text"+e);
+				}
 			
-		}
+		
 	}	
 	
 	public void vehicleAllocation(int routeId, boolean escort_req, int empCount, String tripType, int avaiable_seat,EFmFmClientBranchPO eFmFmClientBranchPO, String shiftTime) throws ParseException{		
