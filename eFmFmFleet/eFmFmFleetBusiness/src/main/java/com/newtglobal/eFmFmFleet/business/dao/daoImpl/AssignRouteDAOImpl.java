@@ -745,7 +745,7 @@ public class AssignRouteDAOImpl implements IAssignRouteDAO {
 			Format formatter;		
 			formatter = new SimpleDateFormat("yyyy-MM-dd"); 
 			formatter.format(fromDate);
-			Query query=entityManager.createQuery("SELECT b FROM EFmFmAssignRoutePO b JOIN b.efmFmEmployeeTripDetails t JOIN t.eFmFmEmployeeTravelRequest r JOIN b.eFmFmClientBranchPO c where b.shiftTime='"+ShifTime+"' AND b.tripType='"+tripType+"' AND DATE(r.requestDate)>=TRIM('"+formatter.format(fromDate)+"') AND DATE(r.requestDate)<=TRIM('"+formatter.format(toDate)+"') AND b.tripStatus ='allocated' AND c.branchId='"+branchId+"' group by b.assignRouteId");			
+			Query query=entityManager.createQuery("SELECT b FROM EFmFmAssignRoutePO b JOIN b.eFmFmClientBranchPO c where b.shiftTime='"+ShifTime+"' AND b.tripType='"+tripType+"' AND DATE(b.tripAssignDate)>=TRIM('"+formatter.format(fromDate)+"') AND DATE(b.tripAssignDate)<=TRIM('"+formatter.format(toDate)+"') AND b.tripStatus ='allocated' AND c.branchId='"+branchId+"'");			
 			allTrips=query.getResultList();				
 			return allTrips;
 		}
