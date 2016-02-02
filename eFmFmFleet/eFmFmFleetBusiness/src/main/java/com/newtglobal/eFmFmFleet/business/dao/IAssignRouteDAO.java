@@ -151,4 +151,8 @@ public interface IAssignRouteDAO {
 	public List<EFmFmAssignRoutePO> getTodayTripByShift(Date fromDate, Date toDate, String tripType, String ShifTime,
 			int branchId);
 	public List<EFmFmAssignRoutePO> getExportTodayTrips(Date fromDate, Date toDate, String tripType, String ShifTime,int branchId);
+	public List<EFmFmAssignRoutePO> getAllEscortRequiredTripsByDate(Date fromDate,
+			Date toDate, int branchId);
+	public List<Date> getAllTripsByDistinctDates(Date fromDate, Date toDate,
+			int branchId);
 }

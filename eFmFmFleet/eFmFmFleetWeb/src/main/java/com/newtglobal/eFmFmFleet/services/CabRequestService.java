@@ -2105,6 +2105,7 @@ public class CabRequestService {
 		eFmFmTripAlertsPO.setUserType("Driver");
 		eFmFmTripAlertsPO.setAlertOpenStatus("open");
 		eFmFmTripAlertsPO.setAlertClosingDescription("No Action");
+		eFmFmTripAlertsPO.setCurrentSpeed(actualRouteTravelledPO.getSpeed());
 		eFmFmTripAlertsPO.setStatus("Y");
 		iAlertBO.save(eFmFmTripAlertsPO);
 		}

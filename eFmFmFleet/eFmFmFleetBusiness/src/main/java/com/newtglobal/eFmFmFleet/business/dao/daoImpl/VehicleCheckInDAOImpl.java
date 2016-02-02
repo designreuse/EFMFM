@@ -9,6 +9,7 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+import javax.persistence.TemporalType;
 
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Propagation;
@@ -1549,5 +1550,15 @@ public class VehicleCheckInDAOImpl implements IVehicleCheckInDAO {
 		vehicleCheckIn = query.getResultList();
 		return vehicleCheckIn;
 	}
+	
+	@Override
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRED)
+	public List<EFmFmVehicleCheckInPO> getVehicleAndDriverAttendence(Date fromDate, Date toDate,int branchId) {
+		String query = "SELECT t FROM EFmFmVehicleCheckInPO t JOIN t.efmFmVehicleMaster d JOIN d.efmFmVendorMaster f JOIN f.eFmFmClientBranchPO c WHERE   date(t.checkOutTime) >= ?1  AND   date(t.checkOutTime) <=?2  AND c.branchId='"+branchId+"'  ORDER BY checkOutTime ASC";
+		Query q = entityManager.createQuery(query).setParameter(1, fromDate, TemporalType.TIMESTAMP).setParameter(2, toDate, TemporalType.TIMESTAMP);
+		return q.getResultList();
+	}
+	
+	
 	
 }

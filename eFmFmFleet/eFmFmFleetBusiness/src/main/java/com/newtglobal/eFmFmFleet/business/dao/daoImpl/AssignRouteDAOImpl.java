@@ -750,6 +750,21 @@ public class AssignRouteDAOImpl implements IAssignRouteDAO {
 			return allTrips;
 		}
 		
-		
+//total trip distinct date counts
+		@Override
+		@Transactional(readOnly = false, propagation = Propagation.REQUIRED)
+		public List<Date> getAllTripsByDistinctDates(Date fromDate, Date toDate,int branchId) {
+		    	String query = "SELECT Distinct DATE(t.tripAssignDate) FROM EFmFmAssignRoutePO t JOIN t.eFmFmClientBranchPO c WHERE t.tripStatus ='completed' AND date(t.tripAssignDate) >= ?1  AND   date(t.tripAssignDate) <=?2  AND c.branchId='"+branchId+"'  ORDER BY tripAssignDate ASC";
+				Query q = entityManager.createQuery(query).setParameter(1, fromDate, TemporalType.TIMESTAMP).setParameter(2, toDate, TemporalType.TIMESTAMP);
+				List<Date> tripDates=(List<Date>) q.getResultList();
+				return tripDates;	
+		}
+	@Override
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRED)
+	public List<EFmFmAssignRoutePO> getAllEscortRequiredTripsByDate(Date fromDate, Date toDate,int branchId) {
+		String query = "SELECT t FROM EFmFmAssignRoutePO t JOIN t.eFmFmClientBranchPO c WHERE t.tripStatus ='completed' AND date(t.tripAssignDate) >= ?1  AND   date(t.tripAssignDate) <=?2  AND t.escortRequredFlag='Y' AND c.branchId='"+branchId+"'  ORDER BY tripAssignDate ASC";
+		Query q = entityManager.createQuery(query).setParameter(1, fromDate, TemporalType.TIMESTAMP).setParameter(2, toDate, TemporalType.TIMESTAMP);
+		return q.getResultList();
+	}		
 		
 }

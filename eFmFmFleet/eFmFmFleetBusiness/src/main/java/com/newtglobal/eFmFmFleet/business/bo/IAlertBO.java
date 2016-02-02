@@ -86,6 +86,8 @@ public interface IAlertBO {
 	public long getAllTodaysTripCloseAlertsCount(int branchId);
 	public List<EFmFmTripAlertsPO> getParticuarAlertDetailFromAlertId(int branchId,
 			int alertId, int assignRouteId);
+	public List<EFmFmTripAlertsPO> getAllTripAlertsForSelectedDates(Date fromDate,
+			Date toDate, int branchId);
 
 
 }

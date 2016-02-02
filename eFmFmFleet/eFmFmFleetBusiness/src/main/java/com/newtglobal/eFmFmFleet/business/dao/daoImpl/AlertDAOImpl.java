@@ -18,7 +18,9 @@ import org.springframework.transaction.annotation.Transactional;
 import com.newtglobal.eFmFmFleet.business.dao.IAlertDAO;
 import com.newtglobal.eFmFmFleet.model.EFmFmAlertTxnPO;
 import com.newtglobal.eFmFmFleet.model.EFmFmAlertTypeMasterPO;
+import com.newtglobal.eFmFmFleet.model.EFmFmAssignRoutePO;
 import com.newtglobal.eFmFmFleet.model.EFmFmTripAlertsPO;
+import com.newtglobal.eFmFmFleet.model.EFmFmVehicleCheckInPO;
 
 @Repository("IAlertDAO")
 public class AlertDAOImpl implements IAlertDAO {
@@ -213,6 +215,25 @@ public class AlertDAOImpl implements IAlertDAO {
 	
 	//End Of Dash Board alerts
 
+	
+	/*@Override
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRED)
+	public List<EFmFmTripAlertsPO> getAllTripAlertsForSelectedDates(Date fromDate, Date toDate,int branchId) {
+		String query = "SELECT t FROM EFmFmTripAlertsPO t  JOIN t.efmFmAssignRoute d JOIN d.eFmFmClientBranchPO c WHERE   date(t.creationTime) >= ?1  AND   date(t.creationTime) <=?2  AND c.branchId='"+branchId+"'  ORDER BY creationTime ASC";
+		Query q = entityManager.createQuery(query).setParameter(1, fromDate, TemporalType.TIMESTAMP).setParameter(2, toDate, TemporalType.TIMESTAMP);
+		return q.getResultList();
+	}*/
+	
+	
+	
+	@Override
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRED)
+	public List<EFmFmTripAlertsPO> getAllTripAlertsForSelectedDates(Date fromDate, Date toDate,int branchId) {
+		String query = "SELECT b FROM EFmFmTripAlertsPO b JOIN b.efmFmAssignRoute d JOIN d.eFmFmClientBranchPO c WHERE  date(b.creationTime) >= ?1  AND date(b.creationTime) <=?2  AND c.branchId='"+branchId+"'  ORDER BY b.creationTime ASC";
+		Query q = entityManager.createQuery(query).setParameter(1, fromDate, TemporalType.TIMESTAMP).setParameter(2, toDate, TemporalType.TIMESTAMP);
+		return q.getResultList();
+	}
+	
 	
 	
 	@Override

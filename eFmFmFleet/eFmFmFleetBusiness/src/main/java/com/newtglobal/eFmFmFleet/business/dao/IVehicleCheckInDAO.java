@@ -264,4 +264,6 @@ public interface IVehicleCheckInDAO {
 	public List<EFmFmVehicleMasterPO> getAllVehicleModel(int branchId);
 	public List<EFmFmVehicleCheckInPO> getCheckedInVehicleDetailsFromChecInAndBranchId(
 			int checkInId, int branchId);
+	public List<EFmFmVehicleCheckInPO> getVehicleAndDriverAttendence(Date fromDate,
+			Date toDate, int branchId);
 }

@@ -57,6 +57,9 @@ public class EFmFmTripAlertsPO implements Serializable {
 
 	@Column(name="UserType", length=50)
 	private String userType;
+	
+	@Column(name="Speed", length=50)
+	private String currentSpeed;
 
 	@Transient
 	private int branchId;
@@ -181,6 +184,14 @@ public class EFmFmTripAlertsPO implements Serializable {
 
 	public void setAssignRouteId(int assignRouteId) {
 		this.assignRouteId = assignRouteId;
+	}
+
+	public String getCurrentSpeed() {
+		return currentSpeed;
+	}
+
+	public void setCurrentSpeed(String currentSpeed) {
+		this.currentSpeed = currentSpeed;
 	}
 
 	

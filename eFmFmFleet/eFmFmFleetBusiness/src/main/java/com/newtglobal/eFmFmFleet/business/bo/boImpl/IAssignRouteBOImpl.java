@@ -507,4 +507,18 @@ public class IAssignRouteBOImpl implements IAssignRouteBO {
 		return iAssignRouteDAO.getExportTodayTrips(fromDate, toDate, tripType, ShifTime, branchId);
 	}
 
+	@Override
+	public List<EFmFmAssignRoutePO> getAllEscortRequiredTripsByDate(
+			Date fromDate, Date toDate, int branchId) {
+		// TODO Auto-generated method stub
+		return iAssignRouteDAO.getAllEscortRequiredTripsByDate(fromDate, toDate, branchId);
+	}
+
+	@Override
+	public List<Date> getAllTripsByDistinctDates(Date fromDate, Date toDate,
+			int branchId) {
+		// TODO Auto-generated method stub
+		return iAssignRouteDAO.getAllTripsByDistinctDates(fromDate, toDate, branchId);
+	}
+
 }

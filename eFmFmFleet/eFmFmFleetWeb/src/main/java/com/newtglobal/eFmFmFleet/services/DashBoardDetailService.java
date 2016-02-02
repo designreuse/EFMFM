@@ -748,6 +748,7 @@ public class DashBoardDetailService {
 								alertsDetails.put("driverNumber", alerts.getEfmFmAssignRoute().getEfmFmVehicleCheckIn().getEfmFmDriverMaster().getMobileNumber());
 								alertsDetails.put("vehicleNumber", alerts.getEfmFmAssignRoute().getEfmFmVehicleCheckIn().getEfmFmVehicleMaster().getVehicleNumber());
 								alertsDetails.put("alertType", alerts.getEfmFmAlertTypeMaster().getAlertType());
+								alertsDetails.put("currentSpeed", alerts.getCurrentSpeed());
 								alertsDetails.put("description", alerts.getEfmFmAlertTypeMaster().getAlertDescription());
 								alertsDetails.put("zoneName", alerts.getEfmFmAssignRoute().geteFmFmRouteAreaMapping().geteFmFmZoneMaster().getZoneName());
 								dashBoardActivity.add(alertsDetails);
