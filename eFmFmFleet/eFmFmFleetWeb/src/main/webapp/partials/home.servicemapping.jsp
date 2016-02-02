@@ -22,7 +22,7 @@
                       <ul class="dropdown-menu routeActions">
                         <li class = 'pointer' ng-click = 'createNewRoute()'>Create New Route</li>
                         <li class = 'pointer' ng-click = 'uploadRoute()'>Upload Route</li>
-                        <li class = 'pointer' ng-click = 'exportRoute()'>Export Route</li>
+                        <li class = 'pointer' ng-click = 'exportRoute()'>Prepare to download</li>
                         <li class = 'pointer' ng-click = 'downloadRoute()'>Download Route</li>
                       </ul>
                     </div>
