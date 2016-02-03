@@ -1,6 +1,7 @@
 package com.newtglobal.eFmFmFleet.business.dao;
 
 import java.sql.Time;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -155,4 +156,12 @@ public interface IAssignRouteDAO {
 			Date toDate, int branchId);
 	public List<Date> getAllTripsByDistinctDates(Date fromDate, Date toDate,
 			int branchId);
+	public long getPickedUpOrDroppedEmployeesCountByDate(Date fromDate, Date toDate,
+			int branchId, String tripType);
+	public List<ArrayList> getAllTripsByDistinctDatesAndDeriverId(Date fromDate,
+			Date toDate, int branchId);
+	public List<EFmFmAssignRoutePO> getAllTripByDateByDeriverId(Date fromDate,
+			Date toDate, int branchId, int driverId);
+	public List<EFmFmAssignRoutePO> getAllTripsByDatesAndDriverId(Date fromDate,
+			Date toDate, int branchId, int driverId);
 }

@@ -1533,7 +1533,7 @@ public class ReportService {
 				onTimeReportDetail.put("totalUsedVehicles", iAssignRouteBO
 						.getAllTripsCountByDate(tripDetails, tripDetails, assignRoutePO
 								.geteFmFmClientBranchPO().getBranchId(),assignRoutePO.getTripType()));		
-				long totalPickupPax=iAssignRouteBO.getPickedUpEmployeesCountByDate(tripDetails,
+				long totalPickupPax=iAssignRouteBO.getPickedUpOrDroppedEmployeesCountByDate(tripDetails,
 						tripDetails, assignRoutePO.geteFmFmClientBranchPO()
 						.getBranchId(),assignRoutePO.getTripType());
 				log.info("pickupCount"+totalPickupPax);
@@ -1858,6 +1858,8 @@ public class ReportService {
 						.format(trips.getTripAssignDate()));
 				escortReport.put("tripCompleteDate", dateFormatter
 						.format(trips.getTripCompleteTime()));
+				escortReport.put("shiftTime", timeFormat
+						.format(trips.getShiftTime()));
 				escortReport.put("tripType",trips.getTripType());
 				escortReport.put("vehicleNumber",trips.getEfmFmVehicleCheckIn().getEfmFmVehicleMaster().getVehicleNumber());
 				escortReport.put("vendorName",trips.getEfmFmVehicleCheckIn().getEfmFmVehicleMaster().getEfmFmVendorMaster().getVendorName());
@@ -1872,7 +1874,7 @@ public class ReportService {
 				}
 				catch(Exception e){
 					escortReport.put("escortName","Escort Required But Not Available");
-					escortReport.put("escortId",0);
+					escortReport.put("escortId","NA");
 				}
 				escortReport.put("routeName",trips.geteFmFmRouteAreaMapping().geteFmFmZoneMaster().getZoneName());
 				List<EFmFmEmployeeTripDetailPO> employeeTripDetailPO=null;
@@ -2051,6 +2053,7 @@ public class ReportService {
 		DateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");
 		DateFormat dateFormatter = new SimpleDateFormat("dd-MM-yyyy hh:mm");
 		List<Date> selectedDates = new ArrayList<Date>();
+		List<Object> dateAndDriverId=new ArrayList<Object>();
 		Date fromDate = (Date) formatter.parse(assignRoutePO.getFromDate());
 		Date toDate = (Date) formatter.parse(assignRoutePO.getToDate());		
 		selectedDates = iAssignRouteBO.getAllTripsByDistinctDates(
@@ -2062,12 +2065,9 @@ public class ReportService {
 		log.info("From Date" + assignRoutePO.getToDate());
 		Map<String, Object> allTrips = new HashMap<String, Object>();
 		List<Map<String, Object>> allTripsDetailsData = new ArrayList<Map<String, Object>>();
-
 		if ((!(selectedDates.isEmpty()))
 				|| selectedDates.size() != 0) {		
 			for (Date tripdates : selectedDates) {	
-				List<Map<String, Object>> driverDrivingReportList = new ArrayList<Map<String, Object>>();
-				Map<String, Object> driverReport = new HashMap<String, Object>();
 			List<EFmFmAssignRoutePO> allTripDetails = iAssignRouteBO
 					.getAllTripByDate(tripdates, tripdates, assignRoutePO
 							.geteFmFmClientBranchPO().getBranchId());				
@@ -2077,32 +2077,48 @@ public class ReportService {
 					|| allTripDetails.size() != 0) {
 				long millis=0;
 			for (EFmFmAssignRoutePO trips : allTripDetails) {
-				Map<String, Object> driverDrivingReport = new HashMap<String, Object>();
-				driverDrivingReport.put("date", dateFormatter
-						.format(trips.getTripAssignDate()));
-				driverDrivingReport.put("tripStartDate", dateFormatter
-						.format(trips.getTripStartTime()));
-				driverDrivingReport.put("tripCompleteDate", dateFormatter
-						.format(trips.getTripCompleteTime()));				
-				millis+=trips.getTripCompleteTime().getTime()-trips.getTripStartTime().getTime();
-				driverDrivingReport.put("vehicleNumber",trips.getEfmFmVehicleCheckIn().getEfmFmVehicleMaster().getVehicleNumber());
-				driverDrivingReport.put("vendorName",trips.getEfmFmVehicleCheckIn().getEfmFmVehicleMaster().getEfmFmVendorMaster().getVendorName());
-				driverDrivingReport.put("driverName",trips.getEfmFmVehicleCheckIn().getEfmFmDriverMaster().getFirstName());
-				driverDrivingReport.put("driverId",trips.getEfmFmVehicleCheckIn().getEfmFmDriverMaster().getDriverId());
-				driverDrivingReport.put("tripType",trips.getTripType());
-				driverDrivingReport.put("routeName",trips.geteFmFmRouteAreaMapping().geteFmFmZoneMaster().getZoneName());				
-				driverDrivingReportList.add(driverDrivingReport);	
+				List<Map<String, Object>> driverDrivingReportList = new ArrayList<Map<String, Object>>();
+				Map<String, Object> driverReport = new HashMap<String, Object>();
+
+				if(!(dateAndDriverId.contains(dateFormatter
+						.format(trips.getTripAssignDate())) && dateAndDriverId.contains(trips.getEfmFmVehicleCheckIn().getEfmFmDriverMaster().getDriverId()))){					
+					List<EFmFmAssignRoutePO> allTripDetailsByDriverId = iAssignRouteBO
+							.getAllTripsByDatesAndDriverId(tripdates, tripdates, assignRoutePO
+									.geteFmFmClientBranchPO().getBranchId(),trips.getEfmFmVehicleCheckIn().getEfmFmDriverMaster().getDriverId());
+					for (EFmFmAssignRoutePO drivertrips : allTripDetailsByDriverId) {
+						Map<String, Object> driverDrivingReport = new HashMap<String, Object>();
+						millis+=drivertrips.getTripCompleteTime().getTime()-drivertrips.getTripStartTime().getTime();
+						dateAndDriverId.add(dateFormatter
+								.format(drivertrips.getTripAssignDate()));
+						dateAndDriverId.add(drivertrips.getEfmFmVehicleCheckIn().getEfmFmDriverMaster().getDriverId());
+						driverDrivingReport.put("date", dateFormatter
+								.format(drivertrips.getTripAssignDate()));
+						driverDrivingReport.put("tripStartDate", dateFormatter
+								.format(drivertrips.getTripStartTime()));
+						driverDrivingReport.put("tripCompleteDate", dateFormatter
+								.format(drivertrips.getTripCompleteTime()));									
+						driverDrivingReport.put("vehicleNumber",drivertrips.getEfmFmVehicleCheckIn().getEfmFmVehicleMaster().getVehicleNumber());
+						driverDrivingReport.put("vendorName",drivertrips.getEfmFmVehicleCheckIn().getEfmFmVehicleMaster().getEfmFmVendorMaster().getVendorName());
+						driverDrivingReport.put("driverName",drivertrips.getEfmFmVehicleCheckIn().getEfmFmDriverMaster().getFirstName());
+						driverDrivingReport.put("driverId",drivertrips.getEfmFmVehicleCheckIn().getEfmFmDriverMaster().getDriverId());
+						driverDrivingReport.put("tripType",drivertrips.getTripType());
+						driverDrivingReport.put("routeName",drivertrips.geteFmFmRouteAreaMapping().geteFmFmZoneMaster().getZoneName());							
+						driverDrivingReportList.add(driverDrivingReport);	
+					}
+					String travellHours = String.format("%02d:%02d:%02d", TimeUnit.MILLISECONDS.toHours(millis),
+				            TimeUnit.MILLISECONDS.toMinutes(millis) - TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(millis)),
+				            TimeUnit.MILLISECONDS.toSeconds(millis) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(millis)));			
+					driverReport.put("tripCount", allTripDetailsByDriverId.size());
+					driverReport.put("totalDrivingHours",travellHours);
+					driverReport.put("tripsDetails",driverDrivingReportList);
+					allTripsDetailsData.add(driverReport);
+				}
+				allTrips.put("tripDetail", allTripsDetailsData);
+
+				
               }
-			String travellHours = String.format("%02d:%02d:%02d", TimeUnit.MILLISECONDS.toHours(millis),
-		            TimeUnit.MILLISECONDS.toMinutes(millis) - TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(millis)),
-		            TimeUnit.MILLISECONDS.toSeconds(millis) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(millis)));			
-			driverReport.put("tripCount", allTripDetails.size());
-			driverReport.put("totalDrivingHours",travellHours);
-			driverReport.put("tripsDetails",driverDrivingReportList);
 			}
-			allTripsDetailsData.add(driverReport);
 			}
-			allTrips.put("tripDetail", allTripsDetailsData);
 
 	}
 		return Response.ok(allTrips, MediaType.APPLICATION_JSON).build();

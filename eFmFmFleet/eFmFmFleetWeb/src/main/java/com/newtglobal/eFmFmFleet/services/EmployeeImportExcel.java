@@ -200,7 +200,8 @@ public class EmployeeImportExcel {
 					DateFormat dateHypenFormat = new SimpleDateFormat("dd-MM-yyyy");
 
 					DateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
-					DateFormat  shifTimeFormate = new SimpleDateFormat("HH:mm");	
+					DateFormat  shifTimeFormate = new SimpleDateFormat("HH:mm");
+					log.info("Emp_ID"+columnValue.get(9).toString());
                     String shiftTimeInDateTimeFormate=columnValue.get(9).toString();
 					 String  shifTimeSplit[]=shiftTimeInDateTimeFormate.split("\\s+"); 
 					 java.sql.Time shiftTime = new java.sql.Time(shifTimeFormate.parse(shifTimeSplit[1]).getTime());		 
@@ -252,7 +253,9 @@ public class EmployeeImportExcel {
 					
 			 		if(employeeRequestMasterPO.isEmpty() || employeeRequestMasterPO.size()==0){
 			        	 EFmFmEmployeeRequestMasterPO eFmFmEmployeeRequestMasterPO=new EFmFmEmployeeRequestMasterPO();
-			 			 Date endDate  = (Date) dateTimeFormate.parse(requestDate+" "+"23:59");
+			 			 Date endDate  = (Date) dateTimeFormate.parse(dateHypenFormat.format(requestDate)+" "+"23:59");
+
+//			 			 Date endDate  = (Date) dateTimeFormate.parse(requestDate+" "+"23:59");
 			 			if(columnValue.get(6).toString().trim().equalsIgnoreCase("PICKUP")){
 							 String shiftPickUpTime=columnValue.get(5).toString();
 							 String  shifPickUpTimeSplit[]=shiftPickUpTime.split("\\s+"); 						

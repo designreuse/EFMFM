@@ -1348,20 +1348,12 @@
                     
                     <!-- Tenth Tab -->
                      <tab ng-click = "setDates('escortReport')">
-                    <tab-heading>Escort Report</tab-heading>
-                       <div class = "kmTabContent"><div class = "searchDIVREPORT row marginRow">
-                           
-                            <div class = "col-md-3">
-                            	<select class = "select_reports form-control"
-                                        ng-model="showRecords" 
-                						ng-options="pagination.text for pagination in paginations track by pagination.value"
-                						ng-change = "setLimit(showRecords)">
-      						  		<option value="">-- All Records --</option>
-    							</select>
-    						</div>
-                           <div class = "col-md-3"> 
-                               <input type = 'text' placeholder="Filter" class = 'form-control floatRight' ng-model = 'searchSMSShow'>
-                           </div>                              
+                    <tab-heading>Escort</tab-heading>
+                       <div class = "kmTabContent"><div class = "searchDIVREPORT row marginRow">                          
+                           <div class = "col-md-2"> 
+                               <input type = 'text' placeholder="Filter" class = 'form-control floatRight' ng-model = 'efmfilter.filterEscort'>
+                           </div> 
+                           <div class = "col-md-4"> </div>
                             <div class = "col-md-6">
                                 <div class = "calenderMainDiv floatRight pointer" 
                                      popover-template="partials/popovers/calenderReport.jsp"
@@ -1374,21 +1366,19 @@
                                 </div>                                  
                            </div>   </div>                     
                                                    
-                           <div class = "col-md-12 col-xs-12 tableWrapper_report" ng-show = "gotSMSResult">
+                           <div id = "exportableEscortReport" class = "col-md-12 col-xs-12 tableWrapper_report" ng-show = "gotEscortResult">
                             <table class = "reportTable table reportTable_km table-responsive container-fluid">
                                 <thead class ="tableHeading">
-
                                     <tr>
-                                      <th>Employee Id</th>
-                                      <th>Employee Number</th>
-                                      <th>Shift Time</th>
-                                      <th>Allocation Msg</th>
-                                      <th>Cab Delay Msg</th>
-                                      <th>ETA Msg</th>
-                                      <th>Address</th>
-                                      <th>Reached Msg</th>
-                                      <th>Route Name</th>
-                                      <th>Travelled Date</th>
+                                      <th>Date</th>
+                                      <th>Vehicle Number</th>
+                                      <th>Driver Name</th>
+                                      <th>Last Employee id/Name</th>
+                                      <th>ShiftTime</th>
+                                      <th>Escort id</th>
+                                      <th>Escort Name</th>
+                                      <th>Time of Drop/Pickup</th>
+                                      <th>Route</th>
                                       <th>Trip Type</th>
                                         <th><button class = "btn btn-sm btn-success form-control excelExportButton" ng-click = "saveInExcel()">
                                             <i class = "icon-download-alt"></i><span class = "marginLeft5">Excel</span></button>
@@ -1396,17 +1386,16 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-		                           <tr ng-repeat="report in reportsSMSData | filter:searchSMSShow">
-                                       <td class = "col-md-1">{{report.employeeId}}</td>
-                                       <td class = "col-md-1">{{report.employeeNumber}}</td>
-                                       <td class = "col-md-1">{{report.shiftTime}}</td>                                      
-                                       <td class = "col-md-1">{{report.allocationMsgDeliveryDate}}</td>
-                                       <td class = "col-md-1">{{report.cabDelayMsgDeliveryDate}}</td>
-                                       <td class = "col-md-1">{{report.eat15MinuteMsgDeliveryDate}}</td>
-                                       <td class = "col-md-2">{{report.employeeAddress}}</td>
-                                       <td class = "col-md-1">{{report.reachedMsgDeliveryDate}}</td>
+		                           <tr ng-repeat="report in reportEscortData | filter:efmfilter.filterEscort">
+                                       <td class = "col-md-1">{{report.tripCompleteDate}}</td>
+                                       <td class = "col-md-1">{{report.vehicleNumber}}</td>
+                                       <td class = "col-md-1">{{report.driverName}}</td>                                      
+                                       <td class = "col-md-1">{{report.employeeName}}/{{report.employeeId}}</td>
+                                       <td class = "col-md-1">{{report.shiftTime}}</td>
+                                       <td class = "col-md-1">{{report.escortId}}</td>
+                                       <td class = "col-md-2">{{report.escortName}}</td>
+                                       <td class = "col-md-1">{{report.pickOrDropTime}}</td>
                                        <td class = "col-md-1">{{report.routeName}}</td>
-                                       <td class = "col-md-1">{{report.travelledDate}}</td>
                                        <td class = "col-md-1">{{report.tripType}}</td>
                                        <td></td>
                                    </tr> 
@@ -1419,38 +1408,14 @@
                     
                     <!-- Eleventh Tab -->
                      <tab ng-click = "setDates('vehicleDriverAttendence')">
-                      <tab-heading>Vehicle And Driver Attendance</tab-heading>
+                      <tab-heading>Vehicle & Driver Attendance</tab-heading>
                        <div class = "kmTabContent"><div class = "searchDIVREPORT row marginRow">
                            
                            <div class = "col-md-2"> 
-                               <input type = 'text' placeholder="Filter" class = 'form-control floatRight' ng-model = 'searchAttendance'>
+                               <input type = 'text' placeholder="Filter" class = 'form-control floatRight' ng-model = 'efmfilter.filterVDAttendance'>
                            </div>                              
-                            <div class = "col-md-2">
-                            	<select class = "select_reports form-control"
-                                        ng-model="attendance.byType" 
-                						ng-options="reportType.text for reportType in reportTypes_attendance track by reportType.value"
-                						ng-change = "setReportType_attendance(attendance.byType)">
-      						  		<option value="">-- Select --</option>
-    							</select>
-    						</div>                       
-                           <div class = "col-md-2">                               
-                            	<select class = "select_reports form-control"
-                                        ng-model="attendance.list1" 
-                						ng-options="list1.text for list1 in lists1 track by list1.value"
-                						ng-change = "setList1Result(attendance.list1)">
-      						  		<option value="">-- Select --</option>
-    							</select>
-                           </div>                      
-                           <div class = "col-md-2">                               
-                            	<select class = "select_reports select_attendanceList2 form-control"
-                                        ng-model="attendance.list2" 
-                						ng-options="list2.text for list2 in lists2 track by list2.value"
-                						ng-change = "setList2Result(attendance.list2)"
-                                        ng-disabled = "attendance.byType.value != 'vendor'">
-      						  		<option value="">-- Select --</option>
-    							</select>
-                           </div>                              
-                            <div class = "col-md-4">
+                           <div class = "col-md-4"></div>                             
+                            <div class = "col-md-6">
                                 <div class = "calenderMainDiv floatRight pointer" 
                                      popover-template="partials/popovers/calenderReport.jsp"
                                      popover-placement="bottom"
@@ -1462,34 +1427,174 @@
                                 </div>                                  
                            </div>   </div>                     
                                                    
-                           <div class = "col-md-12 col-xs-12 tableWrapper_report" ng-show = "gotSMSResult">
+                           <div id = 'exportTableVDAttendance' class = "col-md-12 col-xs-12 tableWrapper_report" ng-show = "gotVDAttendanceResult">
                             <table class = "reportTable table reportTable_km table-responsive container-fluid">
                                 <thead class ="tableHeading">
                                     <tr>
-                                      <th>Travelled Date</th>
-                                      <th>Route Name</th>
-                                      <th>Shift time</th>
-                                      <th>Trip Type</th>
-                                      <th>Vehicle Number</th>
-                                      <th>Driver Name</th>
-                                      <th>Driver Number</th>
+                                        <th colspan = '7' style = "background-color:black; color: white">
+                                            Vehicle And Driver Attendance</br> 
+                                            <span>{{searchFromDatesVDA | date : 'longDate'}} - {{searchToDatesVDA | date : 'longDate'}}</span>
+                                        </th>
+                                
+                                    </tr>
+                                    <tr>
+                                      <th>Date</th>
                                       <th>Vendor Name</th>
+                                      <th>Vehicle Number</th>
+                                      <th>Driver Id</th>
+                                      <th>Driver Name</th>
+                                      <th>Status</th>
                                       <th><button class = "btn btn-sm btn-success form-control excelExportButton" ng-click = "saveInExcel()">
                                         <i class = "icon-download-alt"></i><span class = "marginLeft5">Excel</span></button>
                                       </th>
                                     </tr>
                                 </thead>
                                 <tbody>
-		                           <tr ng-repeat="report in reportsNoShowData | filter:searchNoShow">
-                                       <td class = "col-md-2">{{report.travelledDate}}</td>
-                                       <td class = "col-md-2">{{report.routeName}}</td>
-                                       <td class = "col-md-2">{{report.shiftTime}}</td>
-                                       <td class = "col-md-2">{{report.tripType}}</td>
-                                       <td></td>
-                                       <td></td>
-                                       <td></td>
-                                       <td></td>
-                                       <td></td>
+		                           <tr ng-repeat="report in reportsVDAttendanceData | filter:efmfilter.filterVDAttendance">
+                                       <td class = "col-md-2">{{report.attendanceDate}}</td>
+                                       <td class = "col-md-3">{{report.vendorName}}</td>
+                                       <td class = "col-md-2">{{report.vehicleNumber}}</td>
+                                       <td class = "col-md-1">{{report.driverId}}</td>
+                                       <td class = "col-md-3">{{report.driverName}}</td>
+                                       <td class = "col-md-1">{{report.status}}</td>
+                                       <td class = "col-md-1"></td>
+                                   </tr> 
+		                         </tbody>                                
+                            </table> 
+                          </div> 
+                        </div>
+                    </tab> 
+                    <!-- End of Tab -->
+                    
+                    <!-- Driver working hours Tab -->
+                     <tab ng-click = "setDates('driverWorkingHours')">
+                      <tab-heading>Driver Working Hours</tab-heading>
+                       <div class = "kmTabContent"><div class = "searchDIVREPORT row marginRow">
+                           
+                           <div class = "col-md-2"> 
+                               <input type = 'text' placeholder="Filter" class = 'form-control floatRight' ng-model = 'efmfilter.filterdriverWH'>
+                           </div>                              
+                           <div class = "col-md-4"></div>                             
+                            <div class = "col-md-6">
+                                <div class = "calenderMainDiv floatRight pointer" 
+                                     popover-template="partials/popovers/calenderReport.jsp"
+                                     popover-placement="bottom"
+                                     popover-title = "Get Report"
+                                     popover-trigger ="click">                           
+                                        <span><i class = "icon-calendar"></i></span>
+                                        <span>{{fromDate | date : 'longDate'}} - {{toDate | date : 'longDate'}}</span>
+                                        <span><img ng-src = 'images/spiffygif_22x22.gif' ng-show = 'isProcessing'/></span>
+                                </div>                                  
+                           </div>   </div>                     
+                                                   
+                           <div id = 'exportTableDriverWH' class = "col-md-12 col-xs-12 tableWrapper_report" ng-show = "gotDriverWHResult">
+                            <table class = "reportTable table reportTable_km table-responsive container-fluid">
+                                <thead class ="tableHeading">
+                                    <tr>
+                                        <th colspan = '9' style = "background-color:black; color: white">
+                                            Driver Working Hours</br> 
+                                            <span>{{searchFromDatesDWH | date : 'longDate'}} - {{searchFromDatesDWH | date : 'longDate'}}</span>
+                                        </th>
+                                
+                                    </tr>
+                                    <tr>
+                                      <th>Date</th>
+                                      <th>Vendor Name</th>
+                                      <th>Vehicle Number</th>
+                                      <th>Driver Id</th>
+                                      <th>Driver Name</th>
+                                      <th>Login time</th>
+                                      <th>Logout time</th>
+                                      <th>Total Hours</th>
+                                      <th><button class = "btn btn-sm btn-success form-control excelExportButton" ng-click = "saveInExcel()">
+                                        <i class = "icon-download-alt"></i><span class = "marginLeft5">Excel</span></button>
+                                      </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+		                           <tr ng-repeat="report in reportsDriverWHData | filter:efmfilter.filterdriverWH">
+                                       <td class = "col-md-1">{{report.date}}</td>
+                                       <td class = "col-md-2">{{report.vendorName}}</td>
+                                       <td class = "col-md-2">{{report.vehicleNumber}}</td>
+                                       <td class = "col-md-1">{{report.driverId}}</td>
+                                       <td class = "col-md-2">{{report.driverName}}</td>
+                                       <td class = "col-md-1">{{report.loginTime}}</td>
+                                       <td class = "col-md-1">{{report.logOutTime}}</td>
+                                       <td class = "col-md-1">{{report.totalWorkingHours}}</td>
+                                       <td class = "col-md-1"></td>
+                                   </tr> 
+		                         </tbody>                                
+                            </table> 
+                          </div> 
+                        </div>
+                    </tab> 
+                    <!-- End of Tab -->
+                    
+                    <!-- Driver Driving hours Tab -->
+                     <tab ng-click = "setDates('driverDrivingHours')">
+                      <tab-heading>Driver Driving Hours</tab-heading>
+                       <div class = "kmTabContent"><div class = "searchDIVREPORT row marginRow">
+                           
+                           <div class = "col-md-2"> 
+                               <input type = 'text' placeholder="Filter" class = 'form-control floatRight' ng-model = 'efmfilter.filterdriverDH'>
+                           </div>                              
+                           <div class = "col-md-4"></div>                             
+                            <div class = "col-md-6">
+                                <div class = "calenderMainDiv floatRight pointer" 
+                                     popover-template="partials/popovers/calenderReport.jsp"
+                                     popover-placement="bottom"
+                                     popover-title = "Get Report"
+                                     popover-trigger ="click">                           
+                                        <span><i class = "icon-calendar"></i></span>
+                                        <span>{{fromDate | date : 'longDate'}} - {{toDate | date : 'longDate'}}</span>
+                                        <span><img ng-src = 'images/spiffygif_22x22.gif' ng-show = 'isProcessing'/></span>
+                                </div>                                  
+                           </div>   </div>                     
+                                                   
+                           <div id = 'exportTableDriverDH' class = "col-md-12 col-xs-12 tableWrapper_report" ng-show = "gotDriverDHResult">
+                            <table class = "reportTable table reportTable_km table-responsive container-fluid">
+                                <thead class ="tableHeading">
+                                    <tr>
+                                        <th colspan = '14' style = "background-color:black; color: white">
+                                            Driver Driving Hours</br> 
+                                            <span>{{searchFromDatesDDH | date : 'longDate'}} - {{searchFromDatesDDH | date : 'longDate'}}</span>
+                                        </th>
+                                
+                                    </tr>
+                                    <tr>
+                                      <th>Date</th>
+                                      <th>Vendor Name</th>
+                                      <th>Vehicle Number</th>
+                                      <th>Driver Id</th>
+                                      <th>Driver Name</th>
+                                      <th>Trip Type</th>
+                                      <th>Route Name</th>
+                                      <th>Trip start time</th>
+                                      <th>Trip End time</th>
+                                      <th>Trip Details</th>
+                                      <th>Driving hrs/trip</th>
+<!--                                      <th>Total driving hrs</th>-->
+                                      <th><button class = "btn btn-sm btn-success form-control excelExportButton" ng-click = "saveInExcel()">
+                                        <i class = "icon-download-alt"></i><span class = "marginLeft5">Excel</span></button>
+                                      </th>
+                                    </tr>
+                                </thead>
+                                <tbody ng-repeat="report in reportsDriverDHData">
+                                    
+		                           <tr ng-repeat="dh in report.tripsDetails | filter:efmfilter.filterdriverDH">
+                                       <td class = "col-md-1">{{dh.date}}</td>
+                                       <td class = "col-md-1">{{dh.vendorName}}</td>
+                                       <td class = "col-md-2">{{dh.vehicleNumber}}</td>
+                                       <td class = "col-md-1">{{dh.driverId}}</td>
+                                       <td class = "col-md-1">{{dh.driverName}}</td>
+                                       <td class = "col-md-1">{{dh.tripType}}</td>
+                                       <td class = "col-md-1">{{dh.routeName}}</td>
+                                       <td class = "col-md-1">{{dh.tripStartDate}}</td>
+                                       <td class = "col-md-1">{{dh.tripCompleteDate}}</td>
+                                       <td class = "col-md-1">**123**</td>
+                                       <td class = "col-md-1">**123**</td>
+<!--                                       <td rowspan = "{{report.tripsDetails.length}}" class = "col-md-1">{{report.totalDrivingHours}}</td>-->
+                                       <td class = "col-md-1"></td>
                                    </tr> 
 		                         </tbody>                                
                             </table> 
@@ -1497,6 +1602,7 @@
                         </div>
                     </tab> 
                     <!-- End of Eleventh Tab -->
+                    
                     
                     <!-- Twelveth Tab -->
 <!--                     <tab ng-click = "setDates('overSpeed')">
@@ -1553,21 +1659,20 @@
                     <!-- End of Twelveth Tab -->
                     
                     <!-- Thirteenth Tab -->
-                     <tab ng-click = "setDates('travelTimeByRoute')">
+                     <tab ng-click = "setDates('routeWiseTravel')">
                     <tab-heading>Route Wise Travel Time</tab-heading>
                        <div class = "kmTabContent"><div class = "searchDIVREPORT row marginRow">
-                           
-                            <div class = "col-md-3">
-                            	<select class = "select_reports form-control"
-                                        ng-model="showRecords" 
-                						ng-options="pagination.text for pagination in paginations track by pagination.value"
-                						ng-change = "setLimit(showRecords)">
-      						  		<option value="">-- All Records --</option>
-    							</select>
-    						</div>
-                           <div class = "col-md-3"> 
-                               <input type = 'text' placeholder="Filter" class = 'form-control floatRight' ng-model = 'searchSMSShow'>
-                           </div>                              
+                           <div class = "col-md-2"> 
+                               <input type = 'text' placeholder="Filter" class = 'form-control floatRight' ng-model = 'efmfilter.filterRWT'>
+                           </div>            
+                           <div class = "col-md-2">                                
+                               <select ng-model="searchRWT.type"
+                                       class="form-control" 
+                                       ng-options="RWTTripType.text for RWTTripType in RWTTripTypes track by RWTTripType.value"
+                                       ng-change = "setTripTypeRWT(searchRWT.type)">
+                              </select>
+                           </div>            
+                           <div class = "col-md-2"> </div>             
                             <div class = "col-md-6">
                                 <div class = "calenderMainDiv floatRight pointer" 
                                      popover-template="partials/popovers/calenderReport.jsp"
@@ -1580,31 +1685,43 @@
                                 </div>                                  
                            </div>   </div>                     
                                                    
-                           <div class = "col-md-12 col-xs-12 tableWrapper_report" ng-show = "gotSMSResult">
+                           <div id = 'exportTableRWT' class = "col-md-12 col-xs-12 tableWrapper_report" ng-show = "gotRWTResult">
                             <table class = "reportTable table reportTable_km table-responsive container-fluid">
-                                <thead class ="tableHeading">
-                                   <tr col-span = "3" class ="tableHeadding_km">Kilometer Report</tr>
+                                <thead class ="tableHeading"> 
+                                    <tr>
+                                        <th colspan = '10' style = "background-color:black; color: white">
+                                            Route Wise Travel Time - {{RWTTripType}} </br> 
+                                            <span>{{searchFromDatesRWT | date : 'longDate'}} - {{searchToDatesRWT | date : 'longDate'}}</span>
+                                        </th>
+                                
+                                    </tr>
+                                   <tr col-span = "10" class ="tableHeadding_km">Route Wise Travel Time</tr>
                                     <tr>
                                       <th>Travelled Date</th>
-                                      <th>Travel Time</th>
-                                      <th>Employee Id</th>
-                                      <th>Route Name</th>
-                                      <th>Shift time</th>
-                                      <th>Trip Type</th>
-                                      <th>Escort Required</th>
+                                      <th>Vehicle Number</th>
+                                      <th>Driver Id</th>
+                                      <th>Driver name</th>
+                                      <th>Vendor Name</th>
+                                      <th>Route Name/Id</th>
+                                      <th>Start time</th>
+                                      <th>End time</th>
+                                      <th>Total travel time</th>
                                         <th><button class = "btn btn-sm btn-success form-control excelExportButton" ng-click = "saveInExcel()">
                                             <i class = "icon-download-alt"></i><span class = "marginLeft5">Excel</span></button>
                                         </th>
                                     </tr>
                                 </thead>
                                 <tbody>
-		                            <tr ng-repeat="report in reportsNoShowData | filter:searchNoShow">
-                                    <td class = "col-md-2">{{report.travelledDate}}</td>
-                                    <td class = "col-md-2">{{report.employeeId}}</td>
+		                            <tr ng-repeat="report in reportsRouteWiseTravelData | filter:efmfilter.filterRWT">
+                                    <td class = "col-md-1">{{report.tripAssignDate}}</td>
+                                    <td class = "col-md-1">{{report.vehicleNumber}}</td>
+                                    <td class = "col-md-1">{{report.driverId}}</td>
+                                    <td class = "col-md-2">{{report.driverName}}</td>
+                                    <td class = "col-md-2">{{report.vendorName}}</td>
                                     <td class = "col-md-2">{{report.routeName}}</td>
-                                    <td class = "col-md-2">{{report.shiftTime}}</td>
-                                    <td class = "col-md-2">{{report.employeeAddress}}</td>
-                                    <td class = "col-md-2">{{report.tripType}}</td>
+                                    <td class = "col-md-1">{{report.tripStartDate}}</td>
+                                    <td class = "col-md-1">{{report.tripCompleteDate}}</td>
+                                    <td class = "col-md-1">{{report.totalRouteTravelledTime}}</td>
                                     <td></td>
                                     <td></td>
                                    </tr> 

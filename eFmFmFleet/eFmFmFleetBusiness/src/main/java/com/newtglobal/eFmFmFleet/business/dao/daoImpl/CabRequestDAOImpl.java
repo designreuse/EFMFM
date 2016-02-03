@@ -240,7 +240,7 @@ public class CabRequestDAOImpl implements ICabRequestDAO{
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRED)
 	public List<EFmFmEmployeeTravelRequestPO> listOfTravelRequestByShiftWice(int branchId,Time shiftTime) {
 		List <EFmFmEmployeeTravelRequestPO> employeeTravelRequestPO = new ArrayList<EFmFmEmployeeTravelRequestPO>();
-		Query query=entityManager.createQuery("SELECT b FROM EFmFmEmployeeTravelRequestPO b JOIN b.efmFmUserMaster u JOIN u.eFmFmClientBranchPO c JOIN b.eFmFmRouteAreaMapping a JOIN a.eFmFmZoneMaster z where c.branchId='"+branchId+"' AND b.approveStatus='Y' AND b.readFlg='Y' AND b.shiftTime='"+shiftTime+"' ORDER BY requestDate,z.zoneName,pickUpTime ASC");
+		Query query=entityManager.createQuery("SELECT b FROM EFmFmEmployeeTravelRequestPO b JOIN b.efmFmUserMaster u JOIN u.eFmFmClientBranchPO c JOIN b.eFmFmRouteAreaMapping a JOIN a.eFmFmZoneMaster z where c.branchId='"+branchId+"' AND b.approveStatus='Y' AND b.readFlg='Y' AND b.shiftTime='"+shiftTime+"' AND b.requestType='normal' ORDER BY requestDate,z.zoneName,pickUpTime ASC");
 		employeeTravelRequestPO=query.getResultList();		
 		return employeeTravelRequestPO;
 	}

@@ -126,6 +126,13 @@
                               {text:'3+', value:'3+'}];
        $scope.gotNSResult = false; 
        
+       $scope.gotEscortResult = false;
+       
+       $scope.gotRWTResult = false;
+       $scope.searchRWT = [];
+       $scope.searchRWT.type = {};
+       
+       $scope.gotVDAttendanceResult = false;
        
        $scope.setLimit = function(showRecords){
 	    	 if(!showRecords){$scope.numberofRecords = tripDataLength;
@@ -175,7 +182,7 @@
        
        //Set the Label of the Date Selection Button
        $scope.setDates = function(tabClicked){
-    	   alert(tabClicked);
+    	   //alert(tabClicked);
            $scope.isResult = false;
            //Set the Current Tab
            $scope.currentTab  = tabClicked;    
@@ -229,6 +236,10 @@
                    $scope.reportKM.distanceShift = {'text':'By Shifts', 'value':1};
                    $scope.reportKM.reportType= {'value':"vendor", 'text':'By VENDOR'};
                    $scope.getVendorOrVehicle($scope.reportKM.reportType);
+               }
+               if($scope.currentTab == 'routeWiseTravel'){                   
+                   $scope.RWTTripTypes = $scope.tripTypes;
+                   $scope.searchRWT.type = {'value':'PICKUP', 'text':'PICKUP'};
                }
                //Set all the items from the Dates Drop Downs to false
                angular.forEach($scope.dates, function(item){
@@ -472,24 +483,116 @@
                     });
            }  
                
-          //Check if Escort Required Tab is clicked
-          if($scope.currentTab == 'escortRequired'){
+          //Check if Escort Report Tab is clicked
+          if($scope.currentTab == 'escortReport'){
+                $('.popover').hide();
+                $scope.efmfilter= {filterEscort:''};
+                $http.post('services/report/escortReport/',data).
+                    success(function(data, status, headers, config) {
+                        $scope.gotEscortResult = true;
+                        console.log(data);
+                        $scope.reportEscortData = data.tripDetail;
+                    //alert(JSON.stringify(data));
+                        $scope.fromDate = fromDate;
+                        $scope.toDate = toDate;
+                        $scope.searchFromDateEscort = fromDate;
+                        $scope.searchToDateEscort = toDate;
+                    }).
+                    error(function(data, status, headers, config) {
+                               // log error
+                    });
                
            }
            
           //Check if Vehicle And Driver attendance report Tab is clicked
           if($scope.currentTab == 'vehicleDriverAttendence'){
+                $('.popover').hide();
+                $scope.efmfilter= {filterVDAttendance:''};
+                $http.post('services/report/attendenceReport/',data).
+                    success(function(data, status, headers, config) {
+                        $scope.gotVDAttendanceResult = true;
+                        console.log(data);
+                        $scope.reportsVDAttendanceData = data.tripDetail;
+                   //alert(JSON.stringify(data));
+                        $scope.fromDate = fromDate;
+                        $scope.toDate = toDate;
+                        $scope.searchFromDatesVDA = fromDate;
+                        $scope.searchToDatesVDA = toDate;
+                    }).
+                    error(function(data, status, headers, config) {
+                               // log error
+                    });
+               
                
            }
-           
+            
+          //Check if Driver Working Hour report Tab is clicked
+          if($scope.currentTab == 'driverWorkingHours'){
+                $('.popover').hide();
+                $scope.efmfilter= {filterdriverWH:''};
+                $http.post('services/report/driverWorkinHoursReport/',data).
+                    success(function(data, status, headers, config) {
+                        $scope.gotDriverWHResult = true;
+                        console.log(data);
+                        $scope.reportsDriverWHData = data.tripDetail;
+                    //alert(JSON.stringify(data));
+                        $scope.fromDate = fromDate;
+                        $scope.toDate = toDate;
+                        $scope.searchFromDatesDWH = fromDate;
+                        $scope.searchFromDatesDWH = toDate;
+                    }).
+                    error(function(data, status, headers, config) {
+                               // log error
+                    });
+               
+               
+           }           
+            
+          //Check if Driver Driving Hour report Tab is clicked
+          if($scope.currentTab == 'driverDrivingHours'){
+                $('.popover').hide();
+                $scope.efmfilter= {filterdriverDH:''};
+                $http.post('services/report/driverDrivingHoursReport/',data).
+                    success(function(data, status, headers, config) {
+                        $scope.gotDriverDHResult = true;
+                        console.log(data);
+                        $scope.reportsDriverDHData = data.tripDetail;
+                    alert(JSON.stringify($scope.reportsDriverDHData));
+                        $scope.fromDate = fromDate;
+                        $scope.toDate = toDate;
+                        $scope.searchFromDatesDDH = fromDate;
+                        $scope.searchFromDatesDDH = toDate;
+                    }).
+                    error(function(data, status, headers, config) {
+                               // log error
+                    });
+               
+               
+           }
           //Check if Over Speed report Tab is clicked
           if($scope.currentTab == 'overSpeed'){
                
           }
 
           //Check if Route wise travel time Report is clicked
-          if($scope.currentTab == 'travelTimeByRoute'){
-               
+          if($scope.currentTab == 'routeWiseTravel'){               
+                $('.popover').hide();
+                $scope.efmfilter= {filterRWT:''};
+                $http.post('services/report/routeWiceReport/',data).
+                    success(function(data, status, headers, config) {
+                        $scope.gotRWTResult = true;
+                        console.log(data);
+                        $scope.reportsRouteWiseTravelData = data.tripDetail;
+                    //alert(JSON.stringify(data));
+                        $scope.fromDate = fromDate;
+                        $scope.toDate = toDate;
+                        $scope.searchFromDatesRWT = fromDate;
+                        $scope.searchToDatesRWT = toDate;
+                        $scope.RWTTripType = $scope.searchRWT.type.text;
+                    }).
+                    error(function(data, status, headers, config) {
+                               // log error
+                    });
           }
                
            //Check if On Time ArrivalReport is clicked
@@ -647,7 +750,7 @@
            //If the No Show Tab is clicked
            if($scope.currentTab == 'noShow'){              
                $('.popover').hide();
-               $scope.efmfilter= {filterNoShowData:''}
+               $scope.efmfilter= {filterNoShowData:''};
                $scope.gotNSResult = false;
                $scope.NSTripType = '';
                $scope.NSReportTitle = '';
@@ -734,31 +837,31 @@
                             });                   
            }  
           //Escort Required Reports
-           if($scope.currentTab == 'escortReport'){               
-               $('.popover').hide();
-            	   var data = {
-                           eFmFmClientBranchPO:{branchId:branchId},
-                           fromDate:convertDateUTC(fromDate),
-                           toDate:convertDateUTC(toDate),
-                         };
-                         $http.post('services/report/speedReport/',data).
-                         success(function(data, status, headers, config) {
-                        	 alert(JSON.stringify(data));
-                               console.log(data);
-                               $scope.seatUtilData = data.tripDetail;                          
-                               $scope.fromDate = fromDate;
-                               $scope.toDate = toDate;
-                               if($scope.seatUtilData.length>0){
-                                   }
-                               else{
-                                   $scope.gotSUResult = false;
-                                   $scope.showalertMessage('No Data Found. Please Change the Dates', "");                                   
-                                   }
-                            }).
-                            error(function(data, status, headers, config) {
-                                       // log error
-                            });
-           }
+//           if($scope.currentTab == 'escortReport'){               
+//               $('.popover').hide();
+//            	   var data = {
+//                           eFmFmClientBranchPO:{branchId:branchId},
+//                           fromDate:convertDateUTC(fromDate),
+//                           toDate:convertDateUTC(toDate),
+//                         };
+//                         $http.post('services/report/speedReport/',data).
+//                         success(function(data, status, headers, config) {
+//                        	 alert(JSON.stringify(data));
+//                               console.log(data);
+//                               $scope.seatUtilData = data.tripDetail;                          
+//                               $scope.fromDate = fromDate;
+//                               $scope.toDate = toDate;
+//                               if($scope.seatUtilData.length>0){
+//                                   }
+//                               else{
+//                                   $scope.gotSUResult = false;
+//                                   $scope.showalertMessage('No Data Found. Please Change the Dates', "");                                   
+//                                   }
+//                            }).
+//                            error(function(data, status, headers, config) {
+//                                       // log error
+//                            });
+//           }
       }
     $scope.progressbar.complete();
    };          
@@ -908,18 +1011,7 @@
                var blob = new Blob([document.getElementById('exportableTripSheet').innerHTML], {
             type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8"
                 });
-                saveAs(blob, "TripSheetReport.xls");
-//               $scope.reportTSExcel = [];
-//               angular.forEach($scope.tripSheetData, function(item){
-//                   $scope.reportTSExcel.push({'Travelled Date':item.tripCompleteDate, 
-//                                              'Employee Id':item.empId, 
-//                                              'Shift Name':item.shiftTime, 
-//                                              'Shift time':item.shiftTime,
-//                                              'Address':item.employeeAddress,
-//                                              'Trip Type':item.tripType})
-//               }); 
-//                alasql('SELECT * INTO XLSX("tripSheetReport.xlsx",{headers:true}) FROM ?',[$scope.reportNSExcel]);
-               
+                saveAs(blob, "TripSheetReport.xls");               
            }
            
            if($scope.currentTab == 'onTime'){
@@ -927,236 +1019,41 @@
             type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8"
                 });
                 saveAs(blob, "onTimeReport.xls");
-//               $scope.reportOTExcel = [];
-//               if($scope.headingShiftOT == 'All Shifts'){
-// //                  alert($scope.headingVendorsOT);
-//                   if($scope.headingVendorsOT == 'All Vendors'){
-//                	   if($scope.OTresultTripType=='Pickup'){
-//                           angular.forEach($scope.onTimeData, function(item){
-//                               $scope.reportOTExcel.push({'Trip Type':$scope.OTresultTripType,
-//                                                          'Date':item.tripDates,
-//                                                          'Actual Users':item.totalAllocatedEmployeesCount,
-//                                                          'Total Fleets of the Day':item.totalUsedVehicles,
-//                                                          'PAX':item.totalEmployeesPickedDropCount,
-//                                                          'Trips':item.totalTrips,
-//                                                          'On Time Trips':item.onTimeTrips,
-//                                                          'On Time in %':item.delayTripsPercentage,
-//                                                          'Delay Trips':item.totalDelayTrips,
-//                                                          'Beyound Login time': item.totalDelayTripsBeyondLogin,
-//                                                          'No Show':item.totalEmployeesNoShowCount});
-//                           });
-//                        
-//                	   }
-//                	   else{
-//                       angular.forEach($scope.onTimeData, function(item){
-//                           $scope.reportOTExcel.push({'Trip Type':$scope.OTresultTripType,
-//                                                      'Date':item.tripDates,
-//                                                      'Actual Users':item.totalAllocatedEmployeesCount,
-//                                                      'Total Fleets of the Day':item.totalUsedVehicles,
-//                                                      'PAX':item.totalEmployeesPickedDropCount,
-//                                                      'Trips':item.totalTrips,
-//                                                      'On Time Trips':item.onTimeTrips,
-//                                                      'On Time in %':item.delayTripsPercentage,
-//                                                      'Beyound Login time': item.totalDelayTripsBeyondLogin,
-//                                                      'No Show':item.totalEmployeesNoShowCount});
-//                       });
-//                   }
-//                   }
-//                   else{
-//                	   if($scope.OTresultTripType=='Pickup'){
-//                           angular.forEach($scope.onTimeData, function(item){
-//                               $scope.reportOTExcel.push({'Trip Type':$scope.OTresultTripType,
-//                                                          'Date':item.tripDates,
-//                                                          'Actual Users':item.totalAllocatedEmployeesCount,
-//                                                          'Total Fleets of the Day':item.totalUsedVehicles,
-//                                                          'PAX':item.totalEmployeesPickedDropCount,
-//                                                          'Trips':item.totalTrips,
-//                                                          'On Time Trips':item.onTimeTrips,
-//                                                          'On Time in %':item.delayTripsPercentage,
-//                                                          'Delay Trips':item.totalDelayTrips,
-//                                                          'Beyound Login time': item.totalDelayTripsBeyondLogin,
-//                                                          'No Show':item.totalEmployeesNoShowCount});
-//                           });
-//                        alert("HELLO")
-//                        alert(JSON.stringify($scope.reportOTExcel))
-//                	   }
-//                	   else{
-//                       angular.forEach($scope.onTimeData, function(item){
-//                           $scope.reportOTExcel.push({'Trip Type':$scope.OTresultTripType,
-//                                                      'Date':item.tripDates,
-//                                                      'Actual Users':item.totalAllocatedEmployeesCount,
-//                                                      'Total Fleets of the Day':item.totalUsedVehicles,
-//                                                      'PAX':item.totalEmployeesPickedDropCount,
-//                                                      'Trips':item.totalTrips,
-//                                                      'On Time Trips':item.onTimeTrips,
-//                                                      'On Time in %':item.delayTripsPercentage,
-//                                                      'Beyound Login time': item.totalDelayTripsBeyondLogin,
-//                                                      'No Show':item.totalEmployeesNoShowCount});
-//                       });
-//                   }
-//                }
-//               }
-//               else if($scope.headingShiftOT == 'By Shifts'){
-//                   if($scope.headingVendorsOT == 'All Vendors'){
-//                	   if($scope.OTresultTripType == 'Pickup'){
-//                           angular.forEach($scope.onTimeData, function(item){
-//                               $scope.reportOTExcel.push({'Trip Type':$scope.OTresultTripType,
-//                                                          'Shift Time':item.tripDates,
-//                                                          'Actual Users':item.totalAllocatedEmployeesCount,
-//                                                          'Total Fleets of the Day':item.totalUsedVehicles,
-//                                                          'PAX':item.totalEmployeesPickedDropCount,
-//                                                          'Trips':item.totalTrips,
-//                                                          'On Time Trips':item.onTimeTrips,
-//                                                          'On Time in %':item.delayTripsPercentage,
-//                                                          'Delay Trips':item.totalDelayTrips,
-//                                                          'Beyound Login time': item.totalDelayTripsBeyondLogin,
-//                                                          'No Show':item.totalEmployeesNoShowCount});
-//
-//
-//                           });
-//                        
-//                	   }
-//                	   else{
-//                           angular.forEach($scope.onTimeData, function(item){
-//                               $scope.reportOTExcel.push({'Trip Type':$scope.OTresultTripType,
-//                                                          'Shift Time':item.tripDates,
-//                                                          'Actual Users':item.totalAllocatedEmployeesCount,
-//                                                          'Total Fleets of the Day':item.totalUsedVehicles,
-//                                                          'PAX':item.totalEmployeesPickedDropCount,
-//                                                          'Trips':item.totalTrips,
-//                                                          'On Time Trips':item.onTimeTrips,
-//                                                          'On Time in %':item.delayTripsPercentage,
-//                                                          'Beyound Login time': item.totalDelayTripsBeyondLogin,
-//                                                          'No Show':item.totalEmployeesNoShowCount});
-//
-//
-//                           });
-//                         
-//                	   }
-//                   }
-//                   else{
-//                	   if($scope.OTresultTripType == 'Pickup'){
-//                           angular.forEach($scope.onTimeData, function(item){
-//                               $scope.reportOTExcel.push({'Trip Type':$scope.OTresultTripType,
-//                                                          'Shift Time':item.tripDates,
-//                                                          'Vendor Name':item.vendorName,
-//                                                          'Actual Users':item.totalAllocatedEmployeesCount,
-//                                                          'Total Fleets of the Day':item.totalUsedVehicles,
-//                                                          'PAX':item.totalEmployeesPickedDropCount,
-//                                                          'Trips':item.totalTrips,
-//                                                          'On Time Trips':item.onTimeTrips,
-//                                                          'On Time in %':item.delayTripsPercentage,
-//                                                          'Delay Trips':item.totalDelayTrips,
-//                                                          'Beyound Login time': item.totalDelayTripsBeyondLogin,
-//                                                          'No Show':item.totalEmployeesNoShowCount});
-//
-//                           });
-//                         
-//                	   }
-//                	   else{
-//                          angular.forEach($scope.onTimeData, function(item){
-//                               $scope.reportOTExcel.push({'Trip Type':$scope.OTresultTripType,
-//                                                          'Shift Time':item.tripDates,
-//                                                          'Vendor Name':item.vendorName,
-//                                                          'Actual Users':item.totalAllocatedEmployeesCount,
-//                                                          'Total Fleets of the Day':item.totalUsedVehicles,
-//                                                          'PAX':item.totalEmployeesPickedDropCount,
-//                                                          'Trips':item.totalTrips,
-//                                                          'On Time Trips':item.onTimeTrips,
-//                                                          'On Time in %':item.delayTripsPercentage,
-//                                                          'Beyound Login time': item.totalDelayTripsBeyondLogin,
-//                                                          'No Show':item.totalEmployeesNoShowCount});
-//                           });
-//                        
-//                	   }
-//                   }
-//               }
-//               else if(($scope.headingShiftOT != 'By Shifts') && ($scope.headingShiftOT != 'All Shifts')){
-//                   if($scope.headingVendorsOT == 'All Vendors'){
-//                	   if($scope.OTresultTripType == 'Pickup'){
-//                           angular.forEach($scope.onTimeData, function(item){
-//                               $scope.reportOTExcel.push({'Trip Type':$scope.OTresultTripType,
-//                                                          'Shift Time':item.tripDates,
-//                                                          'Actual Users':item.totalAllocatedEmployeesCount,
-//                                                          'Total Fleets of the Day':item.totalUsedVehicles,
-//                                                          'PAX':item.totalEmployeesPickedDropCount,
-//                                                          'Trips':item.totalTrips,
-//                                                          'On Time Trips':item.onTimeTrips,
-//                                                          'On Time in %':item.delayTripsPercentage,
-//                                                          'Delay Trips':item.totalDelayTrips,
-//                                                          'Beyound Login time': item.totalDelayTripsBeyondLogin,
-//                                                          'No Show':item.totalEmployeesNoShowCount});
-//
-//
-//                           });
-//                        
-//                	   }
-//                	   else{
-//                           angular.forEach($scope.onTimeData, function(item){
-//                               $scope.reportOTExcel.push({'Trip Type':$scope.OTresultTripType,
-//                                                          'Shift Time':item.tripDates,
-//                                                          'Actual Users':item.totalAllocatedEmployeesCount,
-//                                                          'Total Fleets of the Day':item.totalUsedVehicles,
-//                                                          'PAX':item.totalEmployeesPickedDropCount,
-//                                                          'Trips':item.totalTrips,
-//                                                          'On Time Trips':item.onTimeTrips,
-//                                                          'On Time in %':item.delayTripsPercentage,
-//                                                          'Beyound Login time': item.totalDelayTripsBeyondLogin,
-//                                                          'No Show':item.totalEmployeesNoShowCount});
-//
-//
-//                           });
-//                         
-//                	   }
-//                   }
-//                   else{
-//                	   if($scope.OTresultTripType == 'Pickup'){
-//                           angular.forEach($scope.onTimeData, function(item){
-//                               $scope.reportOTExcel.push({'Trip Type':$scope.OTresultTripType,
-//                                                          'Shift Time':item.tripDates,
-//                                                          'Vendor Name':item.vendorName,
-//                                                          'Actual Users':item.totalAllocatedEmployeesCount,
-//                                                          'Total Fleets of the Day':item.totalUsedVehicles,
-//                                                          'PAX':item.totalEmployeesPickedDropCount,
-//                                                          'Trips':item.totalTrips,
-//                                                          'On Time Trips':item.onTimeTrips,
-//                                                          'On Time in %':item.delayTripsPercentage,
-//                                                          'Delay Trips':item.totalDelayTrips,
-//                                                          'Beyound Login time': item.totalDelayTripsBeyondLogin,
-//                                                          'No Show':item.totalEmployeesNoShowCount});
-//
-//
-//                           });
-//                         
-//                	   }
-//                	   else{
-//                          angular.forEach($scope.onTimeData, function(item){
-//                               $scope.reportOTExcel.push({'Trip Type':$scope.OTresultTripType,
-//                                                          'Shift Time':item.tripDates,
-//                                                          'Vendor Name':item.vendorName,
-//                                                          'Actual Users':item.totalAllocatedEmployeesCount,
-//                                                          'Total Fleets of the Day':item.totalUsedVehicles,
-//                                                          'PAX':item.totalEmployeesPickedDropCount,
-//                                                          'Trips':item.totalTrips,
-//                                                          'On Time Trips':item.onTimeTrips,
-//                                                          'On Time in %':item.delayTripsPercentage,
-//                                                          'Beyound Login time': item.totalDelayTripsBeyondLogin,
-//                                                          'No Show':item.totalEmployeesNoShowCount});
-//                           });
-//                        
-//                	   }
-//                   }
-//               
-//            	   
-//               }
-//               
-               
-//               var sheetLabel = $scope.OTresultTripType+" "+$scope.headingVendorsOT;
-//               var opts = [{sheetid:sheetLabel,header:true}];
-//               
-//               console.log(opts);
-//               alasql('SELECT INTO XLSX("onTimeReport.xlsx",?) FROM ?',[opts,[$scope.onTimeData]]);
            }
+           
+           if($scope.currentTab == 'escortReport'){
+               var blob = new Blob([document.getElementById('exportableEscortReport').innerHTML], {
+            type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8"
+                });
+                saveAs(blob, "EscortReport.xls");
+           }
+           
+           if($scope.currentTab == 'vehicleDriverAttendence'){    
+               var blob = new Blob([document.getElementById('exportTableVDAttendance').innerHTML], {
+            type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8"
+                });
+                saveAs(blob, "Vehicle/DriverAttendance.xls");
+          }
+           
+          if($scope.currentTab == 'driverWorkingHours'){    
+               var blob = new Blob([document.getElementById('exportTableDriverWH').innerHTML], {
+            type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8"
+                });
+                saveAs(blob, "DriverWorkingHours.xls");
+            }
+           
+           if($scope.currentTab == 'driverDrivingHours'){   
+               var blob = new Blob([document.getElementById('exportTableDriverDH').innerHTML], {
+            type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8"
+                });
+                saveAs(blob, "DriverDrivingHours.xls");}
+           
+          if($scope.currentTab == 'routeWiseTravel'){    
+               var blob = new Blob([document.getElementById('exportTableRWT').innerHTML], {
+            type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8"
+                });
+                saveAs(blob, "RoutewiseTravelTime.xls");
+          }
            
            if($scope.currentTab == 'seatUtil'){
                $scope.reportSUExcel = [];

@@ -1,6 +1,7 @@
 package com.newtglobal.eFmFmFleet.business.bo.boImpl;
 
 import java.sql.Time;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -519,6 +520,34 @@ public class IAssignRouteBOImpl implements IAssignRouteBO {
 			int branchId) {
 		// TODO Auto-generated method stub
 		return iAssignRouteDAO.getAllTripsByDistinctDates(fromDate, toDate, branchId);
+	}
+
+	@Override
+	public long getPickedUpOrDroppedEmployeesCountByDate(Date fromDate,
+			Date toDate, int branchId, String tripType) {
+		// TODO Auto-generated method stub
+		return iAssignRouteDAO.getPickedUpOrDroppedEmployeesCountByDate(fromDate, toDate, branchId, tripType);
+	}
+
+	@Override
+	public List<ArrayList> getAllTripsByDistinctDatesAndDeriverId(Date fromDate,
+			Date toDate, int branchId) {
+		// TODO Auto-generated method stub
+		return iAssignRouteDAO.getAllTripsByDistinctDatesAndDeriverId(fromDate, toDate, branchId);
+	}
+
+	@Override
+	public List<EFmFmAssignRoutePO> getAllTripByDateByDeriverId(Date fromDate,
+			Date toDate, int branchId, int driverId) {
+		// TODO Auto-generated method stub
+		return iAssignRouteDAO.getAllTripByDateByDeriverId(fromDate, toDate, branchId, driverId);
+	}
+
+	@Override
+	public List<EFmFmAssignRoutePO> getAllTripsByDatesAndDriverId(
+			Date fromDate, Date toDate, int branchId, int driverId) {
+		// TODO Auto-generated method stub
+		return iAssignRouteDAO.getAllTripsByDatesAndDriverId(fromDate, toDate, branchId, driverId);
 	}
 
 }

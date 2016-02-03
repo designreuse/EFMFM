@@ -238,6 +238,14 @@ public class AssignRouteDAOImpl implements IAssignRouteDAO {
 	
 	@Override
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRED)
+	public List<EFmFmAssignRoutePO> getAllTripByDateByDeriverId(Date fromDate, Date toDate,int branchId,int driverId) {
+		String query = "SELECT t FROM EFmFmAssignRoutePO t JOIN t.eFmFmClientBranchPO c JOIN t.efmFmVehicleCheckIn ch JOIN ch.efmFmDriverMaster dm WHERE t.tripStatus ='completed' AND date(t.tripAssignDate) >= ?1  AND   date(t.tripAssignDate) <=?2  AND c.branchId='"+branchId+"' AND dm.driverId='"+driverId+"' ORDER BY tripAssignDate ASC";
+		Query q = entityManager.createQuery(query).setParameter(1, fromDate, TemporalType.TIMESTAMP).setParameter(2, toDate, TemporalType.TIMESTAMP);
+		return q.getResultList();
+	}
+	
+	@Override
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRED)
 	public List<EFmFmEmployeeTripDetailPO> getAllNoShowEmployeesByDate(Date fromDate, Date toDate,int branchId) {
 		String query = "SELECT t FROM EFmFmEmployeeTripDetailPO t JOIN t.efmFmAssignRoute a JOIN a.eFmFmClientBranchPO c WHERE t.boardedFlg ='NO' AND date(t.actualTime) >= ?1  AND   date(t.actualTime) <=?2  AND c.branchId='"+branchId+"'  ORDER BY actualTime ASC";
 		Query q = entityManager.createQuery(query).setParameter(1, fromDate, TemporalType.TIMESTAMP).setParameter(2, toDate, TemporalType.TIMESTAMP);
@@ -491,7 +499,7 @@ public class AssignRouteDAOImpl implements IAssignRouteDAO {
 		@Override
 		@Transactional(readOnly = false, propagation = Propagation.REQUIRED)
 		public long getAllEmployeesCountByDate(Date fromDate, Date toDate,int branchId,String tripType) {
-			String query = "SELECT count(t) FROM EFmFmEmployeeTripDetailPO t JOIN t.efmFmAssignRoute a JOIN a.eFmFmClientBranchPO c WHERE date(t.actualTime) >= ?1  AND   date(t.actualTime) <=?2  AND c.branchId='"+branchId+"' AND a.tripType='"+tripType+"'";
+			String query = "SELECT count(t) FROM EFmFmEmployeeTripDetailPO t JOIN t.efmFmAssignRoute a JOIN a.eFmFmClientBranchPO c WHERE a.tripStatus ='completed' AND date(t.actualTime) >= ?1  AND   date(t.actualTime) <=?2  AND c.branchId='"+branchId+"' AND a.tripType='"+tripType+"'";
 			Query q = entityManager.createQuery(query).setParameter(1, fromDate, TemporalType.TIMESTAMP).setParameter(2, toDate, TemporalType.TIMESTAMP);
 			long empCountByTripDate=(long) q.getSingleResult();
 			return empCountByTripDate;
@@ -501,7 +509,7 @@ public class AssignRouteDAOImpl implements IAssignRouteDAO {
 		@Override
 		@Transactional(readOnly = false, propagation = Propagation.REQUIRED)
 		public long getAllEmployeesCountByDateByVendorId(Date fromDate, Date toDate,int branchId,String tripType,int vendorId) {
-			String query = "SELECT count(t) FROM EFmFmEmployeeTripDetailPO t JOIN t.efmFmAssignRoute a JOIN a.eFmFmClientBranchPO c JOIN a.efmFmVehicleCheckIn ch JOIN ch.efmFmVehicleMaster vm JOIN vm.efmFmVendorMaster vem WHERE date(t.actualTime) >= ?1  AND   date(t.actualTime) <=?2  AND c.branchId='"+branchId+"' AND a.tripType='"+tripType+"' AND vem.vendorId='"+vendorId+"'";
+			String query = "SELECT count(t) FROM EFmFmEmployeeTripDetailPO t JOIN t.efmFmAssignRoute a JOIN a.eFmFmClientBranchPO c JOIN a.efmFmVehicleCheckIn ch JOIN ch.efmFmVehicleMaster vm JOIN vm.efmFmVendorMaster vem WHERE a.tripStatus ='completed'  AND date(t.actualTime) >= ?1  AND   date(t.actualTime) <=?2  AND c.branchId='"+branchId+"' AND a.tripType='"+tripType+"' AND vem.vendorId='"+vendorId+"'";
 			Query q = entityManager.createQuery(query).setParameter(1, fromDate, TemporalType.TIMESTAMP).setParameter(2, toDate, TemporalType.TIMESTAMP);
 			long empCountByTripDate=(long) q.getSingleResult();
 			return empCountByTripDate;
@@ -512,7 +520,7 @@ public class AssignRouteDAOImpl implements IAssignRouteDAO {
 		@Override
 		@Transactional(readOnly = false, propagation = Propagation.REQUIRED)
 		public long getNoShowEmployeesCountByDate(Date fromDate, Date toDate,int branchId,String tripType) {
-			String query = "SELECT count(t) FROM EFmFmEmployeeTripDetailPO t JOIN t.efmFmAssignRoute a JOIN a.eFmFmClientBranchPO c WHERE t.boardedFlg ='NO' AND date(t.actualTime) >= ?1  AND   date(t.actualTime) <=?2  AND c.branchId='"+branchId+"' AND a.tripType='"+tripType+"'";
+			String query = "SELECT count(t) FROM EFmFmEmployeeTripDetailPO t JOIN t.efmFmAssignRoute a JOIN a.eFmFmClientBranchPO c WHERE a.tripStatus ='completed' AND t.boardedFlg ='NO' AND date(t.actualTime) >= ?1  AND   date(t.actualTime) <=?2  AND c.branchId='"+branchId+"' AND a.tripType='"+tripType+"'";
 			Query q = entityManager.createQuery(query).setParameter(1, fromDate, TemporalType.TIMESTAMP).setParameter(2, toDate, TemporalType.TIMESTAMP);
 			long empCountByTripDate=(long) q.getSingleResult();
 			return empCountByTripDate;
@@ -524,7 +532,7 @@ public class AssignRouteDAOImpl implements IAssignRouteDAO {
 		@Override
 		@Transactional(readOnly = false, propagation = Propagation.REQUIRED)
 		public long getNoShowEmployeesCountByDateByVendor(Date fromDate, Date toDate,int branchId,String tripType,int vendorId) {			
-			String query = "SELECT count(t) FROM EFmFmEmployeeTripDetailPO t JOIN t.efmFmAssignRoute a JOIN a.eFmFmClientBranchPO c JOIN a.efmFmVehicleCheckIn ch JOIN ch.efmFmVehicleMaster vm JOIN vm.efmFmVendorMaster vem WHERE t.boardedFlg ='NO' AND date(t.actualTime) >= ?1  AND   date(t.actualTime) <=?2  AND c.branchId='"+branchId+"' AND a.tripType='"+tripType+"' AND vem.vendorId='"+vendorId+"'";
+			String query = "SELECT count(t) FROM EFmFmEmployeeTripDetailPO t JOIN t.efmFmAssignRoute a JOIN a.eFmFmClientBranchPO c JOIN a.efmFmVehicleCheckIn ch JOIN ch.efmFmVehicleMaster vm JOIN vm.efmFmVendorMaster vem WHERE a.tripStatus ='completed'  AND t.boardedFlg ='NO' AND date(t.actualTime) >= ?1  AND   date(t.actualTime) <=?2  AND c.branchId='"+branchId+"' AND a.tripType='"+tripType+"' AND vem.vendorId='"+vendorId+"'";
 			Query q = entityManager.createQuery(query).setParameter(1, fromDate, TemporalType.TIMESTAMP).setParameter(2, toDate, TemporalType.TIMESTAMP);
 			long empCountByTripDate=(long) q.getSingleResult();
 			return empCountByTripDate;
@@ -536,10 +544,21 @@ public class AssignRouteDAOImpl implements IAssignRouteDAO {
 		@Override
 		@Transactional(readOnly = false, propagation = Propagation.REQUIRED)
 		public long getPickedUpEmployeesCountByDate(Date fromDate, Date toDate,int branchId,String tripType) {
-			String query = "SELECT count(t) FROM EFmFmEmployeeTripDetailPO t JOIN t.efmFmAssignRoute a JOIN a.eFmFmClientBranchPO c WHERE  date(t.actualTime) >= ?1  AND   date(t.actualTime) <=?2  AND c.branchId='"+branchId+"' AND a.tripType='"+tripType+"' AND (t.boardedFlg ='B' OR  t.boardedFlg ='D')";
+			String query = "SELECT count(t) FROM EFmFmEmployeeTripDetailPO t JOIN t.efmFmAssignRoute a JOIN a.eFmFmClientBranchPO c WHERE a.tripStatus ='completed' AND date(t.actualTime) >= ?1  AND   date(t.actualTime) <=?2  AND c.branchId='"+branchId+"' AND a.tripType='"+tripType+"' AND (t.boardedFlg ='B' OR  t.boardedFlg ='D')";
 			Query q = entityManager.createQuery(query).setParameter(1, fromDate, TemporalType.TIMESTAMP).setParameter(2, toDate, TemporalType.TIMESTAMP);
 			long empCountByTripDate=(long) q.getSingleResult();
 			return empCountByTripDate;
+		}
+		
+		
+		//total PickedUp Employees traveled count by date		
+		@Override
+		@Transactional(readOnly = false, propagation = Propagation.REQUIRED)
+		public long getPickedUpOrDroppedEmployeesCountByDate(Date fromDate, Date toDate,int branchId,String tripType) {
+				String query = "SELECT count(t) FROM EFmFmEmployeeTripDetailPO t JOIN t.efmFmAssignRoute a JOIN a.eFmFmClientBranchPO c WHERE  date(t.actualTime) >= ?1  AND   date(t.actualTime) <=?2  AND c.branchId='"+branchId+"' AND a.tripStatus ='completed' AND a.tripType='"+tripType+"' AND (t.boardedFlg ='B' OR  t.boardedFlg ='D')";
+				Query q = entityManager.createQuery(query).setParameter(1, fromDate, TemporalType.TIMESTAMP).setParameter(2, toDate, TemporalType.TIMESTAMP);
+	     		long empCountByTripDate=(long) q.getSingleResult();
+				return empCountByTripDate;		
 		}
 		
 		
@@ -547,7 +566,7 @@ public class AssignRouteDAOImpl implements IAssignRouteDAO {
 		@Override
 		@Transactional(readOnly = false, propagation = Propagation.REQUIRED)
 		public long getPickedUpEmployeesCountByDateByVendor(Date fromDate, Date toDate,int branchId,String tripType,int vendorId) {
-			String query = "SELECT count(t) FROM EFmFmEmployeeTripDetailPO t JOIN t.efmFmAssignRoute a JOIN a.eFmFmClientBranchPO c JOIN a.efmFmVehicleCheckIn ch JOIN ch.efmFmVehicleMaster vm JOIN vm.efmFmVendorMaster vem WHERE  date(t.actualTime) >= ?1  AND   date(t.actualTime) <=?2  AND c.branchId='"+branchId+"' AND a.tripType='"+tripType+"' AND vem.vendorId='"+vendorId+"' AND (t.boardedFlg ='B' OR  t.boardedFlg ='D')";
+			String query = "SELECT count(t) FROM EFmFmEmployeeTripDetailPO t JOIN t.efmFmAssignRoute a JOIN a.eFmFmClientBranchPO c JOIN a.efmFmVehicleCheckIn ch JOIN ch.efmFmVehicleMaster vm JOIN vm.efmFmVendorMaster vem WHERE  a.tripStatus ='completed'  AND date(t.actualTime) >= ?1  AND   date(t.actualTime) <=?2  AND c.branchId='"+branchId+"' AND a.tripType='"+tripType+"' AND vem.vendorId='"+vendorId+"' AND (t.boardedFlg ='B' OR  t.boardedFlg ='D')";
 			Query q = entityManager.createQuery(query).setParameter(1, fromDate, TemporalType.TIMESTAMP).setParameter(2, toDate, TemporalType.TIMESTAMP);
 			long empCountByTripDate=(long) q.getSingleResult();
 			return empCountByTripDate;
@@ -613,7 +632,7 @@ public class AssignRouteDAOImpl implements IAssignRouteDAO {
 		@Transactional(readOnly = false, propagation = Propagation.REQUIRED)
 		public long getAllEmployeesCountByShift(Date fromDate, Date toDate,
 				int branchId, String tripType, Time shiftTime) {
-			String query = "SELECT count(t) FROM EFmFmEmployeeTripDetailPO t JOIN t.efmFmAssignRoute a JOIN a.eFmFmClientBranchPO c WHERE date(t.actualTime) >= ?1  AND   date(t.actualTime) <=?2  AND c.branchId='"+branchId+"' AND a.tripType='"+tripType+"' AND a.shiftTime='"+shiftTime+"'";
+			String query = "SELECT count(t) FROM EFmFmEmployeeTripDetailPO t JOIN t.efmFmAssignRoute a JOIN a.eFmFmClientBranchPO c WHERE a.tripStatus ='completed'  AND date(t.actualTime) >= ?1  AND   date(t.actualTime) <=?2  AND c.branchId='"+branchId+"' AND a.tripType='"+tripType+"' AND a.shiftTime='"+shiftTime+"'";
 			Query q = entityManager.createQuery(query).setParameter(1, fromDate, TemporalType.TIMESTAMP).setParameter(2, toDate, TemporalType.TIMESTAMP);
 			long empCountByTripDate=(long) q.getSingleResult();
 			return empCountByTripDate;
@@ -624,7 +643,7 @@ public class AssignRouteDAOImpl implements IAssignRouteDAO {
 		@Transactional(readOnly = false, propagation = Propagation.REQUIRED)
 		public long getAllEmployeesCountByShiftByVendorId(Date fromDate, Date toDate,
 				int branchId, String tripType, Time shiftTime,int vendorId) {
-			String query = "SELECT count(t) FROM EFmFmEmployeeTripDetailPO t JOIN t.efmFmAssignRoute a JOIN a.eFmFmClientBranchPO c JOIN a.efmFmVehicleCheckIn ch JOIN ch.efmFmVehicleMaster vm JOIN vm.efmFmVendorMaster vem WHERE date(t.actualTime) >= ?1  AND   date(t.actualTime) <=?2  AND c.branchId='"+branchId+"' AND a.tripType='"+tripType+"' AND a.shiftTime='"+shiftTime+"' AND vem.vendorId='"+vendorId+"'";
+			String query = "SELECT count(t) FROM EFmFmEmployeeTripDetailPO t JOIN t.efmFmAssignRoute a JOIN a.eFmFmClientBranchPO c JOIN a.efmFmVehicleCheckIn ch JOIN ch.efmFmVehicleMaster vm JOIN vm.efmFmVendorMaster vem WHERE a.tripStatus ='completed' AND date(t.actualTime) >= ?1  AND   date(t.actualTime) <=?2  AND c.branchId='"+branchId+"' AND a.tripType='"+tripType+"' AND a.shiftTime='"+shiftTime+"' AND vem.vendorId='"+vendorId+"'";
 			Query q = entityManager.createQuery(query).setParameter(1, fromDate, TemporalType.TIMESTAMP).setParameter(2, toDate, TemporalType.TIMESTAMP);
 			long empCountByTripDate=(long) q.getSingleResult();
 			return empCountByTripDate;
@@ -636,7 +655,7 @@ public class AssignRouteDAOImpl implements IAssignRouteDAO {
 		@Transactional(readOnly = false, propagation = Propagation.REQUIRED)
 		public long getNoShowEmployeesCountByShift(Date fromDate, Date toDate,
 				int branchId, String tripType, Time shiftTime) {
-			String query = "SELECT count(t) FROM EFmFmEmployeeTripDetailPO t JOIN t.efmFmAssignRoute a JOIN a.eFmFmClientBranchPO c WHERE t.boardedFlg ='NO' AND date(t.actualTime) >= ?1  AND   date(t.actualTime) <=?2  AND c.branchId='"+branchId+"' AND a.tripType='"+tripType+"' AND a.shiftTime='"+shiftTime+"'";
+			String query = "SELECT count(t) FROM EFmFmEmployeeTripDetailPO t JOIN t.efmFmAssignRoute a JOIN a.eFmFmClientBranchPO c WHERE a.tripStatus ='completed'  AND t.boardedFlg ='NO' AND date(t.actualTime) >= ?1  AND   date(t.actualTime) <=?2  AND c.branchId='"+branchId+"' AND a.tripType='"+tripType+"' AND a.shiftTime='"+shiftTime+"'";
 			Query q = entityManager.createQuery(query).setParameter(1, fromDate, TemporalType.TIMESTAMP).setParameter(2, toDate, TemporalType.TIMESTAMP);
 			long empCountByTripDate=(long) q.getSingleResult();
 			return empCountByTripDate;
@@ -647,7 +666,7 @@ public class AssignRouteDAOImpl implements IAssignRouteDAO {
 		@Transactional(readOnly = false, propagation = Propagation.REQUIRED)
 		public long getNoShowEmployeesCountByShiftByVendor(Date fromDate, Date toDate,
 				int branchId, String tripType, Time shiftTime,int vendorId) {
-			String query = "SELECT count(t) FROM EFmFmEmployeeTripDetailPO t JOIN t.efmFmAssignRoute a JOIN a.eFmFmClientBranchPO c JOIN a.efmFmVehicleCheckIn ch JOIN ch.efmFmVehicleMaster vm JOIN vm.efmFmVendorMaster vem WHERE t.boardedFlg ='NO' AND date(t.actualTime) >= ?1  AND   date(t.actualTime) <=?2  AND c.branchId='"+branchId+"' AND a.tripType='"+tripType+"' AND a.shiftTime='"+shiftTime+"' AND vem.vendorId='"+vendorId+"'";
+			String query = "SELECT count(t) FROM EFmFmEmployeeTripDetailPO t JOIN t.efmFmAssignRoute a JOIN a.eFmFmClientBranchPO c JOIN a.efmFmVehicleCheckIn ch JOIN ch.efmFmVehicleMaster vm JOIN vm.efmFmVendorMaster vem WHERE a.tripStatus ='completed' AND t.boardedFlg ='NO' AND date(t.actualTime) >= ?1  AND   date(t.actualTime) <=?2  AND c.branchId='"+branchId+"' AND a.tripType='"+tripType+"' AND a.shiftTime='"+shiftTime+"' AND vem.vendorId='"+vendorId+"'";
 			Query q = entityManager.createQuery(query).setParameter(1, fromDate, TemporalType.TIMESTAMP).setParameter(2, toDate, TemporalType.TIMESTAMP);
 			long empCountByTripDate=(long) q.getSingleResult();
 			return empCountByTripDate;
@@ -658,7 +677,7 @@ public class AssignRouteDAOImpl implements IAssignRouteDAO {
 		@Transactional(readOnly = false, propagation = Propagation.REQUIRED)
 		public long getPickedUpEmployeesCountByShift(Date fromDate,
 				Date toDate, int branchId, String tripType, Time shiftTime) {
-			String query = "SELECT count(t) FROM EFmFmEmployeeTripDetailPO t JOIN t.efmFmAssignRoute a JOIN a.eFmFmClientBranchPO c WHERE  date(t.actualTime) >= ?1  AND   date(t.actualTime) <=?2  AND c.branchId='"+branchId+"' AND a.tripType='"+tripType+"' AND a.shiftTime='"+shiftTime+"' AND (t.boardedFlg ='B' OR  t.boardedFlg ='D')";
+			String query = "SELECT count(t) FROM EFmFmEmployeeTripDetailPO t JOIN t.efmFmAssignRoute a JOIN a.eFmFmClientBranchPO c WHERE a.tripStatus ='completed'  AND date(t.actualTime) >= ?1  AND   date(t.actualTime) <=?2  AND c.branchId='"+branchId+"' AND a.tripType='"+tripType+"' AND a.shiftTime='"+shiftTime+"' AND (t.boardedFlg ='B' OR  t.boardedFlg ='D')";
 			Query q = entityManager.createQuery(query).setParameter(1, fromDate, TemporalType.TIMESTAMP).setParameter(2, toDate, TemporalType.TIMESTAMP);
 			long empCountByTripDate=(long) q.getSingleResult();
 			return empCountByTripDate;
@@ -669,7 +688,7 @@ public class AssignRouteDAOImpl implements IAssignRouteDAO {
 		@Transactional(readOnly = false, propagation = Propagation.REQUIRED)
 		public long getPickedUpEmployeesCountByShiftByVendor(Date fromDate,
 				Date toDate, int branchId, String tripType, Time shiftTime,int vendorId) {
-			String query = "SELECT count(t) FROM EFmFmEmployeeTripDetailPO t JOIN t.efmFmAssignRoute a JOIN a.eFmFmClientBranchPO c JOIN a.efmFmVehicleCheckIn ch JOIN ch.efmFmVehicleMaster vm JOIN vm.efmFmVendorMaster vem WHERE  date(t.actualTime) >= ?1  AND   date(t.actualTime) <=?2  AND c.branchId='"+branchId+"' AND a.tripType='"+tripType+"' AND a.shiftTime='"+shiftTime+"' AND vem.vendorId='"+vendorId+"' AND (t.boardedFlg ='B' OR  t.boardedFlg ='D')";
+			String query = "SELECT count(t) FROM EFmFmEmployeeTripDetailPO t JOIN t.efmFmAssignRoute a JOIN a.eFmFmClientBranchPO c JOIN a.efmFmVehicleCheckIn ch JOIN ch.efmFmVehicleMaster vm JOIN vm.efmFmVendorMaster vem WHERE  a.tripStatus ='completed' AND date(t.actualTime) >= ?1  AND   date(t.actualTime) <=?2  AND c.branchId='"+branchId+"' AND a.tripType='"+tripType+"' AND a.shiftTime='"+shiftTime+"' AND vem.vendorId='"+vendorId+"' AND (t.boardedFlg ='B' OR  t.boardedFlg ='D')";
 			Query q = entityManager.createQuery(query).setParameter(1, fromDate, TemporalType.TIMESTAMP).setParameter(2, toDate, TemporalType.TIMESTAMP);
 			long empCountByTripDate=(long) q.getSingleResult();
 			return empCountByTripDate;
@@ -693,7 +712,7 @@ public class AssignRouteDAOImpl implements IAssignRouteDAO {
 		@Override
 		@Transactional(readOnly = false, propagation = Propagation.REQUIRED)
 		public List<EFmFmEmployeeTripDetailPO> getAllNoShowEmployeesByIdAndName(Date fromDate, Date toDate,int branchId,String tripType,Time shiftTime) {
-			String query = "SELECT t FROM EFmFmEmployeeTripDetailPO t JOIN t.efmFmAssignRoute a JOIN a.eFmFmClientBranchPO c WHERE t.boardedFlg ='NO' AND date(t.actualTime) >= ?1  AND   date(t.actualTime) <=?2  AND c.branchId='"+branchId+"' and a.tripType='"+tripType+"' AND a.shiftTime='"+shiftTime+"' ORDER BY actualTime ASC";
+			String query = "SELECT t FROM EFmFmEmployeeTripDetailPO t JOIN t.efmFmAssignRoute a JOIN a.eFmFmClientBranchPO c WHERE a.tripStatus ='completed'  AND t.boardedFlg ='NO' AND date(t.actualTime) >= ?1  AND   date(t.actualTime) <=?2  AND c.branchId='"+branchId+"' and a.tripType='"+tripType+"' AND a.shiftTime='"+shiftTime+"' ORDER BY actualTime ASC";
 			Query q = entityManager.createQuery(query).setParameter(1, fromDate, TemporalType.TIMESTAMP).setParameter(2, toDate, TemporalType.TIMESTAMP);
 			return q.getResultList();
 		}
@@ -702,7 +721,7 @@ public class AssignRouteDAOImpl implements IAssignRouteDAO {
 		@Override
 		@Transactional(readOnly = false, propagation = Propagation.REQUIRED)
 		public List<EFmFmEmployeeTripDetailPO> getAllNoShowEmployeesByDateWise(Date fromDate, Date toDate,int branchId,String tripType) {
-				String query = "SELECT t FROM EFmFmEmployeeTripDetailPO t JOIN t.efmFmAssignRoute a JOIN a.eFmFmClientBranchPO c WHERE t.boardedFlg ='NO' AND date(t.actualTime) >= ?1  AND   date(t.actualTime) <=?2  AND c.branchId='"+branchId+"' and a.tripType='"+tripType+"' ORDER BY actualTime ASC";
+				String query = "SELECT t FROM EFmFmEmployeeTripDetailPO t JOIN t.efmFmAssignRoute a JOIN a.eFmFmClientBranchPO c WHERE a.tripStatus ='completed'  AND t.boardedFlg ='NO' AND date(t.actualTime) >= ?1  AND   date(t.actualTime) <=?2  AND c.branchId='"+branchId+"' and a.tripType='"+tripType+"' ORDER BY actualTime ASC";
 				Query q = entityManager.createQuery(query).setParameter(1, fromDate, TemporalType.TIMESTAMP).setParameter(2, toDate, TemporalType.TIMESTAMP);
 				return q.getResultList();
 				}
@@ -712,7 +731,7 @@ public class AssignRouteDAOImpl implements IAssignRouteDAO {
 		@Override
 		@Transactional(readOnly = false, propagation = Propagation.REQUIRED)
 		public List<EFmFmEmployeeTripDetailPO> getAllNoShowEmployeesByEmployeeId(Date fromDate, Date toDate,int branchId,String tripType,Time shiftTime,String employeeId) {
-		       String query = "SELECT t FROM EFmFmEmployeeTripDetailPO t JOIN t.efmFmAssignRoute a JOIN a.eFmFmClientBranchPO c JOIN t.eFmFmEmployeeTravelRequest tr JOIN tr.efmFmUserMaster u WHERE t.boardedFlg ='NO' AND date(t.actualTime) >= ?1  AND   date(t.actualTime) <=?2  AND c.branchId='"+branchId+"' and a.tripType='"+tripType+"' AND a.shiftTime='"+shiftTime+"' AND u.employeeId='"+employeeId+"' ORDER BY actualTime ASC";
+		       String query = "SELECT t FROM EFmFmEmployeeTripDetailPO t JOIN t.efmFmAssignRoute a JOIN a.eFmFmClientBranchPO c JOIN t.eFmFmEmployeeTravelRequest tr JOIN tr.efmFmUserMaster u WHERE a.tripStatus ='completed'  AND t.boardedFlg ='NO' AND date(t.actualTime) >= ?1  AND   date(t.actualTime) <=?2  AND c.branchId='"+branchId+"' and a.tripType='"+tripType+"' AND a.shiftTime='"+shiftTime+"' AND u.employeeId='"+employeeId+"' ORDER BY actualTime ASC";
 				Query q = entityManager.createQuery(query).setParameter(1, fromDate, TemporalType.TIMESTAMP).setParameter(2, toDate, TemporalType.TIMESTAMP);
 				return q.getResultList();				
 		}
@@ -721,7 +740,7 @@ public class AssignRouteDAOImpl implements IAssignRouteDAO {
 		@Override
 		@Transactional(readOnly = false, propagation = Propagation.REQUIRED)
 		public List<EFmFmEmployeeTripDetailPO> getAllNoShowEmployeesByEmployeeIdDateWise(Date fromDate, Date toDate,int branchId,String tripType,String employeeId) {
-		       String query = "SELECT t FROM EFmFmEmployeeTripDetailPO t JOIN t.efmFmAssignRoute a JOIN a.eFmFmClientBranchPO c JOIN t.eFmFmEmployeeTravelRequest tr JOIN tr.efmFmUserMaster u WHERE t.boardedFlg ='NO' AND date(t.actualTime) >= ?1  AND   date(t.actualTime) <=?2  AND c.branchId='"+branchId+"' and a.tripType='"+tripType+"' AND u.employeeId='"+employeeId+"' ORDER BY actualTime ASC";
+		       String query = "SELECT t FROM EFmFmEmployeeTripDetailPO t JOIN t.efmFmAssignRoute a JOIN a.eFmFmClientBranchPO c JOIN t.eFmFmEmployeeTravelRequest tr JOIN tr.efmFmUserMaster u WHERE a.tripStatus ='completed'  AND t.boardedFlg ='NO' AND date(t.actualTime) >= ?1  AND   date(t.actualTime) <=?2  AND c.branchId='"+branchId+"' and a.tripType='"+tripType+"' AND u.employeeId='"+employeeId+"' ORDER BY actualTime ASC";
 		    	Query q = entityManager.createQuery(query).setParameter(1, fromDate, TemporalType.TIMESTAMP).setParameter(2, toDate, TemporalType.TIMESTAMP);
 				return q.getResultList();								
 		}
@@ -758,7 +777,27 @@ public class AssignRouteDAOImpl implements IAssignRouteDAO {
 				Query q = entityManager.createQuery(query).setParameter(1, fromDate, TemporalType.TIMESTAMP).setParameter(2, toDate, TemporalType.TIMESTAMP);
 				List<Date> tripDates=(List<Date>) q.getResultList();
 				return tripDates;	
+		}		
+		
+		//total trip distinct date counts
+		@Override
+		@Transactional(readOnly = false, propagation = Propagation.REQUIRED)
+		public List<ArrayList> getAllTripsByDistinctDatesAndDeriverId(Date fromDate, Date toDate,int branchId) {
+		    	String query = "SELECT Distinct (t.tripAssignDate,dm.driverId) FROM EFmFmAssignRoutePO t JOIN t.eFmFmClientBranchPO c JOIN t.efmFmVehicleCheckIn ch JOIN ch.efmFmDriverMaster dm WHERE t.tripStatus ='completed' AND date(t.tripAssignDate) >= ?1  AND   date(t.tripAssignDate) <=?2  AND c.branchId='"+branchId+"'  ORDER BY tripAssignDate ASC";
+				Query q = entityManager.createQuery(query).setParameter(1, fromDate, TemporalType.TIMESTAMP).setParameter(2, toDate, TemporalType.TIMESTAMP);
+				List<ArrayList> tripDates=(List<ArrayList>) q.getResultList();
+				return tripDates;			
 		}
+		
+		//total trip distinct date counts
+				@Override
+				@Transactional(readOnly = false, propagation = Propagation.REQUIRED)
+				public List<EFmFmAssignRoutePO> getAllTripsByDatesAndDriverId(Date fromDate, Date toDate,int branchId,int driverId) {
+				    	String query = "SELECT t FROM EFmFmAssignRoutePO t JOIN t.eFmFmClientBranchPO c JOIN t.efmFmVehicleCheckIn ch JOIN ch.efmFmDriverMaster dm WHERE t.tripStatus ='completed' AND date(t.tripAssignDate) >= ?1  AND   date(t.tripAssignDate) <=?2  AND c.branchId='"+branchId+"' And dm.driverId='"+driverId+"' ORDER BY tripAssignDate ASC";
+						Query q = entityManager.createQuery(query).setParameter(1, fromDate, TemporalType.TIMESTAMP).setParameter(2, toDate, TemporalType.TIMESTAMP);						
+						return q.getResultList();			
+				}
+		
 	@Override
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRED)
 	public List<EFmFmAssignRoutePO> getAllEscortRequiredTripsByDate(Date fromDate, Date toDate,int branchId) {
