@@ -1,10 +1,10 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
-    <groupId>com.newtglobal.eFmFmFleet</groupId>
-	<artifactId>eFmFmRouter</artifactId>
+  <groupId>com.newtglobal.eFmFmFleet</groupId>
+  <artifactId>eFmFmRouter</artifactId>
   <version>0.0.1</version>
-   <name>eFmFmRouter</name>
+  <name>eFmFmRouter</name>
   <url>http://maven.apache.org</url>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -17,9 +17,9 @@
         <executions>
           <execution>
             <phase>package</phase>
-              <goals>
-              	<goal>single</goal>
-              </goals>
+            <goals>
+              <goal>single</goal>
+            </goals>
           </execution>
         </executions>
         <configuration>
@@ -68,33 +68,33 @@
     <dependency>
       <groupId>jsprit</groupId>
       <artifactId>jsprit-core</artifactId>
-      <version>1.6.1</version>
+      <version>1.6.2</version>
     </dependency>
     <dependency>
       <groupId>jsprit</groupId>
       <artifactId>jsprit-analysis</artifactId>
-      <version>1.6.1</version>
+      <version>1.6.2</version>
     </dependency>
     <dependency>
       <groupId>jsprit</groupId>
       <artifactId>jsprit-instances</artifactId>
-      <version>1.6.1</version>
+      <version>1.6.2</version>
     </dependency>
     <dependency>
-	  <groupId>com.google.maps</groupId>
-	  <artifactId>google-maps-services</artifactId>
-	  <version>0.1.9</version>
-	</dependency>
-	<dependency>
-	  <groupId>com.thetransactioncompany</groupId>
-	  <artifactId>jsonrpc2-base</artifactId>
-	  <version>1.38</version>
-	</dependency>
-	<dependency>
-	  <groupId>com.thetransactioncompany</groupId>
-	  <artifactId>jsonrpc2-server</artifactId>
-	  <version>1.11</version>
-	</dependency>	
+      <groupId>com.google.maps</groupId>
+      <artifactId>google-maps-services</artifactId>
+      <version>0.1.9</version>
+    </dependency>
+    <dependency>
+      <groupId>com.thetransactioncompany</groupId>
+      <artifactId>jsonrpc2-base</artifactId>
+      <version>1.38</version>
+    </dependency>
+    <dependency>
+      <groupId>com.thetransactioncompany</groupId>
+      <artifactId>jsonrpc2-server</artifactId>
+      <version>1.11</version>
+    </dependency>	
   </dependencies>
   <repositories> <!-- add this, if you don't have any repository definitions yet -->
     <repository>
