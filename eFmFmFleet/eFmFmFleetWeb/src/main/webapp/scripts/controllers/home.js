@@ -85,7 +85,34 @@
                     
        $scope.logout = function(){
          alert("Log out Clicked");
-       }; //End Of FUNCTION   
+       }; //End Of FUNCTION     
+    
+      //Convert the dates in DD-MM-YYYY format
+      $scope.convertDateUTC = function(date){
+          var convert_date = new Date(date);
+          var currentMonth = date.getMonth()+1;
+          var currentDate=date.getDate();
+                  if (currentDate < 10) { 
+                      currentDate = '0' + currentDate; 
+                      console.log('in convert function : ' + currentDate);
+              }
+              if (currentMonth < 10) { 
+                  currentMonth = '0' + currentMonth; 
+                  console.log('in convert function : ' + currentMonth);
+              }
+          return currentDate+'-'+currentMonth+'-'+convert_date.getFullYear();   
+     }; 
+        
+     //Convert to hh:mm
+     $scope.convertToTime = function(newdate){
+           d = new Date(newdate);
+           hr = d.getHours();
+           min = d.getMinutes();
+           if(hr<10){hr = '0'+hr;} 
+           if(min<10){min = '0'+min;}           
+           console.log("TIME :: " + hr+":"+min);
+           return hr+":"+min;
+    };
         
 };    
     angular.module('efmfmApp').controller('homeCtrl', homeCtrl);

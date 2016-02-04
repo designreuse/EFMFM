@@ -7,6 +7,9 @@
        $scope.searchData = [];
        $scope.searchIsEmpty = false;
        $scope.search = {};
+       $scope.hstep = 1;
+       $scope.mstep = 5;
+       $scope.ismeridian = false;
 //       $scope.search;
        
        $scope.searchTypes = [{'value':'Search by VEHICLE', 'text':'Vehicle'},
@@ -55,7 +58,15 @@
        $scope.$watch("search.text", function(query){
         if($scope.search.text == ""){
             $scope.searchIsEmpty = false;
-        }});
+        }});  
+       
+       $scope.initializeTime = function(time){
+            var d = new Date();
+            var tempTime = time.split(":");
+            d.setHours( tempTime[0] );
+            d.setMinutes( tempTime[1] );
+            return d;           
+       }
            
        $scope.getZoneData = function(){
            $scope.progressbar.start();
@@ -89,20 +100,30 @@
            $http.post('services/zones/allroutes/',dataObj).
 				success(function(data, status, headers, config) {
                    $scope.routesData = data.routeDetails;
-      //          alert(JSON.stringify($scope.routesData));
                    console.log($scope.routesData);
-//               alert(JSON.stringify(data));
                    angular.forEach($scope.routesData, function(item){
-                        item.isVehicleEmpty = false;
-                            angular.forEach(item.empDetails, function(item){
+                      item.isVehicleEmpty = false;
+                      if(item.tripType == "DROP") {
+                          angular.forEach(item.empDetails, function(item){
                                 item.upArrows = false;
                                 item.downArrows = false;
                                 item.isZoneclicked = false;
-                            });                       
-//                       item.isRouteClicked = false;
-                       item.editClicked = false;
-                       item.closeBucketClicked = true;
-                       $scope.progressbar.complete();
+                                item.isUpdateClicked = false;
+                                item.dropSequence = item.pickUpTime;
+                            }); 
+                      }
+                      else{ 
+                          angular.forEach(item.empDetails, function(item){
+                                item.upArrows = false;
+                                item.downArrows = false;
+                                item.isZoneclicked = false;
+                                item.isUpdateClicked = false;
+                                item.createNewAdHocTime = $scope.initializeTime(item.pickUpTime);
+                            }); 
+                      }                           
+                      item.editClicked = false;
+                      item.closeBucketClicked = true;
+                      $scope.progressbar.complete();
                    });              
                     
 				}).
@@ -681,6 +702,37 @@
           modalInstance.result.then(function(result){ });
          
      };
+       
+    $scope.updateDropSeq = function(employee, route, index, parentIndex){
+        if(employee.isUpdateClicked){
+            alert(employee.dropSequence);            
+            $confirm({text: "Are you sure you want to change the drop sequence from " + employee.pickUpTime + " to " + employee.dropSequence + " ?", title:     'Confirmation', ok: 'Yes', cancel: 'No'})
+        .then(function() {
+            employee.pickUpTime = employee.dropSequence;
+            employee.isUpdateClicked = false;
+          });            
+        }
+        else{
+            employee.isUpdateClicked = true
+        }
+        
+    };
+       
+    $scope.updatePickupTime = function(employee, route, index, parentIndex){
+        if(employee.isUpdateClicked){
+            alert("Timer time: " + $scope.convertToTime(employee.createNewAdHocTime)+":00");
+            alert("Route ID: " + route.routeId)
+            alert(JSON.stringify(employee));
+            $confirm({text: "Are you sure you want to change the pickup time from " + employee.pickUpTime + " to " +                                              $scope.convertToTime(employee.createNewAdHocTime)+":00 ?", title: 'Confirmation', ok: 'Yes', cancel: 'No'})
+        .then(function() {
+            employee.pickUpTime = $scope.convertToTime(employee.createNewAdHocTime)+":00";
+            employee.isUpdateClicked = false;
+            });
+        }
+        else{
+            employee.isUpdateClicked = true
+        }
+    };
      
 }; 
     

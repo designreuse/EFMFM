@@ -40,7 +40,7 @@
                             <div id ='exportableTripSheet' class = "col-md-12 col-xs-12 tableWrapper_report" ng-show="gotTripResult">
                             <table class = "reportTable reportTable_km table table-responsive container-fluid" ng-show = "tripSheetData.length>0">
                                 <thead class ="tableHeading">
-                                    <tr><th colspan = "13" class ="tableHeadding_km" style = "background-color:rgba(0, 0, 0, 0.46); color: white">Trip Sheet Report </br>Date : <span>{{searchFromDateTS | date : 'longDate'}} - {{searchToDateTS | date : 'longDate'}}</span></th></tr>
+                                    <tr><th colspan = "15" class ="tableHeadding_km" style = "background-color:rgba(0, 0, 0, 0.46); color: white">Trip Sheet Report </br>Date : <span>{{searchFromDateTS | date : 'longDate'}} - {{searchToDateTS | date : 'longDate'}}</span></th></tr>
                                     <tr>
                                       <th>Trip Id</th>
                                        <th>Trip Assign Time</th>
@@ -86,7 +86,7 @@
 <!--                                <tbody ng-show = "tripSheetData.length>0">-->
                                 <tbody>
 		                           <tr ng-repeat-start="date in tripSheetData" class = "visibleRow_reportTripSheet">
-                                       <td colspan="13">{{date.tripAssignDate}}</td>
+                                       <td colspan="15">{{date.tripAssignDate}}</td>
                                    </tr> 
 		                            <tr ng-repeat-end="" 
                                         ng-repeat-start = "trip in date.tripDetail | filter: efmfilter.filterTrips"
@@ -1552,7 +1552,7 @@
                            </div>   </div>                     
                                                    
                            <div id = 'exportTableDriverDH' class = "col-md-12 col-xs-12 tableWrapper_report" ng-show = "gotDriverDHResult">
-                            <table class = "reportTable table reportTable_km table-responsive container-fluid">
+                            <table class = "reportTable table reportTable_km table-responsive container-fluid table-bordered">
                                 <thead class ="tableHeading">
                                     <tr>
                                         <th colspan = '14' style = "background-color:black; color: white">
@@ -1573,15 +1573,29 @@
                                       <th>Trip End time</th>
                                       <th>Trip Details</th>
                                       <th>Driving hrs/trip</th>
-<!--                                      <th>Total driving hrs</th>-->
+                                      <th>Total driving hrs</th>
                                       <th><button class = "btn btn-sm btn-success form-control excelExportButton" ng-click = "saveInExcel()">
                                         <i class = "icon-download-alt"></i><span class = "marginLeft5">Excel</span></button>
                                       </th>
                                     </tr>
                                 </thead>
                                 <tbody ng-repeat="report in reportsDriverDHData">
-                                    
-		                           <tr ng-repeat="dh in report.tripsDetails | filter:efmfilter.filterdriverDH">
+                                   <tr>
+                                       <td class = "col-md-1">{{report.tripsDetails[0].date}}</td>
+                                       <td class = "col-md-1">{{report.tripsDetails[0].vendorName}}</td>
+                                       <td class = "col-md-2">{{report.tripsDetails[0].vehicleNumber}}</td>
+                                       <td class = "col-md-1">{{report.tripsDetails[0].driverId}}</td>
+                                       <td class = "col-md-1">{{report.tripsDetails[0].driverName}}</td>
+                                       <td class = "col-md-1">{{report.tripsDetails[0].tripType}}</td>
+                                       <td class = "col-md-1">{{report.tripsDetails[0].routeName}}</td>
+                                       <td class = "col-md-1">{{report.tripsDetails[0].tripStartDate}}</td>
+                                       <td class = "col-md-1">{{report.tripsDetails[0].tripCompleteDate}}</td>
+                                       <td class = "col-md-1">**123**</td>
+                                       <td class = "col-md-1">**123**</td>
+                                       <td rowspan = "{{report.tripsDetails.length}}" class = "col-md-1">{{report.totalDrivingHours}}</td>
+                                       <td></td>
+                                   </tr> 
+		                           <tr ng-repeat="dh in report.tripsDetails.slice(1,report.tripsDetails.length) | filter:efmfilter.filterdriverDH">
                                        <td class = "col-md-1">{{dh.date}}</td>
                                        <td class = "col-md-1">{{dh.vendorName}}</td>
                                        <td class = "col-md-2">{{dh.vehicleNumber}}</td>
@@ -1593,8 +1607,7 @@
                                        <td class = "col-md-1">{{dh.tripCompleteDate}}</td>
                                        <td class = "col-md-1">**123**</td>
                                        <td class = "col-md-1">**123**</td>
-<!--                                       <td rowspan = "{{report.tripsDetails.length}}" class = "col-md-1">{{report.totalDrivingHours}}</td>-->
-                                       <td class = "col-md-1"></td>
+                                       <td></td>
                                    </tr> 
 		                         </tbody>                                
                             </table> 
@@ -1605,21 +1618,31 @@
                     
                     
                     <!-- Twelveth Tab -->
-<!--                     <tab ng-click = "setDates('overSpeed')">
-                    <tab-heading>Over Speed</tab-heading>
+                     <tab ng-click = "setDates('speed')">
+                    <tab-heading>Speed</tab-heading>
                        <div class = "kmTabContent"><div class = "searchDIVREPORT row marginRow">
                            
-                            <div class = "col-md-3">
-                            	<select class = "select_reports form-control"
-                                        ng-model="showRecords" 
-                						ng-options="pagination.text for pagination in paginations track by pagination.value"
-                						ng-change = "setLimit(showRecords)">
-      						  		<option value="">-- All Records --</option>
-    							</select>
+                            <div class = "col-md-2">
+                               <input type = 'text' placeholder="Filter" class = 'form-control floatRight' ng-model = 'efmfilter.filterSpeed'>
     						</div>
-                           <div class = "col-md-3"> 
-                               <input type = 'text' placeholder="Filter" class = 'form-control floatRight' ng-model = 'searchSMSShow'>
-                           </div>                              
+                            <div class = "col-md-2">                                
+                               <select ng-model="searchSpeed.SpeedVendors"
+                                           class="form-control" 
+                                           ng-options="SpeedAllVendor.name for SpeedAllVendor in SpeedAllVendors track by SpeedAllVendor.Id"
+                                           ng-change = "setVendorSpeed(searchSpeed.SpeedVendors)"
+                                           >
+<!--                                     <option value="">-- Select Vendors --</option>-->
+                                  </select>
+                            </div>     
+                            <div class = "col-md-2">
+                                <select class = "select_reports_VSelection marginBottom10 form-control"
+                                        ng-model="searchSpeed.VSelection" 
+                						ng-options="vendorVehicle.name for vendorVehicle in vendorVehicles_SpeedReport track by vendorVehicle.Id"
+                						ng-change = "setvendorVehicle(searchSpeed.VSelection)"
+                                        required>
+<!--      						  		<option value="">-- Select --</option>-->
+    							</select> 
+                            </div>                             
                             <div class = "col-md-6">
                                 <div class = "calenderMainDiv floatRight pointer" 
                                      popover-template="partials/popovers/calenderReport.jsp"
@@ -1630,32 +1653,46 @@
                                         <span>{{fromDate | date : 'longDate'}} - {{toDate | date : 'longDate'}}</span>
                                         <span><img ng-src = 'images/spiffygif_22x22.gif' ng-show = 'isProcessing'/></span>
                                 </div>                                  
-                           </div>   </div>                     
-                        Table                           
-                           <div class = "col-md-12 col-xs-12 tableWrapper_report" ng-show = "gotSMSResult">
+                            </div>   
+                           </div>                       
+                           <div id = 'exportTableSpeed' class = "col-md-12 col-xs-12 tableWrapper_report" ng-show = "gotSpeedResult">
                             <table class = "reportTable table reportTable_km table-responsive container-fluid">
                                     <thead class ="tableHeading">
                                         <tr>
+                                            <th colspan = '14' style = "background-color:black; color: white">
+                                                Speed Report</br> 
+                                                <span>{{searchFromDatesSpeed | date : 'longDate'}} - {{searchFromDatesSpeed | date : 'longDate'}}</span>
+                                            </th>                                
+                                        </tr>
+                                        <tr>
+                                          <th>Date</th>
                                           <th>Vendor Name</th>
-                                          <th>Vendor Id</th>
+                                          <th>Driver Id</th>
+                                          <th>Driver Name</th>
+                                          <th>Vehicle Number</th>
+                                          <th>Area</th>
                                           <th>Speed</th>
-                                            <th><button class = "btn btn-sm btn-success form-control excelExportButton" ng-click = "saveInExcelKM('byVendor_Sum')">
+                                            <th><button class = "btn btn-sm btn-success form-control excelExportButton" ng-click = "saveInExcel()">
                                         <i class = "icon-download-alt"></i><span class = "marginLeft5">Excel</span></button>
                                             </th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                       <tr class = "reportSum" ng-repeat="reportSum_vendor in reportsSum">
-                                           <td>{{reportSum_vendor.vendorName}}</td>
-                                           <td>{{reportSum_vendor.vendorId}}</td>
-                                           <td>{{reportSum_vendor.totalPlannedDistance}}</td>
+                                       <tr class = "reportSum" ng-repeat="speed in reportsSpeedData| filter:efmfilter.filterSpeed">
+                                           <td>{{speed.dateTime}}</td>
+                                           <td>{{speed.vendorName}}</td>
+                                           <td>{{speed.driverId}}</td>
+                                           <td>{{speed.driverName}}</td>
+                                           <td>{{speed.vehicleNumber}}</td>
+                                           <td>{{speed.area}}</td>
+                                           <td>{{speed.speed}}</td>
                                            <td></td>
                                        </tr> 
                                      </tbody>                                
                             </table> 
                           </div> 
                         </div>
-                    </tab> -->
+                    </tab> 
                     <!-- End of Twelveth Tab -->
                     
                     <!-- Thirteenth Tab -->

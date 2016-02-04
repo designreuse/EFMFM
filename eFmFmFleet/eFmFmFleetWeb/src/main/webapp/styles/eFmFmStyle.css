@@ -4579,6 +4579,13 @@ ul.dropdown-menu.routeActions:after {
 .modalMainContentDownload{
     min-height: 150px;
 }
+
+.dropPickColumn_serviceMapping{
+    width:30%;
+}
+.selectArea_serviceMapping{
+    width:80%;
+}
 /*
 select.zoneDropDown_serviceMapping.floatLeft.ng-pristine.ng-valid {
     width: 40%;

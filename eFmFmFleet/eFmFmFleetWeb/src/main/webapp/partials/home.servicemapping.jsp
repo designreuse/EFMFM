@@ -235,7 +235,6 @@
                                       <th>Move To</th>
                                       <th>Move To</th>
                                       <th></th>
-                                      <th></th>
                                     </tr> 
                                 </thead>
                                 <tbody ng-show = "route.empDetails.length==0">
@@ -262,8 +261,36 @@
 		                             <td class = "col-md-1"><span>{{employee.tripType}}</span>
                                      </td>
 -->
-                                     <td  class = 'col-md-1'><span> {{employee.pickUpTime}}</span>
-                                        
+                                     <td  class = 'col-md-1'>
+                                         <form name = "updatePickDrop">
+                                             <span ng-show = "!employee.isUpdateClicked" class = marginRight20> {{employee.pickUpTime}}</span> 
+                                             <input type = "text"
+                                                    class = "dropPickColumn_serviceMapping"
+                                                    ng-model = "employee.dropSequence" 
+                                                    ng-pattern = 'IntegerNumber'
+                                                    required
+                                                    ng-show = "route.tripType == 'DROP' && employee.isUpdateClicked">
+                                             <input type = "button" 
+                                                    class = "btn btn-xs btn-warning buttonRadius0" 
+                                                    value = "Update" 
+                                                    ng-click = "updateDropSeq(employee, route, $index, $parent.$index)"
+                                                    ng-show = "route.tripType == 'DROP'"
+                                                    ng-disabled="updatePickDrop.$invalid">
+                                             
+                                            <timepicker ng-model="employee.createNewAdHocTime" 
+                                                      hour-step="hstep" 
+                                                      minute-step="mstep" 
+                                                      show-meridian="ismeridian" 
+                                                      readonly-input = 'true'
+                                                      class = "timepicker2_empReq floatLeft"
+                                                      ng-show = "route.tripType == 'PICKUP' && employee.isUpdateClicked">
+                                            </timepicker>
+                                             <input type = "button" 
+                                                    class = "btn btn-xs btn-warning buttonRadius0" 
+                                                    value = "Update" 
+                                                    ng-click = "updatePickupTime(employee, route, $index, $parent.$index)"
+                                                    ng-show = "route.tripType == 'PICKUP'">
+                                        </form>                                        
                                      </td>
 <!--                                     <td>{{route.shiftTime}}</td>-->
                                      <td class = "col-md-1">                                          
@@ -325,8 +352,8 @@
                                      </td>
 
 
-                                     <td class = "col-md-1">
-<!--
+<!--                                     <td class = "col-md-1">
+
                                          <button class = "btn upDownDiv_serviceMapping pointer floatLeft"
                                               id = "down{{zone.routeId}}{{route.routeId}}{{employee.employeeId}}"
                                               tooltip="Move Down"
@@ -341,9 +368,9 @@
                                               tooltip-trigger="mouseenter"
                                               ng-disabled = "route.tripStatus =='Started'"
                                               ng-click = "moveUp(route, zone, employee, $index)"><i class = "icon-arrow-up"></i></button>
--->
-                                     </td>
 
+                                     </td>
+-->
 		                           </tr>                                       
 		                         </tbody>
                             </table>

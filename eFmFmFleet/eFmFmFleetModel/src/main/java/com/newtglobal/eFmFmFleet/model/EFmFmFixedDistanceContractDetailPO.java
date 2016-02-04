@@ -13,6 +13,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 
 /**
  * The persistent class for the eFmFmFixedDistanceContractDetail database table.
@@ -48,6 +49,9 @@ public class EFmFmFixedDistanceContractDetailPO implements Serializable {
 	@Column(name="FixedDistanceChargeRate", length=50)
 	private double fixedDistanceChargeRate;
 	
+	@Column(name="PenaltyInPercentagePerDay", length=50)
+	private double penaltyInPercentagePerDay;
+	
 	@Column(name="Penalty", length=10)
 	private String penalty;
 
@@ -68,11 +72,14 @@ public class EFmFmFixedDistanceContractDetailPO implements Serializable {
 	@Column(name="UpdatedTime", length=30)
 	private Date updatedTime;
 	
+	@Transient
+	int branchId;
+	
 
 	//bi-directional many-to-one association to EFmFmClientBranchPO
 	@ManyToOne
-	@JoinColumn(name="BranchId")
-	private EFmFmClientBranchPO eFmFmClientBranchPO;
+	@JoinColumn(name="contractTypeId")
+	private EFmFmVendorContractTypeMasterPO eFmFmVendorContractTypeMaster;
 
 
 
@@ -209,15 +216,37 @@ public class EFmFmFixedDistanceContractDetailPO implements Serializable {
 		this.updatedTime = updatedTime;
 	}
 
-
-
-	public EFmFmClientBranchPO geteFmFmClientBranchPO() {
-		return eFmFmClientBranchPO;
+	public double getPenaltyInPercentagePerDay() {
+		return penaltyInPercentagePerDay;
 	}
 
 
-	public void seteFmFmClientBranchPO(EFmFmClientBranchPO eFmFmClientBranchPO) {
-		this.eFmFmClientBranchPO = eFmFmClientBranchPO;
+	public void setPenaltyInPercentagePerDay(double penaltyInPercentagePerDay) {
+		this.penaltyInPercentagePerDay = penaltyInPercentagePerDay;
+	}
+
+
+
+	public EFmFmVendorContractTypeMasterPO geteFmFmVendorContractTypeMaster() {
+		return eFmFmVendorContractTypeMaster;
+	}
+
+
+
+	public void seteFmFmVendorContractTypeMaster(
+			EFmFmVendorContractTypeMasterPO eFmFmVendorContractTypeMaster) {
+		this.eFmFmVendorContractTypeMaster = eFmFmVendorContractTypeMaster;
+	}
+
+
+	public int getBranchId() {
+		return branchId;
+	}
+
+
+
+	public void setBranchId(int branchId) {
+		this.branchId = branchId;
 	}
 
 	

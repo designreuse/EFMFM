@@ -58,8 +58,8 @@ public class EFmFmTripBasedContractDetailPO implements Serializable {
 	
 	//bi-directional many-to-one association to EFmFmClientBranchPO
 	@ManyToOne
-	@JoinColumn(name="BranchId")
-	private EFmFmClientBranchPO eFmFmClientBranchPO;
+	@JoinColumn(name="contractTypeId")
+	private EFmFmVendorContractTypeMasterPO eFmFmVendorContractTypeMaster;
 
 
 	public int getTripBasedContractId() {
@@ -142,15 +142,14 @@ public class EFmFmTripBasedContractDetailPO implements Serializable {
 	}
 
 
-	public EFmFmClientBranchPO geteFmFmClientBranchPO() {
-		return eFmFmClientBranchPO;
+	public EFmFmVendorContractTypeMasterPO geteFmFmVendorContractTypeMaster() {
+		return eFmFmVendorContractTypeMaster;
 	}
 
 
-	public void seteFmFmClientBranchPO(EFmFmClientBranchPO eFmFmClientBranchPO) {
-		this.eFmFmClientBranchPO = eFmFmClientBranchPO;
+	public void seteFmFmVendorContractTypeMaster(
+			EFmFmVendorContractTypeMasterPO eFmFmVendorContractTypeMaster) {
+		this.eFmFmVendorContractTypeMaster = eFmFmVendorContractTypeMaster;
 	}
-	
-	
 	
 	}

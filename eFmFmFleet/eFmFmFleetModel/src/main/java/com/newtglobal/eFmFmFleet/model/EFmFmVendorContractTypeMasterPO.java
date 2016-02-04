@@ -66,7 +66,17 @@ public class EFmFmVendorContractTypeMasterPO implements Serializable {
 	//bi-directional many-to-one association to EFmFmVehicleMaster
 	@OneToMany(mappedBy="eFmFmVendorContractTypeMaster")
 	private List<EFmFmVehicleMasterPO> efmFmVehicleMasters;
+	
+	
+	//bidirectional manytoone association to eFmFmVendorContractMaster
+	@OneToMany(mappedBy="eFmFmVendorContractTypeMaster")
+	private List<EFmFmFixedDistanceContractDetailPO> eFmFmFixedDistanceContractDetail;
 		
+	//bidirectional manytoone association to eFmFmVendorContractMaster
+	@OneToMany(mappedBy="eFmFmVendorContractTypeMaster")
+	private List<EFmFmTripBasedContractDetailPO> eFmFmTripBasedContractDetail;
+			
+	
 	
 
 	public EFmFmVendorContractTypeMasterPO() {
@@ -161,4 +171,23 @@ public class EFmFmVendorContractTypeMasterPO implements Serializable {
 		this.serviceTax = serviceTax;
 	}
 
+	public List<EFmFmFixedDistanceContractDetailPO> geteFmFmFixedDistanceContractDetail() {
+		return eFmFmFixedDistanceContractDetail;
+	}
+
+	public void seteFmFmFixedDistanceContractDetail(
+			List<EFmFmFixedDistanceContractDetailPO> eFmFmFixedDistanceContractDetail) {
+		this.eFmFmFixedDistanceContractDetail = eFmFmFixedDistanceContractDetail;
+	}
+
+	public List<EFmFmTripBasedContractDetailPO> geteFmFmTripBasedContractDetail() {
+		return eFmFmTripBasedContractDetail;
+	}
+
+	public void seteFmFmTripBasedContractDetail(
+			List<EFmFmTripBasedContractDetailPO> eFmFmTripBasedContractDetail) {
+		this.eFmFmTripBasedContractDetail = eFmFmTripBasedContractDetail;
+	}
+
+	
 }

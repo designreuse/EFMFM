@@ -1,7 +1,7 @@
 (function(){
    var reportsCtrl = function($scope, $location, $anchorScroll, $timeout, $http){      
        $('.reportMenu').addClass('active');  
-       $scope.currentTab = 'tripSheet';
+       $scope.currentTab = 'tripSheet';       
        $scope.setMinDate = new Date();
 	   $scope.numberofRecords = 10000;
        $scope.fromDate;
@@ -132,6 +132,11 @@
        $scope.searchRWT = [];
        $scope.searchRWT.type = {};
        
+       $scope.searchSpeed = [];
+       $scope.searchSpeed.type = {};
+       $scope.gotSpeedResult = false;
+       $scope.vendorVehicles_SpeedReport = [];
+       
        $scope.gotVDAttendanceResult = false;
        
        $scope.setLimit = function(showRecords){
@@ -236,6 +241,14 @@
                    $scope.reportKM.distanceShift = {'text':'By Shifts', 'value':1};
                    $scope.reportKM.reportType= {'value':"vendor", 'text':'By VENDOR'};
                    $scope.getVendorOrVehicle($scope.reportKM.reportType);
+               }
+               if($scope.currentTab == 'speed'){   
+                   $scope.SpeedAllVendors = $scope.getAllVendors();
+                   $scope.searchSpeed.SpeedVendors = {'name':'All Vendors', 'Id':0};
+                   $scope.vendorVehicles_SpeedReport.push({'name':'All Vehicles', 'Id':0});
+                   $scope.searchSpeed.VSelection = $scope.vendorVehicles_SpeedReport[0];
+//                   $scope.SpeedTripTypes = $scope.tripTypes;
+//                   $scope.searchSpeed.type = {'value':'PICKUP', 'text':'PICKUP'};
                }
                if($scope.currentTab == 'routeWiseTravel'){                   
                    $scope.RWTTripTypes = $scope.tripTypes;
@@ -373,17 +386,25 @@
             if($scope.currentTab == 'tripSheet'){
                 $('.popover').hide();
                 $scope.efmfilter= {filterTrips: ''};
+                //$scope.tripSheetData = [];
                 //alert($scope.filterTrips);
                  $http.post('services/report/tripSheet/',data).
                     success(function(data, status, headers, config) {
                        console.log(data);
                        $scope.tripSheetData = data.data;
- //                    alert(JSON.stringify($scope.tripSheetData));
-                       $scope.gotTripResult = true;
+                     alert(JSON.stringify($scope.tripSheetData));
                        $scope.fromDate = fromDate;
                        $scope.toDate = toDate;
                        $scope.searchFromDateTS = fromDate;
                        $scope.searchToDateTS = toDate;
+                      if($scope.tripSheetData.length>0){
+                          $scope.gotTripResult = true;
+                      }
+                     else{
+                         $scope.gotTripResult = false;
+                         $scope.showalertMessage('No Data Found. Please Change the Dates', "");
+                     }
+                       
                     }).
                     error(function(data, status, headers, config) {
                           // log error
@@ -395,25 +416,24 @@
                $scope.isShiftKM = false;
                 $('.popover').hide(); 
                $scope.efmfilter= {filterKm:''};
-               //alert($scope.reportKM.distanceShift.text + " - " + $scope.reportKM.distanceShift.value);
+               
                if(angular.isObject($scope.reportKM.reportType) && angular.isObject($scope.reportKM.VSelection)){
                     $scope.reportsSum = [];
-                    //var searchType = $scope.reportKM.reportType.value;
+                   
                     $scope.searchKMType = $scope.reportKM.reportType.value;
                     $scope.distanceShiftType = $scope.reportKM.distanceShift.text;
                     var vendor_id;
-                    var vehicle_id;                    
-                    //Saimaa if we will select All vendor then please send me Vendor ID as 0;
+                    var vehicle_id;   
+                   
                     if($scope.searchKMType == 'vendor'){
                        vendor_id = $scope.reportKM.VSelection.Id;
                        vehicle_id = 0;
-//                        alert(vendor_id);
                     }
                     else if ($scope.searchKMType == 'vehicle'){
                        vendor_id = 0;
                        vehicle_id = $scope.reportKM.VSelection.Id;               
                     }
-//                 alert("vendorId"+vendor_id+"vehicleId"+vehicle_id+"searchType"+searchType)
+                   
                    if($scope.reportKM.distanceShift.text == 'By Shifts'){
                     $scope.isShiftKM = false;
                    }
@@ -441,12 +461,11 @@
                     console.log(dataKm);
                     $http.post('services/report/kmreports/',dataKm).
                        success(function(data, status, headers, config) {
-                     //alert(JSON.stringify(data));
+                        
                            $scope.reportsSum = data;
                            $scope.vehicleNumberField=vendor_id;
                            angular.forEach($scope.reportsSum, function(item){item.viewDetailIsClicked = false;})
                            console.log($scope.reportsSum);
-                           $scope.gotKMResult = true;
                            $scope.viewDetail = false;                         
                            $scope.fromDate = fromDate;
                            $scope.toDate = toDate;                           
@@ -454,6 +473,13 @@
                            $scope.searchToDateKM = toDate; 
                            $scope.headingReportTypeKM = $scope.reportKM.reportType.text;
                            $scope.reportSelectionKM = $scope.reportKM.VSelection.name;
+                           if($scope.reportsSum.length>0){
+                                $scope.gotKMResult = true;
+                           }
+                        else{
+                            $scope.gotKMResult = false;
+                            $scope.showalertMessage('No Data Found. Please Change the Dates', "");
+                        }
                         }).
                         error(function(data, status, headers, config) {
                                    // log error
@@ -470,13 +496,19 @@
                 $scope.efmfilter= {filterSMSShow:''};
                 $http.post('services/report/smsreport/',data).
                     success(function(data, status, headers, config) {
-                        $scope.gotSMSResult = true;
+                        
                         console.log(data);
                         $scope.reportsSMSData = data;
                         $scope.fromDate = fromDate;
                         $scope.toDate = toDate;
                         $scope.searchFromDateSMS = fromDate;
                         $scope.searchToDateSMS = toDate;
+                        if($scope.reportsSMSData.length>0){
+                            $scope.gotSMSResult = true;
+                        }else{
+                            $scope.gotSMSResult = false;
+                            $scope.showalertMessage('No Data Found. Please Change the Dates', "");
+                        }
                     }).
                     error(function(data, status, headers, config) {
                                // log error
@@ -489,14 +521,18 @@
                 $scope.efmfilter= {filterEscort:''};
                 $http.post('services/report/escortReport/',data).
                     success(function(data, status, headers, config) {
-                        $scope.gotEscortResult = true;
                         console.log(data);
                         $scope.reportEscortData = data.tripDetail;
-                    //alert(JSON.stringify(data));
                         $scope.fromDate = fromDate;
                         $scope.toDate = toDate;
                         $scope.searchFromDateEscort = fromDate;
                         $scope.searchToDateEscort = toDate;
+                        if($scope.reportEscortData.length>0){
+                            $scope.gotEscortResult = true;
+                        }else{
+                            $scope.gotEscortResult = false;
+                            $scope.showalertMessage('No Data Found. Please Change the Dates', "");
+                        }
                     }).
                     error(function(data, status, headers, config) {
                                // log error
@@ -510,14 +546,19 @@
                 $scope.efmfilter= {filterVDAttendance:''};
                 $http.post('services/report/attendenceReport/',data).
                     success(function(data, status, headers, config) {
-                        $scope.gotVDAttendanceResult = true;
+                        
                         console.log(data);
                         $scope.reportsVDAttendanceData = data.tripDetail;
-                   //alert(JSON.stringify(data));
                         $scope.fromDate = fromDate;
                         $scope.toDate = toDate;
                         $scope.searchFromDatesVDA = fromDate;
                         $scope.searchToDatesVDA = toDate;
+                        if($scope.reportsVDAttendanceData.length>0){
+                            $scope.gotVDAttendanceResult = true;
+                        }else{
+                            $scope.gotVDAttendanceResult = false;
+                            $scope.showalertMessage('No Data Found. Please Change the Dates', "");
+                        }
                     }).
                     error(function(data, status, headers, config) {
                                // log error
@@ -532,14 +573,19 @@
                 $scope.efmfilter= {filterdriverWH:''};
                 $http.post('services/report/driverWorkinHoursReport/',data).
                     success(function(data, status, headers, config) {
-                        $scope.gotDriverWHResult = true;
+                        
                         console.log(data);
                         $scope.reportsDriverWHData = data.tripDetail;
-                    //alert(JSON.stringify(data));
                         $scope.fromDate = fromDate;
                         $scope.toDate = toDate;
                         $scope.searchFromDatesDWH = fromDate;
                         $scope.searchFromDatesDWH = toDate;
+                        if($scope.reportsDriverWHData.length>0){
+                            $scope.gotDriverWHResult = true;
+                        }else{
+                            $scope.gotDriverWHResult = false;
+                            $scope.showalertMessage('No Data Found. Please Change the Dates', "");
+                        }
                     }).
                     error(function(data, status, headers, config) {
                                // log error
@@ -554,14 +600,19 @@
                 $scope.efmfilter= {filterdriverDH:''};
                 $http.post('services/report/driverDrivingHoursReport/',data).
                     success(function(data, status, headers, config) {
-                        $scope.gotDriverDHResult = true;
+                        
                         console.log(data);
                         $scope.reportsDriverDHData = data.tripDetail;
-                    alert(JSON.stringify($scope.reportsDriverDHData));
                         $scope.fromDate = fromDate;
                         $scope.toDate = toDate;
                         $scope.searchFromDatesDDH = fromDate;
                         $scope.searchFromDatesDDH = toDate;
+                        if($scope.reportsDriverDHData.length>0){
+                            $scope.gotDriverDHResult = true;
+                        }else{
+                            $scope.gotDriverDHResult = false;
+                            $scope.showalertMessage('No Data Found. Please Change the Dates', "");
+                        }
                     }).
                     error(function(data, status, headers, config) {
                                // log error
@@ -569,9 +620,31 @@
                
                
            }
-          //Check if Over Speed report Tab is clicked
-          if($scope.currentTab == 'overSpeed'){
-               
+          //Check if Speed report Tab is clicked
+          if($scope.currentTab == 'speed'){    
+              alert("vendor " + $scope.searchSpeed.SpeedVendors.name + " - id: " + $scope.searchSpeed.SpeedVendors.Id);  
+              alert("vehicle " + $scope.searchSpeed.VSelection.name + " - id: " + $scope.searchSpeed.VSelection.Id);
+                $('.popover').hide();
+                $scope.efmfilter= {filterSpeed:''};
+                $http.post('services/report/speedReport/',data).
+                    success(function(data, status, headers, config) {
+                        
+                        console.log(data);
+                        $scope.reportsSpeedData = data.tripDetail;
+                        $scope.fromDate = fromDate;
+                        $scope.toDate = toDate;
+                        $scope.searchFromDatesSpeed = fromDate;
+                        $scope.searchFromDatesSpeed = toDate;
+                    if($scope.reportsSpeedData.length){
+                        $scope.gotSpeedResult = true;
+                    }else{
+                        $scope.gotSpeedResult = false;
+                        $scope.showalertMessage('No Data Found. Please Change the Dates', "");
+                    }
+                    }).
+                    error(function(data, status, headers, config) {
+                               // log error
+                    });
           }
 
           //Check if Route wise travel time Report is clicked
@@ -580,15 +653,20 @@
                 $scope.efmfilter= {filterRWT:''};
                 $http.post('services/report/routeWiceReport/',data).
                     success(function(data, status, headers, config) {
-                        $scope.gotRWTResult = true;
+                       
                         console.log(data);
                         $scope.reportsRouteWiseTravelData = data.tripDetail;
-                    //alert(JSON.stringify(data));
                         $scope.fromDate = fromDate;
                         $scope.toDate = toDate;
                         $scope.searchFromDatesRWT = fromDate;
                         $scope.searchToDatesRWT = toDate;
                         $scope.RWTTripType = $scope.searchRWT.type.text;
+                        if($scope.reportsRouteWiseTravelData.length>0){
+                             $scope.gotRWTResult = true;
+                        }else{
+                             $scope.gotRWTResult = false;
+                             $scope.showalertMessage('No Data Found. Please Change the Dates', "");
+                        }
                     }).
                     error(function(data, status, headers, config) {
                                // log error
@@ -1004,6 +1082,23 @@
        $scope.setTripTypeNS = function(type){
             $scope.NSShiftTimes = $scope.getShiftTime(type.text);
        }
+       
+       $scope.setVendorSpeed = function(vendor){
+           var data = {
+                       branchId:branchId
+            };
+            $http.post('services/vehicle/actualvehiclelist/',data).
+                 success(function(data, status, headers, config) {
+//                              alert(JSON.stringify(data));
+                       angular.forEach(data, function(item){
+                           $scope.vendorVehicles_SpeedReport.push({'name':item.vehicleNum, 'Id':item.vehicleId});
+                        });
+                       $scope.searchSpeed.VSelection = $scope.vendorVehicles_SpeedReport[0];
+                 }).
+                 error(function(data, status, headers, config) {
+                               // log error
+            });
+       };
 
 //****************************************EXCEL DOWNLOADS METHODS*******************************************//
        $scope.saveInExcel = function(){
@@ -1048,12 +1143,19 @@
                 });
                 saveAs(blob, "DriverDrivingHours.xls");}
            
-          if($scope.currentTab == 'routeWiseTravel'){    
+           if($scope.currentTab == 'speed'){    
+               var blob = new Blob([document.getElementById('exportTableSpeed').innerHTML], {
+            type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8"
+                });
+                saveAs(blob, "SpeedReport.xls");
+           }
+           
+           if($scope.currentTab == 'routeWiseTravel'){    
                var blob = new Blob([document.getElementById('exportTableRWT').innerHTML], {
             type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8"
                 });
                 saveAs(blob, "RoutewiseTravelTime.xls");
-          }
+           }
            
            if($scope.currentTab == 'seatUtil'){
                $scope.reportSUExcel = [];

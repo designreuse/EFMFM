@@ -75,7 +75,7 @@ public class InvoiceService {
 								  //tripBasedAmount=allVehicleDetails.getTravelledDistance()*perKmCharges;
 									EFmFmFixedDistanceContractDetailPO  fixedDistanceContractDetailPO=new EFmFmFixedDistanceContractDetailPO();
 									fixedDistanceContractDetailPO.setDistanceContractId(allVehicleDetails.getEfmFmVehicleCheckIn().getEfmFmVehicleMaster().getContractDetailId());
-									fixedDistanceContractDetailPO.seteFmFmClientBranchPO(clientBranchPO);								  
+//									fixedDistanceContractDetailPO.seteFmFmClientBranchPO(clientBranchPO);								  
 								 List<EFmFmVehicleMasterPO> noOfDays=iVehicleCheckInBO.getNoOfWorkingDays(fromDate, toDate,clientBranchPO.getBranchId(),allVehicleDetails.getEfmFmVehicleCheckIn().getEfmFmVehicleMaster().getVehicleId(), allVehicleDetails.getEfmFmVehicleCheckIn().getEfmFmVehicleMaster().geteFmFmVendorContractTypeMaster().getContractType().trim(), allVehicleDetails.getEfmFmVehicleCheckIn().getEfmFmVehicleMaster().getContractDetailId());
 								 List<EFmFmVehicleMasterPO> SumOftotalKm=iVehicleCheckInBO.getSumOfTotalKmByVehicle(fromDate, toDate,clientBranchPO.getBranchId(),allVehicleDetails.getEfmFmVehicleCheckIn().getEfmFmVehicleMaster().getVehicleId(), allVehicleDetails.getEfmFmVehicleCheckIn().getEfmFmVehicleMaster().geteFmFmVendorContractTypeMaster().getContractType().trim(), allVehicleDetails.getEfmFmVehicleCheckIn().getEfmFmVehicleMaster().getContractDetailId());
 								 List<EFmFmFixedDistanceContractDetailPO> fixedDistanceDetails=iVehicleCheckInBO.getFixedDistanceDetails(fixedDistanceContractDetailPO);
@@ -109,7 +109,7 @@ public class InvoiceService {
 					    			double tripTotalAmt=0.0,tripBasedAmount=0.0,penaltyTotalAmt=0.0;
 					    			EFmFmTripBasedContractDetailPO eFmFmTripBasedContractDetailPO=new EFmFmTripBasedContractDetailPO();
 					    			eFmFmTripBasedContractDetailPO.setTripBasedContractId(tripDetails.getContractDetailId());
-					    			eFmFmTripBasedContractDetailPO.seteFmFmClientBranchPO(clientBranchPO);
+//					    			eFmFmTripBasedContractDetailPO.seteFmFmClientBranchPO(clientBranchPO);
 					    		    List<EFmFmTripBasedContractDetailPO> tripDistanceDetails=iVehicleCheckInBO.getTripDistanceDetails(eFmFmTripBasedContractDetailPO);					    			
 					    		for (EFmFmAssignRoutePO tripVehicleDetails:tripBasedDistanceVehicleDetails){
 					    			   double extraKm=0.0,extraKmCharges=0.0;
