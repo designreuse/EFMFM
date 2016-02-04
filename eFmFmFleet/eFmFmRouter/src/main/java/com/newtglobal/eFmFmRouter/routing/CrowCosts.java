@@ -1,17 +1,21 @@
 package com.newtglobal.eFmFmRouter.routing;
 
 import com.newtglobal.eFmFmRouter.clustering.Geocode;
+
 public class CrowCosts implements CostInterface{
-	@Override
-	public Cost getCost(Geocode G1, Geocode G2){
-		double R = 6378.137; // Radius of earth in KM
-	    double dLat = (G1.getLat() - G2.getLat()) * Math.PI / 180;
-	    double dLon = (G1.getLong() - G2.getLong()) * Math.PI / 180;
-	    double a = Math.sin(dLat/2) * Math.sin(dLat/2) +
-	    Math.cos(G1.getLat() * Math.PI / 180) * Math.cos(G2.getLat() * Math.PI / 180) *
-	    Math.sin(dLon/2) * Math.sin(dLon/2);
-	    double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-	    double d = R * c;
-	    return new Cost((long) d*1000, (long) (d*1000/10.0));  //return in metres
-	}
+    @Override
+    public Cost getCost(Geocode G1, Geocode G2){
+        double dLat = toRadians(Math.abs(G1.getLat() - G2.getLat()));
+        double dLong = toRadians(Math.abs(G1.getLong() - G2.getLong()));
+        double a = Math.pow(Math.sin(dLat/2),2) + Math.cos(toRadians(G1.getLat()))
+            *Math.cos(toRadians(G2.getLat()))*Math.pow(Math.sin(dLong/2),2);
+        double c = 2*Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+        double radius = 6371000;
+        return new Cost((long) (radius*c), (long)(radius*c/10.0));
+    }
+    
+    public static double toRadians(double degrees)
+    {
+        return degrees*Math.PI/180;
+    }
 }
