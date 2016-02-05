@@ -1555,7 +1555,7 @@
                             <table class = "reportTable table reportTable_km table-responsive container-fluid table-bordered">
                                 <thead class ="tableHeading">
                                     <tr>
-                                        <th colspan = '14' style = "background-color:black; color: white">
+                                        <th colspan = '13' style = "background-color:black; color: white">
                                             Driver Driving Hours</br> 
                                             <span>{{searchFromDatesDDH | date : 'longDate'}} - {{searchFromDatesDDH | date : 'longDate'}}</span>
                                         </th>
@@ -1571,7 +1571,6 @@
                                       <th>Route Name</th>
                                       <th>Trip start time</th>
                                       <th>Trip End time</th>
-                                      <th>Trip Details</th>
                                       <th>Driving hrs/trip</th>
                                       <th>Total driving hrs</th>
                                       <th><button class = "btn btn-sm btn-success form-control excelExportButton" ng-click = "saveInExcel()">
@@ -1590,8 +1589,7 @@
                                        <td class = "col-md-1">{{report.tripsDetails[0].routeName}}</td>
                                        <td class = "col-md-1">{{report.tripsDetails[0].tripStartDate}}</td>
                                        <td class = "col-md-1">{{report.tripsDetails[0].tripCompleteDate}}</td>
-                                       <td class = "col-md-1">**123**</td>
-                                       <td class = "col-md-1">**123**</td>
+                                       <td class = "col-md-1">{{report.tripsDetails[0].driverDrivingHoursPerTrip}}</td>
                                        <td rowspan = "{{report.tripsDetails.length}}" class = "col-md-1">{{report.totalDrivingHours}}</td>
                                        <td></td>
                                    </tr> 
@@ -1605,8 +1603,8 @@
                                        <td class = "col-md-1">{{dh.routeName}}</td>
                                        <td class = "col-md-1">{{dh.tripStartDate}}</td>
                                        <td class = "col-md-1">{{dh.tripCompleteDate}}</td>
-                                       <td class = "col-md-1">**123**</td>
-                                       <td class = "col-md-1">**123**</td>
+                                       <td class = "col-md-1">{{dh.driverDrivingHoursPerTrip}}</td>
+
                                        <td></td>
                                    </tr> 
 		                         </tbody>                                
@@ -1638,7 +1636,7 @@
                                 <select class = "select_reports_VSelection marginBottom10 form-control"
                                         ng-model="searchSpeed.VSelection" 
                 						ng-options="vendorVehicle.name for vendorVehicle in vendorVehicles_SpeedReport track by vendorVehicle.Id"
-                						ng-change = "setvendorVehicle(searchSpeed.VSelection)"
+                						ng-change = "setvendorVehicle(searchSpeed)"
                                         required>
 <!--      						  		<option value="">-- Select --</option>-->
     							</select> 
@@ -1739,7 +1737,8 @@
                                       <th>Driver Id</th>
                                       <th>Driver name</th>
                                       <th>Vendor Name</th>
-                                      <th>Route Name/Id</th>
+                                       <th>Shift Time</th>
+                                      <th>Route Name</th>                                     
                                       <th>Start time</th>
                                       <th>End time</th>
                                       <th>Total travel time</th>
@@ -1755,6 +1754,7 @@
                                     <td class = "col-md-1">{{report.driverId}}</td>
                                     <td class = "col-md-2">{{report.driverName}}</td>
                                     <td class = "col-md-2">{{report.vendorName}}</td>
+                                    <td class = "col-md-1">{{report.shiftTime}}</td>
                                     <td class = "col-md-2">{{report.routeName}}</td>
                                     <td class = "col-md-1">{{report.tripStartDate}}</td>
                                     <td class = "col-md-1">{{report.tripCompleteDate}}</td>

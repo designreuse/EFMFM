@@ -13,6 +13,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 
 /**
  * The persistent class for the eFmFmTripBasedContractDetail database table.
@@ -54,6 +55,9 @@ public class EFmFmTripBasedContractDetailPO implements Serializable {
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name="UpdatedTime", length=30)
 	private Date updatedTime;
+	
+	@Transient
+	int branchId;
 	
 	
 	//bi-directional many-to-one association to EFmFmClientBranchPO
@@ -151,5 +155,16 @@ public class EFmFmTripBasedContractDetailPO implements Serializable {
 			EFmFmVendorContractTypeMasterPO eFmFmVendorContractTypeMaster) {
 		this.eFmFmVendorContractTypeMaster = eFmFmVendorContractTypeMaster;
 	}
+
+
+	public int getBranchId() {
+		return branchId;
+	}
+
+
+	public void setBranchId(int branchId) {
+		this.branchId = branchId;
+	}
+	
 	
 	}

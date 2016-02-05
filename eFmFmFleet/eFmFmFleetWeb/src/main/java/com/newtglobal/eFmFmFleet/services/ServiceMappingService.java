@@ -188,6 +188,50 @@ public class ServiceMappingService  {
 	
 	
 	/*
+	 * update route drop Sequence from service mapping
+	 */
+	
+	@POST
+	@Path("/updateDropSequnce")
+	public Response updateDropTripRouteSquencing(EFmFmAssignRoutePO assignRoutePO) throws ParseException{
+		Map<String, Object>  responce = new HashMap<String,Object>();
+		ICabRequestBO iCabRequestBO = (ICabRequestBO) ContextLoader.getContext().getBean("ICabRequestBO");			
+		List<EFmFmEmployeeTravelRequestPO> cabRequestDetail=iCabRequestBO.getParticularRequestDetailOnTripComplete(assignRoutePO.geteFmFmClientBranchPO().getBranchId(), assignRoutePO.getRequestId());		
+		if((!(cabRequestDetail.isEmpty())) || cabRequestDetail.size() !=0){	
+			//Time is int varible for updating drop sequence
+			cabRequestDetail.get(0).setDropSequence(Integer.parseInt(assignRoutePO.getTime()));
+			iCabRequestBO.update(cabRequestDetail.get(0));
+		}
+		responce.put("status", "success");
+		return Response.ok(responce, MediaType.APPLICATION_JSON).build();
+	
+	}
+	
+	
+	/*
+	 * update route pickuptime for Sequence from service mapping
+	 */
+	
+	@POST
+	@Path("/updatePickUpTime")
+	public Response updateRouteSquencing(EFmFmAssignRoutePO assignRoutePO) throws ParseException{
+		Map<String, Object>  responce = new HashMap<String,Object>();
+		ICabRequestBO iCabRequestBO = (ICabRequestBO) ContextLoader.getContext().getBean("ICabRequestBO");			
+		List<EFmFmEmployeeTravelRequestPO> cabRequestDetail=iCabRequestBO.getParticularRequestDetailOnTripComplete(assignRoutePO.geteFmFmClientBranchPO().getBranchId(), assignRoutePO.getRequestId());
+		DateFormat timeformate = new SimpleDateFormat("HH:mm");
+		String pickUpTime=assignRoutePO.getTime();
+		Date changePickUpTime  = (Date) timeformate.parse(pickUpTime);				 
+		java.sql.Time pickTime = new java.sql.Time(changePickUpTime.getTime());
+		if((!(cabRequestDetail.isEmpty())) || cabRequestDetail.size() !=0){	
+			cabRequestDetail.get(0).setPickUpTime(pickTime);
+			iCabRequestBO.update(cabRequestDetail.get(0));
+		}
+		responce.put("status", "success");
+		return Response.ok(responce, MediaType.APPLICATION_JSON).build();
+	
+	}
+	
+	/*
 	 * Deleting an empty Route or bucket 
 	 * 
 	*/

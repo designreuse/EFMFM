@@ -153,6 +153,19 @@ public class IAlertBOImpl implements IAlertBO {
 		// TODO Auto-generated method stub
 		return iAlertDAO.getAllTripAlertsForSelectedDates(fromDate, toDate, branchId);
 	}
+	@Override
+	public List<EFmFmTripAlertsPO> getAllTripAlertsForSelectedDatesByVehicle(
+			Date fromDate, Date toDate, int branchId, int vehicleId) {
+		// TODO Auto-generated method stub
+		return iAlertDAO.getAllTripAlertsForSelectedDatesByVehicle(fromDate, toDate, branchId, vehicleId);
+	}
+	@Override
+	public List<EFmFmTripAlertsPO> getAllTripAlertsForSelectedDatesByVendor(
+			Date fromDate, Date toDate, int branchId, int vendorId) {
+		// TODO Auto-generated method stub
+		return iAlertDAO.getAllTripAlertsForSelectedDatesByVendor(fromDate, toDate, branchId, vendorId);
+	}
+
 	
 	
 }

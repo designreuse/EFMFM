@@ -229,7 +229,26 @@ public class AlertDAOImpl implements IAlertDAO {
 	@Override
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRED)
 	public List<EFmFmTripAlertsPO> getAllTripAlertsForSelectedDates(Date fromDate, Date toDate,int branchId) {
-		String query = "SELECT b FROM EFmFmTripAlertsPO b JOIN b.efmFmAssignRoute d JOIN d.eFmFmClientBranchPO c WHERE  date(b.creationTime) >= ?1  AND date(b.creationTime) <=?2  AND c.branchId='"+branchId+"'  ORDER BY b.creationTime ASC";
+		String query = "SELECT b FROM EFmFmTripAlertsPO b JOIN b.efmFmAlertTypeMaster ty JOIN b.efmFmAssignRoute d JOIN d.eFmFmClientBranchPO c WHERE  date(b.creationTime) >= ?1  AND date(b.creationTime) <=?2  AND c.branchId='"+branchId+"' AND ty.alertId=10 ORDER BY b.creationTime ASC";
+		Query q = entityManager.createQuery(query).setParameter(1, fromDate, TemporalType.TIMESTAMP).setParameter(2, toDate, TemporalType.TIMESTAMP);
+		return q.getResultList();
+	}
+	
+	
+	
+	
+	@Override
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRED)
+	public List<EFmFmTripAlertsPO> getAllTripAlertsForSelectedDatesByVehicle(Date fromDate, Date toDate,int branchId,int vehicleId) {
+		String query = "SELECT b FROM EFmFmTripAlertsPO b JOIN b.efmFmAlertTypeMaster ty JOIN b.efmFmAssignRoute d JOIN d.eFmFmClientBranchPO c JOIN d.efmFmVehicleCheckIn ch JOIN ch.efmFmVehicleMaster dm WHERE  date(b.creationTime) >= ?1  AND date(b.creationTime) <=?2  AND c.branchId='"+branchId+"' AND dm.vehicleId='"+vehicleId+"' AND ty.alertId=10 ORDER BY b.creationTime ASC";
+		Query q = entityManager.createQuery(query).setParameter(1, fromDate, TemporalType.TIMESTAMP).setParameter(2, toDate, TemporalType.TIMESTAMP);
+		return q.getResultList();
+	}
+	
+	@Override
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRED)
+	public List<EFmFmTripAlertsPO> getAllTripAlertsForSelectedDatesByVendor(Date fromDate, Date toDate,int branchId,int vendorId) {
+		String query = "SELECT b FROM EFmFmTripAlertsPO b JOIN b.efmFmAlertTypeMaster ty JOIN b.efmFmAssignRoute d JOIN d.eFmFmClientBranchPO c JOIN d.efmFmVehicleCheckIn ch JOIN ch.efmFmVehicleMaster dm JOIN dm.efmFmVendorMaster vm WHERE  date(b.creationTime) >= ?1  AND date(b.creationTime) <=?2  AND c.branchId='"+branchId+"' AND vm.vendorId='"+vendorId+"' AND ty.alertId=10 ORDER BY b.creationTime ASC";
 		Query q = entityManager.createQuery(query).setParameter(1, fromDate, TemporalType.TIMESTAMP).setParameter(2, toDate, TemporalType.TIMESTAMP);
 		return q.getResultList();
 	}

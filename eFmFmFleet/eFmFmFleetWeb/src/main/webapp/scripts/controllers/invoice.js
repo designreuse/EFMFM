@@ -86,10 +86,11 @@
                     var data = {invoiceDate:monthYear,
                                 actionType:actionTypes,
                                 efmFmVendorMaster:{vendorId:vendorId,eFmFmClientBranchPO:{branchId:branchId}}
-                               };       
+                               };
+                    console.log(data);
                     $http.post('services/contract/invoiceTripDetails/',data).
                           success(function(data, status, headers, config) {
-                        	  //alert(JSON.stringify(data));
+                        	  alert(JSON.stringify(data));
                             $scope.invoiceByVendor = data;
                             if(Object.keys($scope.invoiceByVendor).length == 0){
                                 $scope.showalertMessage('No Invoice found. Please try again!', '');

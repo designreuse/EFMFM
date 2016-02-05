@@ -110,7 +110,7 @@
        $scope.DistanceShiftTime = [];
        $scope.vehicleNumberField;
        $scope.NSresultShift;
-       $scope.searchNSByEmployeeId
+       $scope.searchNSByEmployeeId;
        
        $scope.reportTSExcel = [];
        $scope.reportOTExcel = [];
@@ -391,8 +391,8 @@
                  $http.post('services/report/tripSheet/',data).
                     success(function(data, status, headers, config) {
                        console.log(data);
-                       $scope.tripSheetData = data.data;
-                     alert(JSON.stringify($scope.tripSheetData));
+                       $scope.tripSheetData = data;
+ //                    alert(JSON.stringify($scope.tripSheetData));
                        $scope.fromDate = fromDate;
                        $scope.toDate = toDate;
                        $scope.searchFromDateTS = fromDate;
@@ -600,9 +600,9 @@
                 $scope.efmfilter= {filterdriverDH:''};
                 $http.post('services/report/driverDrivingHoursReport/',data).
                     success(function(data, status, headers, config) {
-                        
+ //                       alert(JSON.stringify(data));
                         console.log(data);
-                        $scope.reportsDriverDHData = data.tripDetail;
+                        $scope.reportsDriverDHData = data;
                         $scope.fromDate = fromDate;
                         $scope.toDate = toDate;
                         $scope.searchFromDatesDDH = fromDate;
@@ -622,13 +622,20 @@
            }
           //Check if Speed report Tab is clicked
           if($scope.currentTab == 'speed'){    
-              alert("vendor " + $scope.searchSpeed.SpeedVendors.name + " - id: " + $scope.searchSpeed.SpeedVendors.Id);  
-              alert("vehicle " + $scope.searchSpeed.VSelection.name + " - id: " + $scope.searchSpeed.VSelection.Id);
+//              alert("vendor " + $scope.searchSpeed.SpeedVendors.name + " - id: " + $scope.searchSpeed.SpeedVendors.Id);  
+ //             alert("vehicle " + $scope.searchSpeed.VSelection.name + " - id: " + $scope.searchSpeed.VSelection.Id);
                 $('.popover').hide();
                 $scope.efmfilter= {filterSpeed:''};
+                var data = {
+                        eFmFmClientBranchPO:{branchId:branchId},
+                        fromDate:convertDateUTC(fromDate),
+                        toDate:convertDateUTC(toDate),
+                        vendorId:$scope.searchSpeed.SpeedVendors.Id,
+                        vehicleId:$scope.searchSpeed.VSelection.Id
+                      };
                 $http.post('services/report/speedReport/',data).
                     success(function(data, status, headers, config) {
-                        
+//                        alert(JSON.stringify(data));
                         console.log(data);
                         $scope.reportsSpeedData = data.tripDetail;
                         $scope.fromDate = fromDate;
@@ -651,6 +658,12 @@
           if($scope.currentTab == 'routeWiseTravel'){               
                 $('.popover').hide();
                 $scope.efmfilter= {filterRWT:''};
+                var data = {
+                        eFmFmClientBranchPO:{branchId:branchId},
+                        fromDate:convertDateUTC(fromDate),
+                        toDate:convertDateUTC(toDate),
+                        tripType:$scope.searchRWT.type.value
+                      };
                 $http.post('services/report/routeWiceReport/',data).
                     success(function(data, status, headers, config) {
                        
@@ -1081,15 +1094,18 @@
        
        $scope.setTripTypeNS = function(type){
             $scope.NSShiftTimes = $scope.getShiftTime(type.text);
-       }
+       };
        
        $scope.setVendorSpeed = function(vendor){
+    	  
            var data = {
-                       branchId:branchId
+                       branchId:branchId,
+                       vendorId:vendor.Id
+                       
             };
             $http.post('services/vehicle/actualvehiclelist/',data).
                  success(function(data, status, headers, config) {
-//                              alert(JSON.stringify(data));
+    //                          alert(JSON.stringify(data));
                        angular.forEach(data, function(item){
                            $scope.vendorVehicles_SpeedReport.push({'name':item.vehicleNum, 'Id':item.vehicleId});
                         });

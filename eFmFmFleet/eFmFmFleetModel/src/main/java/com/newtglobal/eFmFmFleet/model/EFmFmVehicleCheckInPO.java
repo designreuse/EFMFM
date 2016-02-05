@@ -50,6 +50,9 @@ public class EFmFmVehicleCheckInPO implements Serializable {
 	private int driverId;
     
     @Transient
+   	private int vendorId;
+    
+    @Transient
 	private String deviceImei;
 	
 	
@@ -181,4 +184,13 @@ public class EFmFmVehicleCheckInPO implements Serializable {
 		this.efmFmVehicleMaster = efmFmVehicleMaster;
 	}
 
+	public int getVendorId() {
+		return vendorId;
+	}
+
+	public void setVendorId(int vendorId) {
+		this.vendorId = vendorId;
+	}
+
+	
 }

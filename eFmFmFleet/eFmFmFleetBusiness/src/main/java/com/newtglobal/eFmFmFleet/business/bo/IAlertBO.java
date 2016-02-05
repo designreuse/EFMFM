@@ -88,6 +88,10 @@ public interface IAlertBO {
 			int alertId, int assignRouteId);
 	public List<EFmFmTripAlertsPO> getAllTripAlertsForSelectedDates(Date fromDate,
 			Date toDate, int branchId);
+	public List<EFmFmTripAlertsPO> getAllTripAlertsForSelectedDatesByVehicle(
+			Date fromDate, Date toDate, int branchId, int vehicleId);
+	public List<EFmFmTripAlertsPO> getAllTripAlertsForSelectedDatesByVendor(
+			Date fromDate, Date toDate, int branchId, int vendorId);
 
 
 }

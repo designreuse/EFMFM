@@ -743,7 +743,7 @@ public class VehicleCheckInDAOImpl implements IVehicleCheckInDAO {
 						+ vendorId
 						+ "'  AND c.branchId='"
 						+ branchId
-						+ "' AND b.status='A' ");
+						+ "' AND (b.status='A' OR b.status='allocated') ");
 		vehicleDetail = query.getResultList();
 		return vehicleDetail;
 	}
@@ -1096,7 +1096,7 @@ public class VehicleCheckInDAOImpl implements IVehicleCheckInDAO {
 								.getDistanceContractId()
 						+ "' AND c.branchId='"
 						+ eFmFmFixedDistanceContractDetailPO
-								.geteFmFmClientBranchPO().getBranchId() + "'");
+								.getBranchId() + "'");
 		fixedDistanceContractDetailPO = query.getResultList();
 		return fixedDistanceContractDetailPO;
 	}
@@ -1111,8 +1111,7 @@ public class VehicleCheckInDAOImpl implements IVehicleCheckInDAO {
 						+ eFmFmTripBasedContractDetailPO
 								.getTripBasedContractId()
 						+ "' AND c.branchId='"
-						+ eFmFmTripBasedContractDetailPO
-								.geteFmFmClientBranchPO().getBranchId() + "'");
+						+ eFmFmTripBasedContractDetailPO.getBranchId() + "'");
 		tripBasedContractDetailPO = query.getResultList();
 		return tripBasedContractDetailPO;
 	}

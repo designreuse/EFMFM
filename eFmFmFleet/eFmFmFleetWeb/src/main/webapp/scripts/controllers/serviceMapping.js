@@ -705,11 +705,24 @@
        
     $scope.updateDropSeq = function(employee, route, index, parentIndex){
         if(employee.isUpdateClicked){
-            alert(employee.dropSequence);            
             $confirm({text: "Are you sure you want to change the drop sequence from " + employee.pickUpTime + " to " + employee.dropSequence + " ?", title:     'Confirmation', ok: 'Yes', cancel: 'No'})
         .then(function() {
             employee.pickUpTime = employee.dropSequence;
             employee.isUpdateClicked = false;
+            var dataObj = {
+          		   eFmFmClientBranchPO:{branchId:branchId},
+  				   assignRouteId:route.routeId,
+  				  time:employee.dropSequence,
+  				 requestId:employee.requestId 				  
+  			};	
+              $http.post('services/zones/updateDropSequnce/',dataObj).
+  			success(function(data, status, headers, config) {
+  			    $scope.showalertMessage("Drop Sequence Updated Successfully", "");
+  			  $scope.getRoutes(route);
+  			}).
+  			error(function(data, status, headers, config) {
+  				      // log error
+  			});      
           });            
         }
         else{
@@ -720,17 +733,31 @@
        
     $scope.updatePickupTime = function(employee, route, index, parentIndex){
         if(employee.isUpdateClicked){
-            alert("Timer time: " + $scope.convertToTime(employee.createNewAdHocTime)+":00");
-            alert("Route ID: " + route.routeId)
-            alert(JSON.stringify(employee));
             $confirm({text: "Are you sure you want to change the pickup time from " + employee.pickUpTime + " to " +                                              $scope.convertToTime(employee.createNewAdHocTime)+":00 ?", title: 'Confirmation', ok: 'Yes', cancel: 'No'})
         .then(function() {
             employee.pickUpTime = $scope.convertToTime(employee.createNewAdHocTime)+":00";
             employee.isUpdateClicked = false;
+            var dataObj = {
+         		   eFmFmClientBranchPO:{branchId:branchId},
+ 				   assignRouteId:route.routeId,
+ 				  time:employee.pickUpTime,
+ 				 requestId:employee.requestId
+ 				  
+ 			};	
+             $http.post('services/zones/updatePickUpTime/',dataObj).
+ 			success(function(data, status, headers, config) {
+ 				 $scope.getRoutes(route);
+ 			    $scope.showalertMessage("PickUpTime Updated Successfully", "");
+ 			}).
+ 			error(function(data, status, headers, config) {
+ 				      // log error
+ 			});        
+            
             });
         }
         else{
-            employee.isUpdateClicked = true
+            employee.isUpdateClicked = true;
+  //         alert("hmm");
         }
     };
      

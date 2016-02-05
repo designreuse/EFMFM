@@ -66,11 +66,10 @@ public class EFmFmVehicleMasterPO implements Serializable {
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name="VehicleFitNessDate", length=30)
 	private Date vehicleFitnessDate;
-	
-	
-   @Transient
+		
+    @Transient
 	private String vehicleRegistrationDate;
-   
+ 
 
 	@Column(name="RegistartionCertificateNumber", length=150)
 	private String registartionCertificateNumber;

@@ -794,10 +794,8 @@ public class VehicleService {
 		IVehicleCheckInBO vehicleCheckInBO = (IVehicleCheckInBO) ContextLoader
 				.getContext().getBean("IVehicleCheckInBO");
 		List<EFmFmVehicleMasterPO> allVehicleDetail = vehicleCheckInBO
-				.getAllActualVehicleDetailsFromBranchId(eFmFmVehicleCheckInPO
-						.getBranchId());
+				.getAllApprovedVehiclesByVendorId(eFmFmVehicleCheckInPO.getVendorId(), eFmFmVehicleCheckInPO.getBranchId());
 		List<Map<String, Object>> vehicleList = new ArrayList<Map<String, Object>>();
-		System.out.println("....." + allVehicleDetail.size());
 		if (!(allVehicleDetail.isEmpty()) || allVehicleDetail.size() != 0) {
 			for (EFmFmVehicleMasterPO vehicleDetail : allVehicleDetail) {
 				if (!(vehicleDetail.getVehicleNumber().contains("DUMMY"))) {
