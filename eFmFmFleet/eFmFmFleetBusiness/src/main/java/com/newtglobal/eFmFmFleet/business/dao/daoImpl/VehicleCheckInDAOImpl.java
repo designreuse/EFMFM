@@ -1055,7 +1055,7 @@ public class VehicleCheckInDAOImpl implements IVehicleCheckInDAO {
 		Format year;
 		year = new SimpleDateFormat("yyyy");
 		Query query = entityManager
-				.createQuery("SELECT SUM(a.odometerEndKm - a.odometerStartKm),COUNT(b.vehicleId),b.contractDetailId,c.contractTypeId,c.contractDescription,c.contractType FROM EFmFmVehicleMasterPO b  JOIN b.efmFmVendorMaster d JOIN b.efmFmVehicleCheckIns v JOIN v.efmFmAssignRoutes a JOIN b.eFmFmVendorContractTypeMaster c JOIN d.eFmFmClientBranchPO f WHERE d.vendorId='"
+				.createQuery("SELECT plannedDistance,COUNT(b.vehicleId),b.contractDetailId,c.contractTypeId,c.contractDescription,c.contractType FROM EFmFmVehicleMasterPO b  JOIN b.efmFmVendorMaster d JOIN b.efmFmVehicleCheckIns v JOIN v.efmFmAssignRoutes a JOIN b.eFmFmVendorContractTypeMaster c JOIN d.eFmFmClientBranchPO f WHERE d.vendorId='"
 						+ vendorId
 						+ "' AND a.tripStatus='completed' AND f.branchId='"
 						+ branchId
@@ -1210,7 +1210,7 @@ public class VehicleCheckInDAOImpl implements IVehicleCheckInDAO {
 		Format year;
 		year = new SimpleDateFormat("yyyy");
 		Query query = entityManager
-				.createQuery("SELECT SUM((b.odometerEndKm - b.odometerStartKm)),count(a.vehicleId) FROM EFmFmAssignRoutePO b  JOIN b.efmFmVehicleCheckIn v JOIN v.efmFmVehicleMaster a JOIN a.efmFmVendorMaster d JOIN a.eFmFmVendorContractTypeMaster c JOIN d.eFmFmClientBranchPO f WHERE a.vehicleId='"
+				.createQuery("SELECT plannedDistance,count(a.vehicleId) FROM EFmFmAssignRoutePO b  JOIN b.efmFmVehicleCheckIn v JOIN v.efmFmVehicleMaster a JOIN a.efmFmVendorMaster d JOIN a.eFmFmVendorContractTypeMaster c JOIN d.eFmFmClientBranchPO f WHERE a.vehicleId='"
 						+ vehicleId
 						+ "' AND b.tripStatus='completed' AND f.branchId='"
 						+ branchId
@@ -1268,7 +1268,7 @@ public class VehicleCheckInDAOImpl implements IVehicleCheckInDAO {
 		Format year;
 		year = new SimpleDateFormat("yyyy");
 		Query query = entityManager
-				.createQuery("SELECT SUM(a.odometerEndKm - a.odometerStartKm),COUNT(a.tripStartTime) FROM EFmFmVehicleMasterPO b  JOIN b.efmFmVendorMaster d JOIN b.efmFmVehicleCheckIns v JOIN v.efmFmAssignRoutes a JOIN b.eFmFmVendorContractTypeMaster c JOIN d.eFmFmClientBranchPO f WHERE b.vehicleId='"
+				.createQuery("SELECT plannedDistance,COUNT(a.tripStartTime) FROM EFmFmVehicleMasterPO b  JOIN b.efmFmVendorMaster d JOIN b.efmFmVehicleCheckIns v JOIN v.efmFmAssignRoutes a JOIN b.eFmFmVendorContractTypeMaster c JOIN d.eFmFmClientBranchPO f WHERE b.vehicleId='"
 						+ vehicleId
 						+ "' AND a.tripStatus='completed' AND f.branchId='"
 						+ branchId

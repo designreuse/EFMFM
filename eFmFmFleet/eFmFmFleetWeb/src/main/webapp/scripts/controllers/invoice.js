@@ -83,6 +83,8 @@
                     var actionTypes="VENDORBASED";  
                     var vendorId=vendor.selectVendor.vendorId;                  
                     var monthYear=convertMonthYear(d);
+                    alert(vendorId);
+                    alert(monthYear);
                     var data = {invoiceDate:monthYear,
                                 actionType:actionTypes,
                                 efmFmVendorMaster:{vendorId:vendorId,eFmFmClientBranchPO:{branchId:branchId}}
