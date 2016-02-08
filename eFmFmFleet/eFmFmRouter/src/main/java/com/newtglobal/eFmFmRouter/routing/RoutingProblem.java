@@ -875,6 +875,9 @@ public class RoutingProblem {
         if (distAB + distAC <= distBC + 500 && distAB >= 250) {
           return ConstraintsStatus.NOT_FULFILLED;
         }
+        else if (distAC + distBC <= distAB + 500 && distBC >= 250) {
+          return ConstraintsStatus.NOT_FULFILLED;
+        }
       }
       TourActivity first = null, second = null, third = null;
       for (TourActivity T : route.getActivities()) {
@@ -896,6 +899,9 @@ public class RoutingProblem {
             double distBC = getDistance(second.getLocation(), third.getLocation());
             double distAC = getDistance(first.getLocation(), third.getLocation());
             if (distAB + distAC <= distBC + 500 && distAB >= 250) {
+              return ConstraintsStatus.NOT_FULFILLED;
+            }
+            else if (distAC + distBC <= distAB + 500 && distBC >= 250) {
               return ConstraintsStatus.NOT_FULFILLED;
             }
           }
