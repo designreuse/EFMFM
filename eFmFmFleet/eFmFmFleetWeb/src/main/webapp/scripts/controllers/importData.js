@@ -168,6 +168,13 @@ var importEmployeeRequestCtrl = function($scope, $modalInstance, $state, $http, 
  	    		// 		    	$scope.showalertMessageModal(splitedResponce[1]+ '-Sorry you can not upload a back date request.Excel quite from same employee', '');
  //		        $timeout(function() {$modalInstance.dismiss('cancel')}, 5000);
  	    	}
+ 	    	
+ 	    	/*else if(splitedResponce[0]=='emptyColumn'){
+ 	    		alert('Please check uploded excel for empty columns.');
+ 	    		$modalInstance.dismiss('cancel');
+ 	    	}*/
+ 	    	
+ 	    	
  	    	else if(splitedResponce[0]=='empIdNotExist'){
  	    		alert(splitedResponce[1]+'-This Employee Id Not exists in system please add it first.Excel quite from same employee');
  	    		$modalInstance.dismiss('cancel');

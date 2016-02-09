@@ -579,7 +579,7 @@
                         $scope.fromDate = fromDate;
                         $scope.toDate = toDate;
                         $scope.searchFromDatesDWH = fromDate;
-                        $scope.searchFromDatesDWH = toDate;
+                        $scope.searchToDatesDWH = toDate;
                         if($scope.reportsDriverWHData.length>0){
                             $scope.gotDriverWHResult = true;
                         }else{
@@ -606,7 +606,7 @@
                         $scope.fromDate = fromDate;
                         $scope.toDate = toDate;
                         $scope.searchFromDatesDDH = fromDate;
-                        $scope.searchFromDatesDDH = toDate;
+                        $scope.searchToDatesDDH = toDate;
                         if($scope.reportsDriverDHData.length>0){
                             $scope.gotDriverDHResult = true;
                         }else{

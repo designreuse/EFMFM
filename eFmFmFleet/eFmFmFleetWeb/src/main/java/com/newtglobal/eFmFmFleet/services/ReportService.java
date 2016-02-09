@@ -1831,12 +1831,9 @@ public class ReportService {
 	public Response getEscortRequiredReport(
 			EFmFmAssignRoutePO assignRoutePO) throws ParseException {	
 		ICabRequestBO iCabRequestBO = (ICabRequestBO) ContextLoader.getContext().getBean("ICabRequestBO");	
-
 		IAssignRouteBO iAssignRouteBO = (IAssignRouteBO) ContextLoader
 				.getContext().getBean("IAssignRouteBO");
 		DateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");
-		DateFormat dateFormatter = new SimpleDateFormat("dd-MM-yyyy hh:mm");
-
 		Date fromDate = (Date) formatter.parse(assignRoutePO.getFromDate());
 		Date toDate = (Date) formatter.parse(assignRoutePO.getToDate());
 		Map<String, Object> allTrips = new HashMap<String, Object>();
@@ -1851,11 +1848,11 @@ public class ReportService {
 					|| allTripDetails.size() != 0) {
 			for (EFmFmAssignRoutePO trips : allTripDetails) {
 				Map<String, Object> escortReport = new HashMap<String, Object>();
-				escortReport.put("tripStartDate", dateFormatter
+				escortReport.put("tripStartDate", formatter
 						.format(trips.getTripStartTime()));
-				escortReport.put("tripAssignDate", dateFormatter
+				escortReport.put("tripAssignDate", formatter
 						.format(trips.getTripAssignDate()));
-				escortReport.put("tripCompleteDate", dateFormatter
+				escortReport.put("tripCompleteDate", formatter
 						.format(trips.getTripCompleteTime()));
 				escortReport.put("shiftTime", timeFormat
 						.format(trips.getShiftTime()));
@@ -1897,59 +1894,6 @@ public class ReportService {
 	
 	/**
 	 * @param Get
-	 * Get all route details start time and end time details...
-	 * @return
-	 * @throws ParseException
-	 */
-	@POST
-	@Path("/routeWiceReport")
-	public Response getRouteWiseTravelTime(
-			EFmFmAssignRoutePO assignRoutePO) throws ParseException {	
-		IAssignRouteBO iAssignRouteBO = (IAssignRouteBO) ContextLoader
-				.getContext().getBean("IAssignRouteBO");
-		DateFormat timeFormat = new SimpleDateFormat("HH:mm");
-		DateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");
-		DateFormat dateFormatter = new SimpleDateFormat("dd-MM-yyyy hh:mm");
-		Date fromDate = (Date) formatter.parse(assignRoutePO.getFromDate());
-		Date toDate = (Date) formatter.parse(assignRoutePO.getToDate());
-		Map<String, Object> allTrips = new HashMap<String, Object>();
-		List<Map<String, Object>> routeWiseReportList = new ArrayList<Map<String, Object>>();
-		List<EFmFmAssignRoutePO> allTripDetails = iAssignRouteBO
-				.getTripCountByDate(fromDate, toDate,assignRoutePO.getTripType(),assignRoutePO
-						.geteFmFmClientBranchPO().getBranchId());
-			log.info("From Date" + assignRoutePO.getFromDate());
-			log.info("From Date" + assignRoutePO.getToDate());
-			if ((!(allTripDetails.isEmpty()))
-					|| allTripDetails.size() != 0) {
-			for (EFmFmAssignRoutePO trips : allTripDetails) {
-				Map<String, Object> routeReport = new HashMap<String, Object>();
-				routeReport.put("tripStartDate", dateFormatter
-						.format(trips.getTripStartTime()));
-				routeReport.put("tripAssignDate", dateFormatter
-						.format(trips.getTripAssignDate()));
-				routeReport.put("tripCompleteDate", dateFormatter
-						.format(trips.getTripCompleteTime()));
-				long millis=trips.getTripCompleteTime().getTime()-trips.getTripStartTime().getTime();				
-				String travellHours = String.format("%02d:%02d:%02d", TimeUnit.MILLISECONDS.toHours(millis),
-			            TimeUnit.MILLISECONDS.toMinutes(millis) - TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(millis)),
-			            TimeUnit.MILLISECONDS.toSeconds(millis) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(millis)));
-				routeReport.put("totalRouteTravelledTime",travellHours);
-				routeReport.put("shiftTime", timeFormat
-						.format(trips.getShiftTime()));
-				routeReport.put("vehicleNumber",trips.getEfmFmVehicleCheckIn().getEfmFmVehicleMaster().getVehicleNumber());
-				routeReport.put("vendorName",trips.getEfmFmVehicleCheckIn().getEfmFmVehicleMaster().getEfmFmVendorMaster().getVendorName());
-				routeReport.put("driverName",trips.getEfmFmVehicleCheckIn().getEfmFmDriverMaster().getFirstName());
-				routeReport.put("driverId",trips.getEfmFmVehicleCheckIn().getEfmFmDriverMaster().getDriverId());
-				routeReport.put("routeName",trips.geteFmFmRouteAreaMapping().geteFmFmZoneMaster().getZoneName());
-				routeWiseReportList.add(routeReport);	
-              }
-			}
-		allTrips.put("tripDetail", routeWiseReportList);
-		return Response.ok(allTrips, MediaType.APPLICATION_JSON).build();
-	}
-	
-	/**
-	 * @param Get
 	 * Get all getVehicleAndDriverAttendenceReport details method will return all the checkin and Checkout details...
 	 * @return
 	 * @throws ParseException
@@ -1960,7 +1904,6 @@ public class ReportService {
 			EFmFmAssignRoutePO assignRoutePO) throws ParseException {	
 		IVehicleCheckInBO iVehicleCheckInBO = (IVehicleCheckInBO) ContextLoader.getContext().getBean("IVehicleCheckInBO");			
 		DateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");
-		DateFormat dateFormatter = new SimpleDateFormat("dd-MM-yyyy hh:mm");
 		Date fromDate = (Date) formatter.parse(assignRoutePO.getFromDate());
 		Date toDate = (Date) formatter.parse(assignRoutePO.getToDate());
 		Map<String, Object> allTrips = new HashMap<String, Object>();
@@ -1974,9 +1917,9 @@ public class ReportService {
 					|| allTripDetails.size() != 0) {
 			for (EFmFmVehicleCheckInPO trips : allTripDetails) {
 				Map<String, Object> attendenceReport = new HashMap<String, Object>();
-				attendenceReport.put("attendanceDate", dateFormatter
+				attendenceReport.put("attendanceDate", formatter
 						.format(trips.getCheckInTime()));
-				attendenceReport.put("status", "Yes");				
+				attendenceReport.put("status", "Present");				
 				attendenceReport.put("vehicleNumber",trips.getEfmFmVehicleMaster().getVehicleNumber());
 				attendenceReport.put("vendorName",trips.getEfmFmVehicleMaster().getEfmFmVendorMaster().getVendorName());
 				attendenceReport.put("driverName",trips.getEfmFmDriverMaster().getFirstName());
@@ -2016,7 +1959,7 @@ public class ReportService {
 					|| allTripDetails.size() != 0) {
 			for (EFmFmVehicleCheckInPO trips : allTripDetails) {
 				Map<String, Object> driverWorkingReport = new HashMap<String, Object>();
-				driverWorkingReport.put("date", dateFormatter
+				driverWorkingReport.put("date", formatter
 						.format(trips.getCheckInTime()));				
 				driverWorkingReport.put("loginTime", dateFormatter
 						.format(trips.getCheckInTime()));
@@ -2091,7 +2034,7 @@ public class ReportService {
 						dateAndDriverId.add(dateFormatter
 								.format(drivertrips.getTripAssignDate()));
 						dateAndDriverId.add(drivertrips.getEfmFmVehicleCheckIn().getEfmFmDriverMaster().getDriverId());
-						driverDrivingReport.put("date", dateFormatter
+						driverDrivingReport.put("date", formatter
 								.format(drivertrips.getTripAssignDate()));
 						driverDrivingReport.put("tripStartDate", dateFormatter
 								.format(drivertrips.getTripStartTime()));
@@ -2146,6 +2089,8 @@ public class ReportService {
 			EFmFmAssignRoutePO assignRoutePO) throws ParseException {	
 		DateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");
 		DateFormat dateFormatter = new SimpleDateFormat("dd-MM-yyyy hh:mm");
+		DateFormat timeFormat = new SimpleDateFormat("HH:mm");
+
 		Date fromDate = (Date) formatter.parse(assignRoutePO.getFromDate());
 		Date toDate = (Date) formatter.parse(assignRoutePO.getToDate());
 		Map<String, Object> allTrips = new HashMap<String, Object>();
@@ -2162,7 +2107,10 @@ public class ReportService {
 			for (EFmFmTripAlertsPO tripsAlerts : allSpeedAlerts) {
 				Map<String, Object> vehicleSpeedAlerts = new HashMap<String, Object>();
 				vehicleSpeedAlerts.put("dateTime", dateFormatter
-						.format(tripsAlerts.getCreationTime()));							
+						.format(tripsAlerts.getCreationTime()));
+				vehicleSpeedAlerts.put("shiftTime", timeFormat
+						.format(tripsAlerts.getEfmFmAssignRoute().getShiftTime()));
+				
 				vehicleSpeedAlerts.put("vehicleNumber",tripsAlerts.getEfmFmAssignRoute().getEfmFmVehicleCheckIn().getEfmFmVehicleMaster().getVehicleNumber());
 				vehicleSpeedAlerts.put("vendorName",tripsAlerts.getEfmFmAssignRoute().getEfmFmVehicleCheckIn().getEfmFmVehicleMaster().getEfmFmVendorMaster().getVendorName());
 				vehicleSpeedAlerts.put("driverName",tripsAlerts.getEfmFmAssignRoute().getEfmFmVehicleCheckIn().getEfmFmDriverMaster().getFirstName());
@@ -2219,5 +2167,58 @@ public class ReportService {
 		allTrips.put("tripDetail", vehicleSpeedAlertsList);
 		return Response.ok(allTrips, MediaType.APPLICATION_JSON).build();
 	}	
+	
+	/**
+	 * @param Get
+	 * Get all route details start time and end time details...
+	 * @return
+	 * @throws ParseException
+	 */
+	@POST
+	@Path("/routeWiceReport")
+	public Response getRouteWiseTravelTime(
+			EFmFmAssignRoutePO assignRoutePO) throws ParseException {	
+		IAssignRouteBO iAssignRouteBO = (IAssignRouteBO) ContextLoader
+				.getContext().getBean("IAssignRouteBO");
+		DateFormat timeFormat = new SimpleDateFormat("HH:mm");
+		DateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");
+		DateFormat dateFormatter = new SimpleDateFormat("dd-MM-yyyy hh:mm");
+		Date fromDate = (Date) formatter.parse(assignRoutePO.getFromDate());
+		Date toDate = (Date) formatter.parse(assignRoutePO.getToDate());
+		Map<String, Object> allTrips = new HashMap<String, Object>();
+		List<Map<String, Object>> routeWiseReportList = new ArrayList<Map<String, Object>>();
+		List<EFmFmAssignRoutePO> allTripDetails = iAssignRouteBO
+				.getTripCountByDate(fromDate, toDate,assignRoutePO.getTripType(),assignRoutePO
+						.geteFmFmClientBranchPO().getBranchId());
+			log.info("From Date" + assignRoutePO.getFromDate());
+			log.info("From Date" + assignRoutePO.getToDate());
+			if ((!(allTripDetails.isEmpty()))
+					|| allTripDetails.size() != 0) {
+			for (EFmFmAssignRoutePO trips : allTripDetails) {
+				Map<String, Object> routeReport = new HashMap<String, Object>();
+				routeReport.put("tripStartDate", dateFormatter
+						.format(trips.getTripStartTime()));
+				routeReport.put("tripAssignDate", formatter
+						.format(trips.getTripAssignDate()));
+				routeReport.put("tripCompleteDate", dateFormatter
+						.format(trips.getTripCompleteTime()));
+				long millis=trips.getTripCompleteTime().getTime()-trips.getTripStartTime().getTime();				
+				String travellHours = String.format("%02d:%02d:%02d", TimeUnit.MILLISECONDS.toHours(millis),
+			            TimeUnit.MILLISECONDS.toMinutes(millis) - TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(millis)),
+			            TimeUnit.MILLISECONDS.toSeconds(millis) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(millis)));
+				routeReport.put("totalRouteTravelledTime",travellHours);
+				routeReport.put("shiftTime", timeFormat
+						.format(trips.getShiftTime()));
+				routeReport.put("vehicleNumber",trips.getEfmFmVehicleCheckIn().getEfmFmVehicleMaster().getVehicleNumber());
+				routeReport.put("vendorName",trips.getEfmFmVehicleCheckIn().getEfmFmVehicleMaster().getEfmFmVendorMaster().getVendorName());
+				routeReport.put("driverName",trips.getEfmFmVehicleCheckIn().getEfmFmDriverMaster().getFirstName());
+				routeReport.put("driverId",trips.getEfmFmVehicleCheckIn().getEfmFmDriverMaster().getDriverId());
+				routeReport.put("routeName",trips.geteFmFmRouteAreaMapping().geteFmFmZoneMaster().getZoneName());
+				routeWiseReportList.add(routeReport);	
+              }
+			}
+		allTrips.put("tripDetail", routeWiseReportList);
+		return Response.ok(allTrips, MediaType.APPLICATION_JSON).build();
+	}
 
 }

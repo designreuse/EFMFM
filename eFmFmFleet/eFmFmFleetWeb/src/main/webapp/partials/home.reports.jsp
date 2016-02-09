@@ -1373,7 +1373,7 @@
                                       <th>Date</th>
                                       <th>Vehicle Number</th>
                                       <th>Driver Name</th>
-                                      <th>Last Employee id/Name</th>
+                                      <th>Employee Name/Id</th>
                                       <th>ShiftTime</th>
                                       <th>Escort id</th>
                                       <th>Escort Name</th>
@@ -1387,7 +1387,7 @@
                                 </thead>
                                 <tbody>
 		                           <tr ng-repeat="report in reportEscortData | filter:efmfilter.filterEscort">
-                                       <td class = "col-md-1">{{report.tripCompleteDate}}</td>
+                                       <td class = "col-md-1">{{report.tripAssignDate}}</td>
                                        <td class = "col-md-1">{{report.vehicleNumber}}</td>
                                        <td class = "col-md-1">{{report.driverName}}</td>                                      
                                        <td class = "col-md-1">{{report.employeeName}}/{{report.employeeId}}</td>
@@ -1493,7 +1493,7 @@
                                     <tr>
                                         <th colspan = '9' style = "background-color:black; color: white">
                                             Driver Working Hours</br> 
-                                            <span>{{searchFromDatesDWH | date : 'longDate'}} - {{searchFromDatesDWH | date : 'longDate'}}</span>
+                                            <span>{{searchFromDatesDWH | date : 'longDate'}} - {{searchToDatesDWH | date : 'longDate'}}</span>
                                         </th>
                                 
                                     </tr>
@@ -1557,7 +1557,7 @@
                                     <tr>
                                         <th colspan = '13' style = "background-color:black; color: white">
                                             Driver Driving Hours</br> 
-                                            <span>{{searchFromDatesDDH | date : 'longDate'}} - {{searchFromDatesDDH | date : 'longDate'}}</span>
+                                            <span>{{searchFromDatesDDH | date : 'longDate'}} - {{searchToDatesDDH | date : 'longDate'}}</span>
                                         </th>
                                 
                                     </tr>
@@ -1578,7 +1578,7 @@
                                       </th>
                                     </tr>
                                 </thead>
-                                <tbody ng-repeat="report in reportsDriverDHData">
+                                <tbody ng-repeat="report in reportsDriverDHData | filter:efmfilter.filterdriverDH">
                                    <tr>
                                        <td class = "col-md-1">{{report.tripsDetails[0].date}}</td>
                                        <td class = "col-md-1">{{report.tripsDetails[0].vendorName}}</td>
@@ -1663,12 +1663,13 @@
                                             </th>                                
                                         </tr>
                                         <tr>
-                                          <th>Date</th>
+                                          <th>DateTime</th>
                                           <th>Vendor Name</th>
                                           <th>Driver Id</th>
                                           <th>Driver Name</th>
                                           <th>Vehicle Number</th>
-                                          <th>Area</th>
+                                          <th>Route Name</th>
+                                          <th>Shift Time</th>
                                           <th>Speed</th>
                                             <th><button class = "btn btn-sm btn-success form-control excelExportButton" ng-click = "saveInExcel()">
                                         <i class = "icon-download-alt"></i><span class = "marginLeft5">Excel</span></button>
@@ -1683,6 +1684,7 @@
                                            <td>{{speed.driverName}}</td>
                                            <td>{{speed.vehicleNumber}}</td>
                                            <td>{{speed.area}}</td>
+                                           <td>{{speed.shiftTime}}</td>
                                            <td>{{speed.speed}}</td>
                                            <td></td>
                                        </tr> 
@@ -1730,7 +1732,6 @@
                                         </th>
                                 
                                     </tr>
-                                   <tr col-span = "10" class ="tableHeadding_km">Route Wise Travel Time</tr>
                                     <tr>
                                       <th>Travelled Date</th>
                                       <th>Vehicle Number</th>
