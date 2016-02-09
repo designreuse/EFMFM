@@ -18,6 +18,16 @@ public class Geocode
     this.longitude = Double.parseDouble(latlong[1].trim());
   }
 
+  public double getLat()
+  {
+    return this.latitude;
+  }
+
+  public double getLong()
+  {
+    return this.longitude;
+  }
+
   public static double distance(Geocode G1, Geocode G2)
   {
     double dLat = toRadians(Math.abs(G1.latitude - G2.latitude));

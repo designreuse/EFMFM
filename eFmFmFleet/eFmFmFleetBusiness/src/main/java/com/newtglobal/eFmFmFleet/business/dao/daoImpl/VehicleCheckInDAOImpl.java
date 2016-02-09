@@ -1091,7 +1091,7 @@ public class VehicleCheckInDAOImpl implements IVehicleCheckInDAO {
 			EFmFmFixedDistanceContractDetailPO eFmFmFixedDistanceContractDetailPO) {
 		List<EFmFmFixedDistanceContractDetailPO> fixedDistanceContractDetailPO = new ArrayList<EFmFmFixedDistanceContractDetailPO>();
 		Query query = entityManager
-				.createQuery("SELECT b FROM EFmFmFixedDistanceContractDetailPO b JOIN b.eFmFmClientBranchPO c where b.distanceContractId='"
+				.createQuery("SELECT b FROM EFmFmFixedDistanceContractDetailPO b JOIN b.eFmFmVendorContractTypeMaster cn JOIN cn.eFmFmClientBranchPO c where b.distanceContractId='"
 						+ eFmFmFixedDistanceContractDetailPO
 								.getDistanceContractId()
 						+ "' AND c.branchId='"
@@ -1208,7 +1208,7 @@ public class VehicleCheckInDAOImpl implements IVehicleCheckInDAO {
 		Format year;
 		year = new SimpleDateFormat("yyyy");
 		Query query = entityManager
-				.createQuery("SELECT a.plannedDistance,count(a.vehicleId) FROM EFmFmAssignRoutePO b  JOIN b.efmFmVehicleCheckIn v JOIN v.efmFmVehicleMaster a JOIN a.efmFmVendorMaster d JOIN a.eFmFmVendorContractTypeMaster c JOIN d.eFmFmClientBranchPO f WHERE a.vehicleId='"
+				.createQuery("SELECT b.plannedDistance,count(a.vehicleId) FROM EFmFmAssignRoutePO b  JOIN b.efmFmVehicleCheckIn v JOIN v.efmFmVehicleMaster a JOIN a.efmFmVendorMaster d JOIN a.eFmFmVendorContractTypeMaster c JOIN d.eFmFmClientBranchPO f WHERE a.vehicleId='"
 						+ vehicleId
 						+ "' AND b.tripStatus='completed' AND f.branchId='"
 						+ branchId
@@ -1223,10 +1223,9 @@ public class VehicleCheckInDAOImpl implements IVehicleCheckInDAO {
 		List<Object[]> resultList = query.getResultList();
 		for (Object[] result : resultList) {
 			EFmFmVehicleMasterPO vehicleMasterPO = new EFmFmVehicleMasterPO();
-			vehicleMasterPO.setSumTravelledDistance(Integer.valueOf(result[0]
+			vehicleMasterPO.setSumTravelledDistance(Double.valueOf(result[0]
 					.toString()));
-			vehicleMasterPO.setNoOfVehicles((Integer.valueOf(result[1]
-					.toString())));
+			vehicleMasterPO.setNoOfVehicles((Integer.valueOf(result[1].toString())));
 			eFmFmVehicleMasterPO.add(vehicleMasterPO);
 		}
 		return eFmFmVehicleMasterPO;

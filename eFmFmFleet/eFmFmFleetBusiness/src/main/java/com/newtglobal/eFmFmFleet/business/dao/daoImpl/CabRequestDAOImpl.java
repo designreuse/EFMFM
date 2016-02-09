@@ -177,7 +177,7 @@ public class CabRequestDAOImpl implements ICabRequestDAO{
 		Format formatter;		
 		formatter = new SimpleDateFormat("yyyy-MM-dd"); 
 		todayDate = formatter.format(date);
-		Query query=entityManager.createQuery("SELECT b FROM EFmFmEmployeeTravelRequestPO b JOIN b.efmFmUserMaster u JOIN u.eFmFmClientBranchPO c JOIN b.eFmFmEmployeeRequestMaster r where u.userId='"+userId+"' and b.requestDate='"+todayDate+"' and  r.tripType='"+tripType+"' and b.shiftTime='"+siftTime+"' and c.branchId='"+branchId+"' and ( b.requestStatus='RM' OR b.requestStatus='RW' OR b.requestStatus='M' OR b.requestStatus='W'OR b.requestStatus='Y') ");
+		Query query=entityManager.createQuery("SELECT b FROM EFmFmEmployeeTravelRequestPO b JOIN b.efmFmUserMaster u JOIN u.eFmFmClientBranchPO c JOIN b.eFmFmEmployeeRequestMaster r where u.userId='"+userId+"' and b.requestDate='"+todayDate+"' and  b.tripType='"+tripType+"' and b.shiftTime='"+siftTime+"' and c.branchId='"+branchId+"' and ( b.requestStatus='E' OR b.requestStatus='RM' OR b.requestStatus='RW' OR b.requestStatus='M' OR b.requestStatus='W' OR b.requestStatus='Y') ");
     	employeeRequestPO=query.getResultList();
        return employeeRequestPO;
 	}

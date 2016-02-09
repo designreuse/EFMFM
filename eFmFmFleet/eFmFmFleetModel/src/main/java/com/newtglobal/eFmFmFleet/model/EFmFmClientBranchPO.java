@@ -46,6 +46,9 @@ public class EFmFmClientBranchPO implements Serializable {
 
 	@Column(name="Address", length=10)
 	private String address;
+	
+	@Column(name="GeoCodesForGeoFence", length=255)
+	private String GeoCodesForGeoFence;
 
 	
 	@Column(name="BranchName", length=50)
@@ -405,6 +408,14 @@ public class EFmFmClientBranchPO implements Serializable {
 
 	public void seteFmFmClientMaster(EFmFmClientMasterPO eFmFmClientMaster) {
 		this.eFmFmClientMaster = eFmFmClientMaster;
+	}
+
+	public String getGeoCodesForGeoFence() {
+		return GeoCodesForGeoFence;
+	}
+
+	public void setGeoCodesForGeoFence(String geoCodesForGeoFence) {
+		GeoCodesForGeoFence = geoCodesForGeoFence;
 	}
 
 }
