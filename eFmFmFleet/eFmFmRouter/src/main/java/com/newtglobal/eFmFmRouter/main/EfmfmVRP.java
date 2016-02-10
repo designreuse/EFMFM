@@ -58,7 +58,7 @@ public class EfmfmVRP {
     }
 
     for(JsonVehicle V : vehicles) {
-      this.depots.add(new Depot(V));
+      this.depots.add(new Depot(V, settings));
     }
 
     if (settings.auto_clustering && employees.size() > 100) {

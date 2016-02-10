@@ -88,7 +88,6 @@ public class RoutingProblem {
   private CostInterface costintr;
   private Settings settings;
 
-  // employees are tacitly assumed to have been already clustered
   public RoutingProblem() {
   }
 
@@ -135,9 +134,8 @@ public class RoutingProblem {
         .setPickupLocation(Location.newInstance(E.getDrop().getLat(), E.getDrop().getLong()))
         .setDeliveryLocation(Location.newInstance(E.getPickup().getLat(), E.getPickup().getLong()))
         .setPickupServiceTime(0).setDeliveryServiceTime(0)
-        .setPickupTimeWindow(TimeWindow.newInstance(settings.max_idle_time, settings.max_idle_time))
-        .setDeliveryTimeWindow(TimeWindow.newInstance(settings.max_idle_time,
-              settings.max_idle_time + E.getMaxTripDuration()))
+        .setPickupTimeWindow(TimeWindow.newInstance(0, 0))
+        .setDeliveryTimeWindow(TimeWindow.newInstance(0, E.getMaxTripDuration()))
         .setName(E.getSex()).build();
       vrpBuilder.addJob(S);
     }

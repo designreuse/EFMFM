@@ -5,6 +5,7 @@ import java.util.*;
 import com.newtglobal.eFmFmRouter.clustering.Geocode;
 import com.newtglobal.eFmFmRouter.data.JsonDepot;
 import com.newtglobal.eFmFmRouter.data.JsonVehicle;
+import com.newtglobal.eFmFmRouter.data.Settings;
 
 public final class Depot {
 	private ArrayList<Vehicle> vehicleList;
@@ -57,14 +58,14 @@ public final class Depot {
 		}
 	}
 	
-	public Depot(JsonVehicle V) {
+	public Depot(JsonVehicle V, Settings settings) {
 		numberOfDepots += 1;
 		vehicleList = new ArrayList<Vehicle>();
-		this.depotLocation = new Geocode(V.location);
+		this.depotLocation = new Geocode(V.startLocation);
 		this.name = V.vehicle_type.vehicle_type_name;
 		this.depotId = V.vehicle_id;
 		this.content = 0;
-		this.vehicleList.add(new Vehicle(new VehiclePrototype(V), depotLocation, V.vehicle_id, false));
+		this.vehicleList.add(new Vehicle(new VehiclePrototype(V), V, settings));
 	}
 	
 	public boolean isEqual(Depot D) {
@@ -76,7 +77,7 @@ public final class Depot {
 		for(int i = 1; i <= quantity; i++) {
 			content += 1;
 			Vehicle V2;
-			V2 = new Vehicle(V, depotLocation, V.getName() + "_" + content + "_" + name, true);
+			V2 = new Vehicle(V, depotLocation, V.getName() + "_" + content + "_" + name);
 			vehicleList.add(V2);
 		}
 	}
