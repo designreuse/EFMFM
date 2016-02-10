@@ -1208,7 +1208,7 @@ public class VehicleCheckInDAOImpl implements IVehicleCheckInDAO {
 		Format year;
 		year = new SimpleDateFormat("yyyy");
 		Query query = entityManager
-				.createQuery("SELECT b.plannedDistance,count(a.vehicleId) FROM EFmFmAssignRoutePO b  JOIN b.efmFmVehicleCheckIn v JOIN v.efmFmVehicleMaster a JOIN a.efmFmVendorMaster d JOIN a.eFmFmVendorContractTypeMaster c JOIN d.eFmFmClientBranchPO f WHERE a.vehicleId='"
+				.createQuery("SELECT SUM(b.plannedDistance),count(a.vehicleId) FROM EFmFmAssignRoutePO b  JOIN b.efmFmVehicleCheckIn v JOIN v.efmFmVehicleMaster a JOIN a.efmFmVendorMaster d JOIN a.eFmFmVendorContractTypeMaster c JOIN d.eFmFmClientBranchPO f WHERE a.vehicleId='"
 						+ vehicleId
 						+ "' AND b.tripStatus='completed' AND f.branchId='"
 						+ branchId
