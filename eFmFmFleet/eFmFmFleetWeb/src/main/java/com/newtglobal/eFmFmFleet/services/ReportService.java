@@ -874,9 +874,6 @@ public class ReportService {
 		List<Date> selectedDates = new ArrayList<Date>();
 		List<Time> selectedShiftTimes = new ArrayList<Time>();
 		if(assignRoutePO.getTime().equalsIgnoreCase("0") && assignRoutePO.getVendorId()==0){	
-			
-			
-			
 			selectedDates = iAssignRouteBO.getAllTripsDistinctDates(
 					fromDate, toDate, assignRoutePO.geteFmFmClientBranchPO()
 							.getBranchId(), assignRoutePO.getTripType());

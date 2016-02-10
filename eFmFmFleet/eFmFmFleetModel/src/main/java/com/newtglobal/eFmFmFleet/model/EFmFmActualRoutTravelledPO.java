@@ -69,6 +69,9 @@ public class EFmFmActualRoutTravelledPO implements Serializable {
 	@ManyToOne
 	@JoinColumn(name="BranchId")
 	private EFmFmClientBranchPO eFmFmClientBranchPO;
+	
+	@Transient
+	long tripUpdateTime;
 
 
 	public EFmFmActualRoutTravelledPO() {
@@ -172,5 +175,14 @@ public class EFmFmActualRoutTravelledPO implements Serializable {
 		this.time = time;
 	}
 
+	public long getTripUpdateTime() {
+		return tripUpdateTime;
+	}
+
+	public void setTripUpdateTime(long tripUpdateTime) {
+		this.tripUpdateTime = tripUpdateTime;
+	}
+
+	
 
 }

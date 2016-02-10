@@ -29,6 +29,7 @@ import com.newtglobal.eFmFmFleet.model.EFmFmAssignRoutePO;
 import com.newtglobal.eFmFmFleet.model.EFmFmClientBranchPO;
 import com.newtglobal.eFmFmFleet.model.EFmFmFixedDistanceContractDetailPO;
 import com.newtglobal.eFmFmFleet.model.EFmFmTripBasedContractDetailPO;
+import com.newtglobal.eFmFmFleet.model.EFmFmVehicleCheckInPO;
 import com.newtglobal.eFmFmFleet.model.EFmFmVehicleMasterPO;
 import com.newtglobal.eFmFmFleet.model.EFmFmVendorContractInvoicePO;
 import com.newtglobal.eFmFmFleet.model.EFmFmVendorMasterPO;
@@ -86,33 +87,36 @@ public class InvoiceService {
 
 //								List<EFmFmVehicleMasterPO> noOfDays=iVehicleCheckInBO.getNoOfWorkingDays(fromDate, toDate,clientBranchPO.getBranchId(),allVehicleDetails.getEfmFmVehicleCheckIn().getEfmFmVehicleMaster().getVehicleId(),"", allVehicleDetails.getEfmFmVehicleCheckIn().getEfmFmVehicleMaster().getContractDetailId());								
 								
+  
+									List<EFmFmVehicleCheckInPO> totalWorkingDays = iVehicleCheckInBO.getVehicleAndDriverAttendence(fromDate, toDate,clientBranchPO.getBranchId());
+								  
 								List<EFmFmVehicleMasterPO> SumOftotalKm=iVehicleCheckInBO.getSumOfTotalKmByVehicle(fromDate, toDate,clientBranchPO.getBranchId(),allVehicleDetails.getEfmFmVehicleCheckIn().getEfmFmVehicleMaster().getVehicleId(), allVehicleDetails.getEfmFmVehicleCheckIn().getEfmFmVehicleMaster().geteFmFmVendorContractTypeMaster().getContractType().trim(), allVehicleDetails.getEfmFmVehicleCheckIn().getEfmFmVehicleMaster().getContractDetailId());
 								
 								if(SumOftotalKm.get(0).getSumTravelledDistance() >= fixedDistanceDetails.get(0).getFixedDistanceMonthly()){
 									  extraKm=SumOftotalKm.get(0).getSumTravelledDistance()-fixedDistanceDetails.get(0).getFixedDistanceMonthly();
 									  extraKmCharges=extraKm*fixedDistanceDetails.get(0).getExtraDistanceChargeRate();
-									  totalAmt=fixedDistanceDetails.get(0).getFixedDistanceChargeRate()+extraKmCharges;	
-									  //assignRouteDetail.size() is basically total present days
-								  }else if(SumOftotalKm.get(0).getSumTravelledDistance()<fixedDistanceDetails.get(0).getFixedDistanceMonthly() && assignRouteDetail.size()>=fixedDistanceDetails.get(0).getMinimumDays()){
+									  totalAmt=fixedDistanceDetails.get(0).getFixedDistanceChargeRate()+extraKmCharges;										  
+								  }else if(SumOftotalKm.get(0).getSumTravelledDistance()<fixedDistanceDetails.get(0).getFixedDistanceMonthly() && totalWorkingDays.size()>=fixedDistanceDetails.get(0).getMinimumDays()){
 									  totalAmt=fixedDistanceDetails.get(0).getFixedDistanceChargeRate();					  
-								  }else if(SumOftotalKm.get(0).getSumTravelledDistance() <fixedDistanceDetails.get(0).getFixedDistanceMonthly() && assignRouteDetail.size()< fixedDistanceDetails.get(0).getMinimumDays()){
+								  }else if(SumOftotalKm.get(0).getSumTravelledDistance() <fixedDistanceDetails.get(0).getFixedDistanceMonthly() && totalWorkingDays.size()< fixedDistanceDetails.get(0).getMinimumDays()){
 									  if(fixedDistanceDetails.get(0).getPenalty().equalsIgnoreCase("Y")){
-										  penaltyAmt=fixedDistanceDetails.get(0).getFixedDistanceChargeRate()/fixedDistanceDetails.get(0).getMinimumDays();
-										  penaltyTotalAmt=penaltyAmt*(fixedDistanceDetails.get(0).getMinimumDays()-assignRouteDetail.size());
+										  penaltyTotalAmt= ((fixedDistanceDetails.get(0).getMinimumDays()-totalWorkingDays.size())*(fixedDistanceDetails.get(0).getFixedDistancePrDay()*fixedDistanceDetails.get(0).getPenaltyInPercentagePerDay()))/100;
+										  log.info("Penalty amount"+penaltyAmt);
+//										  penaltyTotalAmt=penaltyAmt*(fixedDistanceDetails.get(0).getMinimumDays()-totalWorkingDays.size());
 										  totalAmt=fixedDistanceDetails.get(0).getFixedDistanceChargeRate()-penaltyTotalAmt;							  
 									  }
 								  }
-								  List<EFmFmAssignRoutePO> tripBasedFixedDistance=iVehicleCheckInBO.getVehicleBasedTripSheet(fromDate, toDate,clientBranchPO.getBranchId(),allVehicleDetails.getEfmFmVehicleCheckIn().getEfmFmVehicleMaster().getVehicleId());
+								  addInvoiceRecord(tripBasedAmount,allVehicleDetails,clientBranchPO,fromDate,totalAmt,penaltyTotalAmt,assignRouteDetail.size(),SumOftotalKm.get(0).getSumTravelledDistance(),fixedDistanceDetails.get(0).getFixedDistanceMonthly(),fixedDistanceDetails.get(0).getMinimumDays(),fixedDistanceDetails.get(0).getFixedDistanceChargeRate(),randomNumber,allVehicleDetails.getTravelledDistance(),extraKm,extraKmCharges);
+								 /* List<EFmFmAssignRoutePO> tripBasedFixedDistance=iVehicleCheckInBO.getVehicleBasedTripSheet(fromDate, toDate,clientBranchPO.getBranchId(),allVehicleDetails.getEfmFmVehicleCheckIn().getEfmFmVehicleMaster().getVehicleId());
 								  if(tripBasedFixedDistance.size()>0){
 									  for (EFmFmAssignRoutePO  fixedDistanceLst:tripBasedFixedDistance){
 										  addInvoiceRecord(tripBasedAmount,fixedDistanceLst,clientBranchPO,fromDate,totalAmt,penaltyTotalAmt,assignRouteDetail.size(),SumOftotalKm.get(0).getSumTravelledDistance(),fixedDistanceDetails.get(0).getFixedDistanceMonthly(),fixedDistanceDetails.get(0).getMinimumDays(),fixedDistanceDetails.get(0).getFixedDistanceChargeRate(),randomNumber,fixedDistanceLst.getTravelledDistance(),extraKm,extraKmCharges);
 									  }
-								  }								  								   
+								  }	*/							  								   
 							  }
 							  
 						      }
-					    	}else if(vehicleDetails.getContractType().equalsIgnoreCase("TDC")){					    							    		
-					    		
+					    	}else if(vehicleDetails.getContractType().equalsIgnoreCase("TDC")){					    							    						    		
 							    int noOfDays=0;
 					    		List<EFmFmAssignRoutePO> tripBasedDistanceVehicleDetails=iVehicleCheckInBO.getTripBasedVehicleDetails(fromDate, toDate,clientBranchPO.getBranchId(),eFmFmVehicleMasterPO.getEfmFmVendorMaster().getVendorId(), vehicleDetails.getContractType(), vehicleDetails.getContractDetailId());
 					    		if(tripBasedDistanceVehicleDetails.size()>0){

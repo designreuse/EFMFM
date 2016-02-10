@@ -302,7 +302,6 @@ public class RegistrationService {
 	public Response registerCheck(EFmFmUserMasterPO eFmFmUserMasterPO){					
 		IEmployeeDetailBO employeeDetailBO = (IEmployeeDetailBO) ContextLoader.getContext().getBean("IEmployeeDetailBO");			
 		Map<String, Object>  responce = new HashMap<String,Object>();
-		System.out.println(eFmFmUserMasterPO.getDeviceId());
 			EFmFmUserMasterPO userMasterDetail=employeeDetailBO.getParticularDeviceDetails(eFmFmUserMasterPO.getDeviceId());
 			if(userMasterDetail!=null){
 			if(userMasterDetail.isLoggedIn()){

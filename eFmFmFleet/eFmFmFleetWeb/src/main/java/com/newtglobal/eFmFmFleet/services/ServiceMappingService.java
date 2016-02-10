@@ -195,13 +195,19 @@ public class ServiceMappingService  {
 	@Path("/updateDropSequnce")
 	public Response updateDropTripRouteSquencing(EFmFmAssignRoutePO assignRoutePO) throws ParseException{
 		Map<String, Object>  responce = new HashMap<String,Object>();
-		ICabRequestBO iCabRequestBO = (ICabRequestBO) ContextLoader.getContext().getBean("ICabRequestBO");			
-		List<EFmFmEmployeeTravelRequestPO> cabRequestDetail=iCabRequestBO.getParticularRequestDetailOnTripComplete(assignRoutePO.geteFmFmClientBranchPO().getBranchId(), assignRoutePO.getRequestId());		
+		ICabRequestBO iCabRequestBO = (ICabRequestBO) ContextLoader.getContext().getBean("ICabRequestBO");	
+		IAssignRouteBO assignRouteBO = (IAssignRouteBO) ContextLoader.getContext().getBean("IAssignRouteBO");				
+    	List<EFmFmEmployeeTravelRequestPO> cabRequestDetail=iCabRequestBO.getParticularRequestDetailOnTripComplete(assignRoutePO.geteFmFmClientBranchPO().getBranchId(), assignRoutePO.getRequestId());		
 		if((!(cabRequestDetail.isEmpty())) || cabRequestDetail.size() !=0){	
 			//Time is int varible for updating drop sequence
 			cabRequestDetail.get(0).setDropSequence(Integer.parseInt(assignRoutePO.getTime()));
 			iCabRequestBO.update(cabRequestDetail.get(0));
 		}
+		List<EFmFmAssignRoutePO> assignRoute=assignRouteBO.closeParticularTrips(assignRoutePO);
+    	if((!(assignRoute.isEmpty())) || assignRoute.size() !=0){	
+    		assignRoute.get(0).setTripUpdateTime(new Date());
+    		assignRouteBO.update(assignRoute.get(0));
+    	}
 		responce.put("status", "success");
 		return Response.ok(responce, MediaType.APPLICATION_JSON).build();
 	
@@ -216,7 +222,8 @@ public class ServiceMappingService  {
 	@Path("/updatePickUpTime")
 	public Response updateRouteSquencing(EFmFmAssignRoutePO assignRoutePO) throws ParseException{
 		Map<String, Object>  responce = new HashMap<String,Object>();
-		ICabRequestBO iCabRequestBO = (ICabRequestBO) ContextLoader.getContext().getBean("ICabRequestBO");			
+		ICabRequestBO iCabRequestBO = (ICabRequestBO) ContextLoader.getContext().getBean("ICabRequestBO");	
+		IAssignRouteBO assignRouteBO = (IAssignRouteBO) ContextLoader.getContext().getBean("IAssignRouteBO");				
 		List<EFmFmEmployeeTravelRequestPO> cabRequestDetail=iCabRequestBO.getParticularRequestDetailOnTripComplete(assignRoutePO.geteFmFmClientBranchPO().getBranchId(), assignRoutePO.getRequestId());
 		DateFormat timeformate = new SimpleDateFormat("HH:mm");
 		String pickUpTime=assignRoutePO.getTime();
@@ -226,6 +233,11 @@ public class ServiceMappingService  {
 			cabRequestDetail.get(0).setPickUpTime(pickTime);
 			iCabRequestBO.update(cabRequestDetail.get(0));
 		}
+		List<EFmFmAssignRoutePO> assignRoute=assignRouteBO.closeParticularTrips(assignRoutePO);
+    	if((!(assignRoute.isEmpty())) || assignRoute.size() !=0){	
+    		assignRoute.get(0).setTripUpdateTime(new Date());
+    		assignRouteBO.update(assignRoute.get(0));
+    	}
 		responce.put("status", "success");
 		return Response.ok(responce, MediaType.APPLICATION_JSON).build();
 	
@@ -317,7 +329,8 @@ public class ServiceMappingService  {
 		iCabRequestBO.deleteParticularRequest(nextDayCabRequest.get(0).getRequestId());
 		}
 		List<EFmFmAssignRoutePO> assignRoute=assignRouteBO.closeParticularTrips(eFmFmAssignRoutePO);
-    	assignRoute.get(0).setBucketStatus("N");
+ //   	assignRoute.get(0).setBucketStatus("N");
+    	assignRoute.get(0).setTripUpdateTime(new Date());
     	assignRouteBO.update(assignRoute.get(0));
 		List<EFmFmEmployeeTripDetailPO> tripRequest=iCabRequestBO.getParticularTriprEmployeeBoardedStatus(eFmFmEmployeeTripDetailPO.geteFmFmEmployeeTravelRequest().getRequestId(), eFmFmEmployeeTripDetailPO.getEfmFmAssignRoute().getAssignRouteId());
 		//update the vehicle capacity after deletion
@@ -410,6 +423,8 @@ public class ServiceMappingService  {
 		final List<EFmFmAssignRoutePO> assignRoutes=assignRouteBO.closeParticularTrips(assignRoutePO);
 		IVehicleCheckInBO vehicleCheckIn = (IVehicleCheckInBO) ContextLoader.getContext().getBean("IVehicleCheckInBO");
 		assignRoutes.get(0).setTripUpdateTime(new Date());
+		final MessagingService messagingService=new MessagingService();
+		final PushNotificationService pushNotification= new PushNotificationService();
 		 if(assignRoutes.get(0).getTripType().equalsIgnoreCase("PICKUP")){
 			List<EFmFmEmployeeTripDetailPO> tripEmployees=iCabRequestBO.getParticularTripAllEmployees(assignRoutes.get(0).getAssignRouteId());
 			if(assignRoutes.get(0).getEfmFmVehicleCheckIn().getEfmFmVehicleMaster().getAvailableSeat()==0 && assignRoutes.get(0).getEscortRequredFlag().equalsIgnoreCase("N") && tripEmployees.get(0).geteFmFmEmployeeTravelRequest().getEfmFmUserMaster().getGender().equalsIgnoreCase("Female") &&(tripEmployees.get(0).geteFmFmEmployeeTravelRequest().getShiftTime().getHours() >=20 || tripEmployees.get(0).geteFmFmEmployeeTravelRequest().getShiftTime().getHours() ==0 || tripEmployees.get(0).geteFmFmEmployeeTravelRequest().getShiftTime().getHours() <=7)){
@@ -426,13 +441,24 @@ public class ServiceMappingService  {
 							List<EFmFmEmployeeTripDetailPO> employeeTripDetailPO=iCabRequestBO1.getParticularTripAllEmployees(assignRoutes.get(0).getAssignRouteId());
 							for(EFmFmEmployeeTripDetailPO tripDetailPO:employeeTripDetailPO){								
 								String text="Dear employee cab is allocated for your pickup\n"+assignRoutes.get(0).getShiftTime()+" shift\nAllocated Cab number is\n"+assignRoutes.get(0).getEfmFmVehicleCheckIn().getEfmFmVehicleMaster().getVehicleNumber()+" \nyour pickup time is "+tripDetailPO.geteFmFmEmployeeTravelRequest().getPickUpTime()+"\nVehicle Type "+assignRoutes.get(0).getEfmFmVehicleCheckIn().getEfmFmVehicleMaster().getVehicleModel();
-								MessagingService messagingService=new MessagingService();
 								if(tripDetailPO.geteFmFmEmployeeTravelRequest().getRequestType().equalsIgnoreCase("guest")){
 									String hostText="Dear Host,Your guest pickup details,Cab No-"+assignRoutes.get(0).getEfmFmVehicleCheckIn().getEfmFmVehicleMaster().getVehicleNumber()+"\nDriver-"+assignRoutes.get(0).getEfmFmVehicleCheckIn().getEfmFmDriverMaster().getFirstName()+" Mobile- "+assignRoutes.get(0).getEfmFmVehicleCheckIn().getEfmFmDriverMaster().getMobileNumber()+"\nGuest reporting time is-"+tripDetailPO.geteFmFmEmployeeTravelRequest().getPickUpTime()+"\nRegards SBOT 919962598888";
 									text="Dear Guest,Your pickup details,Cab No-"+assignRoutes.get(0).getEfmFmVehicleCheckIn().getEfmFmVehicleMaster().getVehicleNumber()+"\nDriver-"+assignRoutes.get(0).getEfmFmVehicleCheckIn().getEfmFmDriverMaster().getFirstName()+" Mobile- "+assignRoutes.get(0).getEfmFmVehicleCheckIn().getEfmFmDriverMaster().getMobileNumber()+"\nyour reporting time is-"+tripDetailPO.geteFmFmEmployeeTravelRequest().getPickUpTime()+"\nRegards SBOT 919962598888";
 									messagingService.sendMessageToGuest(tripDetailPO.geteFmFmEmployeeTravelRequest().getEfmFmUserMaster().getMobileNumber(), text,tripDetailPO.geteFmFmEmployeeTravelRequest().getRequestType());			
 									messagingService.sendTripAsMessage(tripDetailPO.geteFmFmEmployeeTravelRequest().getEfmFmUserMaster().getHostMobileNumber(), hostText,tripDetailPO.geteFmFmEmployeeTravelRequest().getRequestType());
+									//GHAP..Allocation message for Pickup Guest and Host 
+									try{
+									pushNotification.notification(tripDetailPO.geteFmFmEmployeeTravelRequest().getEfmFmUserMaster().getDeviceToken(), "GHAP");
+									}catch(Exception e){
+										log.info("PushStatus"+e);
+									}
 								}else{
+									//EAP..Allocation message for Pickup Guest and Host 
+									try{
+									pushNotification.notification(tripDetailPO.geteFmFmEmployeeTravelRequest().getEfmFmUserMaster().getDeviceToken(), "EAP");
+									}catch(Exception e){
+										log.info("PushStatus"+e);
+									}
 									messagingService.sendTripAsMessage(tripDetailPO.geteFmFmEmployeeTravelRequest().getEfmFmUserMaster().getMobileNumber(), text,tripDetailPO.geteFmFmEmployeeTravelRequest().getRequestType());			
 								}
 							}
@@ -490,14 +516,25 @@ public class ServiceMappingService  {
 								List<EFmFmEmployeeTripDetailPO> employeeTripDetailPO=iCabRequestBO1.getDropTripAllSortedEmployees(assignRoutes.get(0).getAssignRouteId());
 								for(EFmFmEmployeeTripDetailPO tripDetailPO:employeeTripDetailPO){
 									String text="Dear employee  cab is allocated for your drop\n"+assignRoutes.get(0).getShiftTime()+" shift\nAllocated Cab number is\n"+assignRoutes.get(0).getEfmFmVehicleCheckIn().getEfmFmVehicleMaster().getVehicleNumber()+"\nVehicle Type "+assignRoutes.get(0).getEfmFmVehicleCheckIn().getEfmFmVehicleMaster().getVehicleModel();
-									MessagingService messagingService=new MessagingService();
 									if(tripDetailPO.geteFmFmEmployeeTravelRequest().getRequestType().equalsIgnoreCase("guest")){
 										String hostText="Dear Host,Your guest drop details,Cab No-"+assignRoutes.get(0).getEfmFmVehicleCheckIn().getEfmFmVehicleMaster().getVehicleNumber()+"\nDriver-"+assignRoutes.get(0).getEfmFmVehicleCheckIn().getEfmFmDriverMaster().getFirstName()+" Mobile- "+assignRoutes.get(0).getEfmFmVehicleCheckIn().getEfmFmDriverMaster().getMobileNumber()+"\nGuest reporting time is-"+tripDetailPO.geteFmFmEmployeeTravelRequest().getShiftTime()+"\nRegards SBOT 919962598888";
 										text="Dear Guest,Your drop details,Cab No-"+assignRoutes.get(0).getEfmFmVehicleCheckIn().getEfmFmVehicleMaster().getVehicleNumber()+"\nDriver-"+assignRoutes.get(0).getEfmFmVehicleCheckIn().getEfmFmDriverMaster().getFirstName()+" Mobile- "+assignRoutes.get(0).getEfmFmVehicleCheckIn().getEfmFmDriverMaster().getMobileNumber()+"\nyour reporting time is-"+tripDetailPO.geteFmFmEmployeeTravelRequest().getShiftTime()+"\nRegards SBOT 919962598888";
 										messagingService.sendMessageToGuest(tripDetailPO.geteFmFmEmployeeTravelRequest().getEfmFmUserMaster().getMobileNumber(), text,tripDetailPO.geteFmFmEmployeeTravelRequest().getRequestType());			
 										messagingService.sendTripAsMessage(tripDetailPO.geteFmFmEmployeeTravelRequest().getEfmFmUserMaster().getHostMobileNumber(), hostText,tripDetailPO.geteFmFmEmployeeTravelRequest().getRequestType());
+										//GHAP..Allocation message for Pickup Guest and Host 
+										try{
+										pushNotification.notification(tripDetailPO.geteFmFmEmployeeTravelRequest().getEfmFmUserMaster().getDeviceToken(), "GHAD");
+										}catch(Exception e){
+											log.info("PushStatus"+e);
+										}
 									}
 									else{
+										//EAP..Allocation message for Pickup Guest and Host 
+										try{
+										pushNotification.notification(tripDetailPO.geteFmFmEmployeeTravelRequest().getEfmFmUserMaster().getDeviceToken(), "EAD");
+										}catch(Exception e){
+											log.info("PushStatus"+e);
+										}
 										messagingService.sendTripAsMessage(tripDetailPO.geteFmFmEmployeeTravelRequest().getEfmFmUserMaster().getMobileNumber(), text,tripDetailPO.geteFmFmEmployeeTravelRequest().getRequestType());			
 									}
 								}
@@ -577,6 +614,7 @@ public class ServiceMappingService  {
 		IApprovalBO approvalBO = (IApprovalBO) ContextLoader.getContext().getBean("IApprovalBO");			
 	    Map<String, Object>  responce = new HashMap<String,Object>();
 		List<EFmFmAssignRoutePO> assignRouteDetails=assignRouteBO.closeParticularTrips(assignRoutePO);
+		assignRouteDetails.get(0).setTripUpdateTime(new Date());
 		if(assignRouteDetails.get(0).getEfmFmVehicleCheckIn().getCheckInId()!=assignRoutePO.getNewCheckInId()){        	
 			//Start Update Old CheckIn Entry Details
 			EFmFmDriverMasterPO particularDriverDetails=approvalBO.getParticularDriverDetail(assignRouteDetails.get(0).getEfmFmVehicleCheckIn().getEfmFmDriverMaster().getDriverId());
@@ -682,6 +720,8 @@ public class ServiceMappingService  {
 		Map<String, Object>  responce = new HashMap<String,Object>();
 		//Courrent Route Details....
 		final List<EFmFmAssignRoutePO> currentRouteDetails=assignRouteBO.closeParticularTrips(assignRoutePO);	
+		currentRouteDetails.get(0).setTripUpdateTime(new Date());
+		assignRouteBO.update(currentRouteDetails.get(0));
 		List<EFmFmEmployeeTripDetailPO> sortedDropEmployeeList=iCabRequestBO.getDropTripAllSortedEmployees(currentRouteDetails.get(0).getAssignRouteId());
 
 		//Selected route Details		
@@ -691,7 +731,8 @@ public class ServiceMappingService  {
 		eFmFmClientBranchPO.setBranchId(assignRoutePO.geteFmFmClientBranchPO().getBranchId());
 		eFmFmAssignRoutePO.seteFmFmClientBranchPO(eFmFmClientBranchPO);
 		final List<EFmFmAssignRoutePO> selectedRouteDetails=assignRouteBO.closeParticularTrips(eFmFmAssignRoutePO);
-		
+		selectedRouteDetails.get(0).setTripUpdateTime(new Date());
+		assignRouteBO.update(selectedRouteDetails.get(0));
 		//Current route
 		EFmFmAssignRoutePO currentAssignRoute=new EFmFmAssignRoutePO();
 		currentAssignRoute.setAssignRouteId(currentRouteDetails.get(0).getAssignRouteId());
@@ -995,8 +1036,7 @@ public class ServiceMappingService  {
 
 				
 			});
-		    thread1.start();
-			
+		    thread1.start();			
 			responce.put("currentRouteAvailableCapacity", currentRouteVehicleCapacity.getAvailableSeat());	
 			responce.put("selectedRouteAvailableCapacity", updateSelectedRouteVehicleCapacity.getAvailableSeat());	
 

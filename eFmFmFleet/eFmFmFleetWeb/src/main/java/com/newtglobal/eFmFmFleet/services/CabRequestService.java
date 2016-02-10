@@ -1222,6 +1222,7 @@ public class CabRequestService {
 					requests.put("escortName", "Not Required");							
 				}
 				requests.put("tripType", assignRoute.get(0).getTripType());
+				requests.put("tripUpdateTime", assignRoute.get(0).getTripUpdateTime().getTime());
 			  //requests.put("cabStartFlg", assignRoute.get(0).getAllocationMsg());
 				requests.put("startKm", assignRoute.get(0).getOdometerStartKm());
 				requests.put("baseLatLong",assignRoute.get(0).geteFmFmClientBranchPO().getLatitudeLongitude());
@@ -1727,6 +1728,27 @@ public class CabRequestService {
 		IAssignRouteBO assignRouteBO = (IAssignRouteBO) ContextLoader.getContext().getBean("IAssignRouteBO");
 		ICabRequestBO iCabRequestBO = (ICabRequestBO) ContextLoader.getContext().getBean("ICabRequestBO");
 		IAlertBO iAlertBO = (IAlertBO) ContextLoader.getContext().getBean("IAlertBO");	
+		
+		
+		EFmFmAssignRoutePO assignRoutePO=new EFmFmAssignRoutePO();
+		EFmFmClientBranchPO clientBranch=new EFmFmClientBranchPO();									
+		clientBranch.setBranchId(actualRouteTravelledPO.geteFmFmClientBranchPO().getBranchId());		
+		assignRoutePO.setAssignRouteId(actualRouteTravelledPO.getEfmFmAssignRoute().getAssignRouteId());
+		assignRoutePO.seteFmFmClientBranchPO(clientBranch);
+		List<EFmFmAssignRoutePO> liveRoute=assignRouteBO.closeParticularTrips(assignRoutePO);	
+		if(liveRoute.get(0).getTripStatus().equalsIgnoreCase("completed")){
+			//Trip Completed....
+			return "N";
+		}
+		else if(actualRouteTravelledPO.getTripUpdateTime()!=liveRoute.get(0).getTripUpdateTime().getTime()){
+			//Trip Changed....
+			return "C";
+		}
+		else if(liveRoute.get(0).getBucketStatus().equalsIgnoreCase("N")){
+			//Processing....
+			return "P";
+		}
+
 		final List<EFmFmEmployeeTripDetailPO> employeeTripDetailPO=iCabRequestBO.getParticularTripNonDropEmployeesDetails(actualRouteTravelledPO.getEfmFmAssignRoute().getAssignRouteId());
 		List<EFmFmEmployeeTripDetailPO> dropEmployeeTripDetail=iCabRequestBO.getNonDropTripAllSortedEmployees(actualRouteTravelledPO.getEfmFmAssignRoute().getAssignRouteId());
 		List<EFmFmEmployeeTripDetailPO> baseLatiLongi=iCabRequestBO.getParticularTripAllEmployees(actualRouteTravelledPO.getEfmFmAssignRoute().getAssignRouteId());		
@@ -2081,15 +2103,9 @@ public class CabRequestService {
 				}
 			}
 		}
-		EFmFmAssignRoutePO assignRoutePO=new EFmFmAssignRoutePO();
-		EFmFmClientBranchPO clientBranch=new EFmFmClientBranchPO();									
-		clientBranch.setBranchId(actualRouteTravelledPO.geteFmFmClientBranchPO().getBranchId());		
-		assignRoutePO.setAssignRouteId(actualRouteTravelledPO.getEfmFmAssignRoute().getAssignRouteId());
-		assignRoutePO.seteFmFmClientBranchPO(clientBranch);
 		if(actualRouteTravelled.size()>0){
 //			String extensionRemoved = actualRouteTravelledPO.getTravelledDistance().split("\\.")[1];
 //			if(extensionRemoved.length()>1){
-				List<EFmFmAssignRoutePO> liveRoute=assignRouteBO.closeParticularTrips(assignRoutePO);		
 				liveRoute.get(0).setTravelledDistance(liveRoute.get(0).getTravelledDistance()+Double.valueOf(actualRouteTravelledPO.getTravelledDistance()));
 				assignRouteBO.update(liveRoute.get(0));
 //			}
