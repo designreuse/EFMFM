@@ -106,6 +106,7 @@ public class InvoiceService {
 										  totalAmt=fixedDistanceDetails.get(0).getFixedDistanceChargeRate()-penaltyTotalAmt;							  
 									  }
 								  }
+								//Save data in invoice service
 								  addInvoiceRecord(tripBasedAmount,allVehicleDetails,clientBranchPO,fromDate,totalAmt,penaltyTotalAmt,assignRouteDetail.size(),SumOftotalKm.get(0).getSumTravelledDistance(),fixedDistanceDetails.get(0).getFixedDistanceMonthly(),fixedDistanceDetails.get(0).getMinimumDays(),fixedDistanceDetails.get(0).getFixedDistanceChargeRate(),randomNumber,allVehicleDetails.getTravelledDistance(),extraKm,extraKmCharges);
 								 /* List<EFmFmAssignRoutePO> tripBasedFixedDistance=iVehicleCheckInBO.getVehicleBasedTripSheet(fromDate, toDate,clientBranchPO.getBranchId(),allVehicleDetails.getEfmFmVehicleCheckIn().getEfmFmVehicleMaster().getVehicleId());
 								  if(tripBasedFixedDistance.size()>0){
