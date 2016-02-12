@@ -58,19 +58,19 @@ public final class Vehicle {
         depotLocation.getLong()));
     if (V.maxTravelTime > 0) {
     	if (settings.trip_type.equalsIgnoreCase("login")) {
-    		vehicleBuilder.setType(prototype.getVehicleType()).setReturnToDepot(false)
+    		vehicleBuilder.setType(prototype.getVehicleType()).setReturnToDepot(true)
     		.setEndLocation(Location.newInstance(V.endLocation.latitude, V.endLocation.longitude))
     		.setEarliestStart(settings.max_travel_time + settings.max_idle_time -
     				V.maxTravelTime).setLatestArrival(settings.max_travel_time + settings.max_idle_time);
     	}
     	else {
-    		vehicleBuilder.setType(prototype.getVehicleType()).setReturnToDepot(false)
+    		vehicleBuilder.setType(prototype.getVehicleType()).setReturnToDepot(true)
     		.setEndLocation(Location.newInstance(V.endLocation.latitude, V.endLocation.longitude))
     		.setEarliestStart(0).setLatestArrival(V.maxTravelTime);
     	}
     }
     else {
-	    vehicleBuilder.setType(prototype.getVehicleType()).setReturnToDepot(false)
+	    vehicleBuilder.setType(prototype.getVehicleType()).setReturnToDepot(true)
 	    .setEndLocation(Location.newInstance(V.endLocation.latitude, V.endLocation.longitude));
     }
 	vehicleInstance = vehicleBuilder.build();
