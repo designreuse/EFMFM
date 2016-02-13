@@ -84,8 +84,6 @@
                     var actionTypes="VENDORBASED";  
                     var vendorId=vendor.selectVendor.vendorId;                  
                     var monthYear=convertMonthYear(d);
-                    alert(vendorId);
-                    alert(monthYear);
                     var data = {invoiceDate:monthYear,
                                 actionType:actionTypes,
                                 efmFmVendorMaster:{vendorId:vendorId,eFmFmClientBranchPO:{branchId:branchId}}
@@ -213,7 +211,7 @@
                           };      
                $http.post('services/contract/invoiceTripDetails/',data).
                      success(function(data, status, headers, config) {
-                            //alert(JSON.stringify(data));
+                            alert(JSON.stringify(data));
                             $scope.vehicleFixedDistanceBasedData = data.fixedDistanceBased;
                             $scope.vehicleTripBasedFixedDetailsData = data.tripBasedFixedDetails;
                             $scope.progressbar.complete();
@@ -236,9 +234,9 @@
        
        $scope.getContractDetail = function(){           
            var data = {
-				   efmFmVendorMaster:{eFmFmClientBranchPO:{branchId:branchId}}
+				   branchId:branchId
 			};
-		   $http.post('services/approval/approveddriver/',data).
+		   $http.post('services/contract/activeContractDetails/',data).
                 success(function(data, status, headers, config) {
                     $scope.contractDetailData = data;
                     if($scope.contractDetailData.length>0){

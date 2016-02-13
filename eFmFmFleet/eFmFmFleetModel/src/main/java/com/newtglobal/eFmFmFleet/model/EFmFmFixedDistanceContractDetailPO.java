@@ -59,6 +59,9 @@ public class EFmFmFixedDistanceContractDetailPO implements Serializable {
 	
 	@Column(name="Created_By", length=50)
 	private String createdBy;
+	
+	@Column(name="Status", length=50)
+	private String status;
 
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name="CreationTime", length=30)

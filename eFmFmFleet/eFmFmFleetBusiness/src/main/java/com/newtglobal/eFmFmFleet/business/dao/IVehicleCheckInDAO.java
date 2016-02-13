@@ -12,6 +12,7 @@ import com.newtglobal.eFmFmFleet.model.EFmFmFixedDistanceContractDetailPO;
 import com.newtglobal.eFmFmFleet.model.EFmFmTripAlertsPO;
 import com.newtglobal.eFmFmFleet.model.EFmFmTripBasedContractDetailPO;
 import com.newtglobal.eFmFmFleet.model.EFmFmVehicleCheckInPO;
+import com.newtglobal.eFmFmFleet.model.EFmFmVehicleInspectionPO;
 import com.newtglobal.eFmFmFleet.model.EFmFmVehicleMasterPO;
 import com.newtglobal.eFmFmFleet.model.EFmFmVendorContractInvoicePO;
 import com.newtglobal.eFmFmFleet.model.EFmFmVendorContractTypeMasterPO;
@@ -266,4 +267,9 @@ public interface IVehicleCheckInDAO {
 			int checkInId, int branchId);
 	public List<EFmFmVehicleCheckInPO> getVehicleAndDriverAttendence(Date fromDate,
 			Date toDate, int branchId);
+	public List<EFmFmVehicleCheckInPO> getVehicleAndDriverAttendenceByVehicleId(
+			Date fromDate, Date toDate, int branchId, int vehicleId);
+	public List<EFmFmFixedDistanceContractDetailPO> getFixedDistanceActiveContractDetails(
+			int branchId);
+	public void save(EFmFmVehicleInspectionPO eFmFmVehicleInspectionPO);
 }

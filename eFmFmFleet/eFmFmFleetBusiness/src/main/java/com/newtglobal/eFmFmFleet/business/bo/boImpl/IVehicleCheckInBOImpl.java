@@ -17,6 +17,7 @@ import com.newtglobal.eFmFmFleet.model.EFmFmFixedDistanceContractDetailPO;
 import com.newtglobal.eFmFmFleet.model.EFmFmTripAlertsPO;
 import com.newtglobal.eFmFmFleet.model.EFmFmTripBasedContractDetailPO;
 import com.newtglobal.eFmFmFleet.model.EFmFmVehicleCheckInPO;
+import com.newtglobal.eFmFmFleet.model.EFmFmVehicleInspectionPO;
 import com.newtglobal.eFmFmFleet.model.EFmFmVehicleMasterPO;
 import com.newtglobal.eFmFmFleet.model.EFmFmVendorContractInvoicePO;
 import com.newtglobal.eFmFmFleet.model.EFmFmVendorContractTypeMasterPO;
@@ -29,6 +30,11 @@ public class IVehicleCheckInBOImpl implements IVehicleCheckInBO  {
 	private IVehicleCheckInDAO iVehicleCheckInDAO;	
 	public void setiVehicleCheckInDAO(IVehicleCheckInDAO iVehicleCheckInDAO) {
 		this.iVehicleCheckInDAO = iVehicleCheckInDAO;
+	}
+	@Override
+	public void save(EFmFmVehicleInspectionPO eFmFmVehicleInspectionPO) {
+		// TODO Auto-generated method stub
+		iVehicleCheckInDAO.save(eFmFmVehicleInspectionPO);
 	}
 	
 	@Override
@@ -666,6 +672,22 @@ public class IVehicleCheckInBOImpl implements IVehicleCheckInBO  {
 		// TODO Auto-generated method stub
 		return iVehicleCheckInDAO.getVehicleAndDriverAttendence(fromDate, toDate, branchId);
 	}
+
+	@Override
+	public List<EFmFmVehicleCheckInPO> getVehicleAndDriverAttendenceByVehicleId(
+			Date fromDate, Date toDate, int branchId, int vehicleId) {
+		// TODO Auto-generated method stub
+		return iVehicleCheckInDAO.getVehicleAndDriverAttendenceByVehicleId(fromDate, toDate, branchId, vehicleId);
+	}
+
+	@Override
+	public List<EFmFmFixedDistanceContractDetailPO> getFixedDistanceActiveContractDetails(
+			int branchId) {
+		// TODO Auto-generated method stub
+		return iVehicleCheckInDAO.getFixedDistanceActiveContractDetails(branchId);
+	}
+
+	
 
 
 

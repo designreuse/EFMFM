@@ -345,26 +345,26 @@
                         <table class = "invoiceByVendorTable table table-responsive container-fluid table-bordered">
                             <thead class ="tableHeading">                               
                                 <tr>
-                                  <th>Date Created</th>
+                                  <th>Contract Date</th>
 <!--                                  <th>Vendor Name</th>-->
                                   <th>Extra Distance Charge Rate</th>
                                   <th>Fixed Distance Charge Rate</th>
                                   <th>Fixed Distance Monthly</th>
                                   <th>Fixed Distance per day</th>
                                   <th>Minimum Days</th>
-                                  <th>Penalty</th>
+                                  <th>Penalty %</th>
                                 </tr>
                             </thead>
                             <tbody>
                                <tr class = 'tabletdCenter' ng-repeat="contractDetail in contractDetailData | filter:efmfilter.contractDetail">
-                                   <td class = 'col-md-1'>{{contractDetail.driverId}}</td>
+                                   <td class = 'col-md-1'>{{contractDetail.contractDate}}</td>
 <!--                                   <td class = 'col-md-1'>{{contractDetail.driverId}}</td>-->
-                                   <td class = 'col-md-1'>{{contractDetail.driverId}}</td>
-                                   <td class = 'col-md-1'>{{contractDetail.name}}</td>
-                                   <td class = 'col-md-1'>{{contractDetail.mobileNumber}}</td>
-                                   <td class = 'col-md-1'>{{contractDetail.vendorName}}</td>
-                                   <td class = 'col-md-1'>{{contractDetail.driverId}}</td>
-                                   <td class = 'col-md-1'>{{contractDetail.name}}</td>
+                                   <td class = 'col-md-1'>{{contractDetail.extraDistanceChargeRate}}</td>
+                                   <td class = 'col-md-1'>{{contractDetail.fixedDistanceChargeRate}}</td>
+                                   <td class = 'col-md-1'>{{contractDetail.contractDistance}}</td>
+                                   <td class = 'col-md-1'>{{contractDetail.fixedDistancePerDay}}</td>
+                                   <td class = 'col-md-1'>{{contractDetail.minimumDays}}</td>
+                                   <td class = 'col-md-1'>{{contractDetail.panalityPercentage}}</td>
                                </tr> 
                               
                              </tbody>                                       

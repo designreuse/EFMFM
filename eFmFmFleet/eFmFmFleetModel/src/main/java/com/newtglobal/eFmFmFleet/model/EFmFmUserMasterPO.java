@@ -209,6 +209,10 @@ public class EFmFmUserMasterPO implements Serializable {
 	private List<EFmFmEmployeeTravelRequestPO> eFmFmEmployeeTravelRequestPO;
 
 
+	//bi-directional many-to-one association to EFmFmVehicleInspectionPO
+	@OneToMany(mappedBy="efmFmUserMaster")
+	private List<EFmFmVehicleInspectionPO> eFmFmVehicleInspection;
+
 	
 	
 	public EFmFmUserMasterPO() {
@@ -696,6 +700,19 @@ public class EFmFmUserMasterPO implements Serializable {
 
 	public void setUserType(String userType) {
 		this.userType = userType;
+	}
+
+
+
+	public List<EFmFmVehicleInspectionPO> geteFmFmVehicleInspection() {
+		return eFmFmVehicleInspection;
+	}
+
+
+
+	public void seteFmFmVehicleInspection(
+			List<EFmFmVehicleInspectionPO> eFmFmVehicleInspection) {
+		this.eFmFmVehicleInspection = eFmFmVehicleInspection;
 	}
 
 	

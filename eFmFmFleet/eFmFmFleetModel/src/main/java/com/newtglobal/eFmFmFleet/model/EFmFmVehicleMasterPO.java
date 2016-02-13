@@ -161,6 +161,11 @@ public class EFmFmVehicleMasterPO implements Serializable {
 	//bi-directional many-to-one association to EFmFmVehicleCheckIn
 	@OneToMany(mappedBy="efmFmVehicleMaster")
 	private List<EFmFmVehicleCheckInPO> efmFmVehicleCheckIns;
+	
+	//bi-directional many-to-one association to EFmFmVehicleCheckIn
+	@OneToMany(mappedBy="efmFmVehicleMaster")
+	private List<EFmFmVehicleInspectionPO> eFmFmVehicleInspection;
+
 
 	//bi-directional many-to-one association to EFmFmVendorMaster
 	@ManyToOne
@@ -575,5 +580,13 @@ public class EFmFmVehicleMasterPO implements Serializable {
 		this.maintenanceValid = maintenanceValid;
 	}
 
+	public List<EFmFmVehicleInspectionPO> geteFmFmVehicleInspection() {
+		return eFmFmVehicleInspection;
+	}
+
+	public void seteFmFmVehicleInspection(
+			List<EFmFmVehicleInspectionPO> eFmFmVehicleInspection) {
+		this.eFmFmVehicleInspection = eFmFmVehicleInspection;
+	}
 	
 }

@@ -25,6 +25,7 @@ import com.newtglobal.eFmFmFleet.model.EFmFmFixedDistanceContractDetailPO;
 import com.newtglobal.eFmFmFleet.model.EFmFmTripAlertsPO;
 import com.newtglobal.eFmFmFleet.model.EFmFmTripBasedContractDetailPO;
 import com.newtglobal.eFmFmFleet.model.EFmFmVehicleCheckInPO;
+import com.newtglobal.eFmFmFleet.model.EFmFmVehicleInspectionPO;
 import com.newtglobal.eFmFmFleet.model.EFmFmVehicleMasterPO;
 import com.newtglobal.eFmFmFleet.model.EFmFmVendorContractInvoicePO;
 import com.newtglobal.eFmFmFleet.model.EFmFmVendorContractTypeMasterPO;
@@ -45,6 +46,13 @@ public class VehicleCheckInDAOImpl implements IVehicleCheckInDAO {
 	public void save(EFmFmDeviceMasterPO eFmFmDeviceMasterPO) {
 		// TODO Auto-generated method stub
 		entityManager.persist(eFmFmDeviceMasterPO);
+	}
+	
+	@Override
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRED)
+	public void save(EFmFmVehicleInspectionPO eFmFmVehicleInspectionPO) {
+		// TODO Auto-generated method stub
+		entityManager.persist(eFmFmVehicleInspectionPO);
 	}
 
 	@Override
@@ -1100,6 +1108,21 @@ public class VehicleCheckInDAOImpl implements IVehicleCheckInDAO {
 		fixedDistanceContractDetailPO = query.getResultList();
 		return fixedDistanceContractDetailPO;
 	}
+	
+	
+	
+	
+	@Override
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRED)
+	public List<EFmFmFixedDistanceContractDetailPO> getFixedDistanceActiveContractDetails(int branchId) {
+		List<EFmFmFixedDistanceContractDetailPO> fixedDistanceContractDetailPO = new ArrayList<EFmFmFixedDistanceContractDetailPO>();
+		Query query = entityManager
+				.createQuery("SELECT b FROM EFmFmFixedDistanceContractDetailPO b JOIN b.eFmFmVendorContractTypeMaster cn JOIN cn.eFmFmClientBranchPO c where  c.branchId='"+branchId+ "' AND b.status='Y' ");
+		fixedDistanceContractDetailPO = query.getResultList();
+		return fixedDistanceContractDetailPO;
+	}
+	
+	
 
 	@Override
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRED)
@@ -1556,5 +1579,21 @@ public class VehicleCheckInDAOImpl implements IVehicleCheckInDAO {
 	}
 	
 	
-	
+	@Override
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRED)
+	public List<EFmFmVehicleCheckInPO> getVehicleAndDriverAttendenceByVehicleId(Date fromDate, Date toDate,int branchId,int vehicleId) {
+		List<EFmFmVehicleCheckInPO> eFmFmVehicleCheckInPO = new ArrayList<EFmFmVehicleCheckInPO>();
+		Format month;
+		month = new SimpleDateFormat("MM");
+		Format year;
+		year = new SimpleDateFormat("yyyy");
+		Query query = entityManager
+				.createQuery("SELECT t FROM EFmFmVehicleCheckInPO t JOIN t.efmFmVehicleMaster d JOIN d.efmFmVendorMaster f JOIN f.eFmFmClientBranchPO c WHERE" +
+						" month(t.checkOutTime)='"
+						+ month.format(fromDate)
+						+ "' AND year(t.checkOutTime)='"
+						+ year.format(fromDate) + "' AND c.branchId='"+branchId+"' AND d.vehicleId='"+vehicleId+"' ORDER BY checkOutTime ASC");
+		eFmFmVehicleCheckInPO = query.getResultList();
+		return eFmFmVehicleCheckInPO;
+	}
 }

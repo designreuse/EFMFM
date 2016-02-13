@@ -28,6 +28,7 @@ import com.newtglobal.eFmFmFleet.model.EFmFmDeviceMasterPO;
 import com.newtglobal.eFmFmFleet.model.EFmFmDriverMasterPO;
 import com.newtglobal.eFmFmFleet.model.EFmFmEscortCheckInPO;
 import com.newtglobal.eFmFmFleet.model.EFmFmVehicleCheckInPO;
+import com.newtglobal.eFmFmFleet.model.EFmFmVehicleInspectionPO;
 import com.newtglobal.eFmFmFleet.model.EFmFmVehicleMasterPO;
 import com.newtglobal.eFmFmFleet.model.EFmFmVendorContractTypeMasterPO;
 import com.newtglobal.eFmFmFleet.model.EFmFmVendorMasterPO;
@@ -430,6 +431,25 @@ public class VehicleService {
 		}
 		return Response.ok(listOfVehicle, MediaType.APPLICATION_JSON).build();
 	}
+	
+	/**
+	 * The addingVehicleInspection method implemented. for Adding vehicle inspection details.
+	 * 
+	 * @author Sarfraz KHan
+	 * 
+	 * @since 2016-02-13
+	 * 
+	 * @return added status.
+	 */
+	@POST
+	@Path("/addingVehicleInspection")
+	public Response addingVehicleIncepaction(EFmFmVehicleInspectionPO eFmFmVehicleInspectionPO) {
+		IVehicleCheckInBO iVehicleCheckInBO = (IVehicleCheckInBO) ContextLoader
+				.getContext().getBean("IVehicleCheckInBO");
+		iVehicleCheckInBO.save(eFmFmVehicleInspectionPO);
+		return Response.ok("Success", MediaType.APPLICATION_JSON).build();
+	}
+	
 
 	/**
 	 * The addingVendorDetails method implemented. for Adding vendor details.

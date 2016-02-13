@@ -1873,6 +1873,7 @@
         };
     	
     	$scope.saveDriver = function(result){ 
+    		alert("hi");
            	var data = {driverId:result.driverId,
                         firstName: result.driverName,
                         address : result.driverAddress,

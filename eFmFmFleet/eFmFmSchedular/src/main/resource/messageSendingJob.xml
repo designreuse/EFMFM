@@ -96,6 +96,8 @@
 		<value>com.newtglobal.eFmFmFleet.model.EFmFmTripAlertsPO</value>	
 	    <value>com.newtglobal.eFmFmFleet.model.EFmFmClientProjectDetailsPO</value>	
 	    <value>com.newtglobal.eFmFmFleet.model.EFmFmClientBranchPO</value>
+	    <value>com.newtglobal.eFmFmFleet.model.EFmFmVehicleInspectionPO</value>
+	    
 		</list>
 		</property>
     </bean>    

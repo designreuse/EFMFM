@@ -38,6 +38,9 @@
 		<class>com.newtglobal.eFmFmFleet.model.EFmFmTripAlertsPO</class>
 		<class>com.newtglobal.eFmFmFleet.model.EFmFmClientProjectDetailsPO</class>
 		<class>com.newtglobal.eFmFmFleet.model.EFmFmClientBranchPO</class>
+		<class>com.newtglobal.eFmFmFleet.model.EFmFmVehicleInspectionPO</class>
+		
+		
 		<exclude-unlisted-classes />
 		<shared-cache-mode>ALL</shared-cache-mode>
 		<properties>

@@ -30,6 +30,7 @@ import com.newtglobal.eFmFmFleet.business.bo.IEmployeeDetailBO;
 import com.newtglobal.eFmFmFleet.business.bo.IRouteDetailBO;
 import com.newtglobal.eFmFmFleet.business.bo.IVehicleCheckInBO;
 import com.newtglobal.eFmFmFleet.eFmFmFleet.MessagingService;
+import com.newtglobal.eFmFmFleet.eFmFmFleet.PushNotificationService;
 import com.newtglobal.eFmFmFleet.model.EFmFmActualRoutTravelledPO;
 import com.newtglobal.eFmFmFleet.model.EFmFmAssignRoutePO;
 import com.newtglobal.eFmFmFleet.model.EFmFmClientBranchPO;
@@ -455,7 +456,9 @@ public class ServiceMappingService  {
 								}else{
 									//EAP..Allocation message for Pickup Guest and Host 
 									try{
+										log.info("notiF");
 									pushNotification.notification(tripDetailPO.geteFmFmEmployeeTravelRequest().getEfmFmUserMaster().getDeviceToken(), "EAP");
+									log.info("notiE");
 									}catch(Exception e){
 										log.info("PushStatus"+e);
 									}

@@ -333,6 +333,8 @@ public class RegistrationService {
 	public Response employeeRegistration(EFmFmUserMasterPO eFmFmUserMasterPO){					
 		IEmployeeDetailBO employeeDetailBO = (IEmployeeDetailBO) ContextLoader.getContext().getBean("IEmployeeDetailBO");	
 		Map<String, Object>  responce = new HashMap<String,Object>();
+		log.info("device token"+eFmFmUserMasterPO.getDeviceToken());
+		log.info("device id"+eFmFmUserMasterPO.getDeviceId());
 		List<EFmFmClientBranchPO> clientMasterDetail=employeeDetailBO.doesClientCodeExist(eFmFmUserMasterPO.geteFmFmClientBranchPO().getBranchCode());
 		if(clientMasterDetail.size()>0){
 			List<EFmFmUserMasterPO> userMasterDetail=employeeDetailBO.getParticularEmpDetailsFromEmployeeId(eFmFmUserMasterPO.getEmployeeId(),clientMasterDetail.get(0).getBranchId());
@@ -348,7 +350,6 @@ public class RegistrationService {
 	        	 userMasterDetail.get(0).setDeviceToken(eFmFmUserMasterPO.getDeviceToken());
 	        	 userMasterDetail.get(0).setDeviceType(eFmFmUserMasterPO.getDeviceType());
 	        	 userMasterDetail.get(0).setDeviceId(eFmFmUserMasterPO.getDeviceId());
-	        	 userMasterDetail.get(0).setDeviceToken(eFmFmUserMasterPO.getDeviceToken());
 	        	 userMasterDetail.get(0).setLoggedIn(true);
 	        	 employeeDetailBO.update(userMasterDetail.get(0));
 	 			responce.put("employeeName", userMasterDetail.get(0).getFirstName());
