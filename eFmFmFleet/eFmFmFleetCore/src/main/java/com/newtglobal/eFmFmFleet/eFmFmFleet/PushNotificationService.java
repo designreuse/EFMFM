@@ -8,6 +8,8 @@ import org.apache.commons.logging.LogFactory;
 import com.google.android.gcm.server.Message;
 import com.google.android.gcm.server.Result;
 import com.google.android.gcm.server.Sender;
+import com.notnoop.apns.APNS;
+import com.notnoop.apns.ApnsService;
 
 public class PushNotificationService {
 
@@ -20,15 +22,29 @@ public class PushNotificationService {
 	// GCM RedgId of Android device to send push notification
 	try {
 			Sender sender = new Sender(GOOGLE_SERVER_KEY);
-			log.info("Push Send to "+new Date());
 			Message message = new Message.Builder().timeToLive(30)
 					.delayWhileIdle(true).addData(MESSAGE_KEY, userMessage).build();
 			result = sender.send(message, deviceToken, 1);
+			log.info("Android Push Send to "+new Date()+" push status"+result);
 		} catch (Exception ioe) {
-		log.info("Push Exception Block"+ioe);
+		log.info("Android Push Exception Block"+ioe);
 		}
-	
-		
-	
 }
+	
+	
+	public  void iosPushNotification(String token,String msg){
+		try{
+		ApnsService service = APNS
+				.newService()
+				.withCert("/home/newtglobal/Dev/eFmFmPushNotification.p12",
+						"newt@123").withSandboxDestination().build();
+		String payload = APNS.newPayload().alertBody(msg).build();
+		service.push(token, payload);
+		log.info("IOS Push Send to "+new Date()+" push status"+service.toString());
+
+		}catch(Exception e){
+			log.info("IOS Push Exception Block"+e);	
+		}
+	}
+	
 }
