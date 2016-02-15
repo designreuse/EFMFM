@@ -286,7 +286,7 @@ public class JsonRoute {
       vehicle = null;
     }
     try {
-      depot_name = (String) route.get("depot");
+      depot_name = (String) route.get("depot_name");
     } catch (Exception E) {
       depot_name = null;
     }

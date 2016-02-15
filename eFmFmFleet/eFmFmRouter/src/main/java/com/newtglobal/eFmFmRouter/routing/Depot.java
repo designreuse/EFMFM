@@ -54,7 +54,11 @@ public final class Depot {
 		this.content = 0;
 		
 		for (JsonDepot.JsonVehicleShed S : D.vehicle_type) {
-			this.addVehicle(new VehiclePrototype(S.vehicle), S.quantity);
+			VehiclePrototype vehicleType = VehiclePrototype.getVehicleType(S.vehicle);
+			if (vehicleType == null) {
+				vehicleType = new VehiclePrototype(S.vehicle);
+			}
+			this.addVehicle(vehicleType, S.quantity);
 		}
 	}
 	
@@ -62,10 +66,14 @@ public final class Depot {
 		numberOfDepots += 1;
 		vehicleList = new ArrayList<Vehicle>();
 		this.depotLocation = new Geocode(V.startLocation);
-		this.name = V.vehicle_type.vehicle_type_name;
+		this.name = V.vehicle_type.vehicle_type_name + V.vehicle_id;
 		this.depotId = V.vehicle_id;
 		this.content = 0;
-		this.vehicleList.add(new Vehicle(new VehiclePrototype(V), V, settings));
+		VehiclePrototype vehicleType = VehiclePrototype.getVehicleType(V.vehicle_type);
+		if (vehicleType == null) {
+			vehicleType = new VehiclePrototype(V.vehicle_type);
+		}
+		this.vehicleList.add(new Vehicle(vehicleType, V, settings));
 	}
 	
 	public boolean isEqual(Depot D) {
