@@ -129,7 +129,6 @@ public class JsonProblem {
 				if (jsonresponse.getError() != null && jsonresponse.getError().equals(JSONRPC2Error.INTERNAL_ERROR)) {
 					System.err.println("Error in creating routes");
 					problem.solution = null;
-					disconnect_client();
 				} else {
 					problem.solution = new JsonSolution((JSONObject) problem.jsonresponse.getResult());
 					// insert code
@@ -179,7 +178,6 @@ public class JsonProblem {
 						}
 					}
 					System.out.println("Routes successfully solved");
-					disconnect_client();
 				}
 			} catch (UnknownHostException e) {
 				// TODO Auto-generated catch block
@@ -190,6 +188,13 @@ public class JsonProblem {
 			} catch (JSONRPC2ParseException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
+			}
+			finally {
+				try {
+					disconnect_client();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
 			}
 
 		}

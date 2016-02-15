@@ -574,7 +574,7 @@ outer:		for(EFmFmEmployeeTravelRequestPO cabRequests:travelDetails){
 			problem.settings.shift_time.setHours(shift.getHours());
 			problem.settings.shift_time.setMinutes(shift.getMinutes());
 			problem.settings.shift_time.setSeconds(0);
-			problem.settings.use_api = true;
+			problem.settings.use_api = false;
 			
 			problem.settings.max_radial_distance = 35000;
 			problem.settings.max_route_length = 90000;
