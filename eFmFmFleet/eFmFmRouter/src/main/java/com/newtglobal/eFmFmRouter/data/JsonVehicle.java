@@ -10,6 +10,7 @@ public class JsonVehicle {
 	public JsonGeocode startLocation;
 	public JsonGeocode endLocation;
 	public long maxTravelTime;
+	public long maxDistance;
 
 	
 	public JsonVehicle(String vehicle_id, JsonVehicleType vehicle_type, JsonGeocode startLocation,
@@ -19,16 +20,18 @@ public class JsonVehicle {
 		this.startLocation = startLocation;
 		this.endLocation = endLocation;
 		this.maxTravelTime = -1;
+		this.maxDistance = -1;
 	}
 	
 	public JsonVehicle(String vehicle_id, JsonVehicleType vehicle_type, JsonGeocode startLocation,
-		      JsonGeocode endLocation, long maxTravelTime) {
-				this.vehicle_id = vehicle_id;
-				this.vehicle_type = vehicle_type;
-				this.startLocation = startLocation;
-				this.endLocation = endLocation;
-				this.maxTravelTime = maxTravelTime;
-			}
+		      JsonGeocode endLocation, long maxTravelTime, long maxDistance) {
+		this.vehicle_id = vehicle_id;
+		this.vehicle_type = vehicle_type;
+		this.startLocation = startLocation;
+		this.endLocation = endLocation;
+		this.maxTravelTime = maxTravelTime;
+		this.maxDistance = maxDistance;
+	}
 	
 	public JsonVehicle(JSONObject vehicle) {
 		vehicle_id = (String) vehicle.get("vehicle_id");
@@ -36,6 +39,7 @@ public class JsonVehicle {
 		startLocation = new JsonGeocode((JSONObject) vehicle.get("startLocation"));
 		endLocation = new JsonGeocode((JSONObject) vehicle.get("endLocation"));
 		maxTravelTime = (Long) vehicle.get("maxTravelTime");
+		maxDistance = (Long) vehicle.get("maxDistance");
 	}
 	
 	public static ArrayList<JsonVehicle> convertArray(ArrayList<JSONObject> vehicles) {

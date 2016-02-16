@@ -76,11 +76,11 @@ public final class Vehicle {
 	vehicleInstance = vehicleBuilder.build();
   }
 
-  public Vehicle(VehiclePrototype prototype, Location location, String name, boolean return_to_depot) {
-    this.location = location;
-    vehicleBuilder = VehicleImpl.Builder.newInstance(name);
-    vehicleBuilder.setStartLocation(location);
-    vehicleBuilder.setType(prototype.getVehicleType()).setReturnToDepot(return_to_depot);
-    vehicleInstance = vehicleBuilder.build();
-  }
+//  public Vehicle(VehiclePrototype prototype, Location location, String name, boolean return_to_depot) {
+//    this.location = location;
+//    vehicleBuilder = VehicleImpl.Builder.newInstance(name);
+//    vehicleBuilder.setStartLocation(location);
+//    vehicleBuilder.setType(prototype.getVehicleType()).setReturnToDepot(return_to_depot);
+//    vehicleInstance = vehicleBuilder.build();
+//  }
 }

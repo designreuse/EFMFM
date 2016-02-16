@@ -25,6 +25,7 @@ import java.util.Map;
 
 import com.newtglobal.eFmFmRouter.clustering.Geocode;
 import com.newtglobal.eFmFmRouter.data.DistanceCache;
+import com.newtglobal.eFmFmRouter.data.JsonVehicle;
 import com.newtglobal.eFmFmRouter.data.Settings;
 
 import jsprit.core.algorithm.VehicleRoutingAlgorithm;
@@ -56,6 +57,11 @@ public class RoutingProblem {
   private VehicleRoutingProblemSolution solution;
   private Collection<VehicleRoutingProblemSolution> allsolutions;
   private VehicleRoutingTransportCostsMatrix costMatrix;
+  private ArrayList<JsonVehicle> vehiclesActual;
+
+  public void setVehiclesActual(ArrayList<JsonVehicle> vehiclesActual) {
+	this.vehiclesActual = vehiclesActual;
+  }
 
   public boolean isFinite() {
     return isFinite;
@@ -378,6 +384,10 @@ public class RoutingProblem {
       constraintManager.addConstraint(new LogoutDeviationConstraint(0.5, 10000, costMatrix),
           ConstraintManager.Priority.CRITICAL);
     }
+    
+    constraintManager.addConstraint(new VehicleDistanceConstraint(vehiclesActual, distanceStateId, stateManager, costMatrix),
+            ConstraintManager.Priority.CRITICAL);
+        
     vraBuilder.addCoreConstraints();
     vraBuilder.addDefaultCostCalculators();
     vraBuilder.setStateAndConstraintManager(stateManager, constraintManager);
@@ -913,6 +923,49 @@ public class RoutingProblem {
 
     double getDistance(Location from, Location to) {
       return costsMatrix.getDistance(from.getId(), to.getId());
+    }
+  }
+  
+  static class VehicleDistanceConstraint implements HardActivityConstraint {
+    private final StateManager stateManager;
+    private final VehicleRoutingTransportCostsMatrix costsMatrix;
+    private final StateId distanceStateId;
+    private final ArrayList<JsonVehicle> vehicles;
+
+    VehicleDistanceConstraint(ArrayList<JsonVehicle> vehicles, StateId distanceStateId, StateManager stateManager,
+        VehicleRoutingTransportCostsMatrix transportCosts) {
+      this.costsMatrix = transportCosts;
+      this.stateManager = stateManager;
+      this.distanceStateId = distanceStateId;
+      this.vehicles = vehicles;
+    }
+
+    @Override
+    public ConstraintsStatus fulfilled(JobInsertionContext context, TourActivity prevAct, TourActivity newAct,
+        TourActivity nextAct, double v) {
+    	jsprit.core.problem.vehicle.Vehicle V = context.getNewVehicle();
+    	double maxDistance = -1;
+    	for (JsonVehicle vehicle : vehicles) {
+    		if (V.getId().equalsIgnoreCase(vehicle.vehicle_id)) {
+    			maxDistance = vehicle.maxDistance;
+    			break;
+    		}
+    	}
+    	if (maxDistance < 0) return ConstraintsStatus.FULFILLED;
+    	
+	    double additionalDistance = getDistance(prevAct, newAct) + getDistance(newAct, nextAct)
+	        - getDistance(prevAct, nextAct);
+	    Double routeDistance = stateManager.getRouteState(context.getRoute(), distanceStateId, Double.class);
+	    if (routeDistance == null) routeDistance = 0.;
+	    double newRouteDistance = routeDistance + additionalDistance;
+	    if (newRouteDistance > maxDistance) {
+	      return ConstraintsStatus.NOT_FULFILLED;
+	    } 
+	    else return ConstraintsStatus.FULFILLED;
+	}
+
+    double getDistance(TourActivity from, TourActivity to) {
+      return costsMatrix.getDistance(from.getLocation().getId(), to.getLocation().getId());
     }
   }
 }

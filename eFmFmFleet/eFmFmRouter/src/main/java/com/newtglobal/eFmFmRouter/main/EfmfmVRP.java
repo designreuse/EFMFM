@@ -110,7 +110,8 @@ public class EfmfmVRP {
       ArrayList<Employee> employees = employeeClusters.getCluster().get(key);
       RoutingProblem problem = new RoutingProblem();
       problem.setSettings(settings); //Always do this before anything else
-
+      problem.setVehiclesActual(jsonVehicles);
+    
       if (settings.use_api) {
         problem.init_cost("gme-skymapglobalindia", "ZkcB7U7OSeKArCiA0rBuEdQSIGM=", cache);  //Enterprise account
         //problem.init_cost("AIzaSyCbq62Wp2avFqEndhuRwkfuNDxYqvES314", cache); //Free API key
