@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.newtglobal.eFmFmFleet</groupId>
 	<artifactId>eFmFmSchedular</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.0.1-SNAPSHOT-$\{buildNumber}</version>
 	<packaging>jar</packaging>
 	<name>eFmFmSchedular</name>
 	<url>http://maven.apache.org</url>
@@ -14,12 +14,12 @@
 		<dependency>
 			<groupId>com.newtglobal.eFmFmFleet.business</groupId>
 			<artifactId>eFmFmFleetBusiness</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
+			<version>0.0.1-SNAPSHOT-$\{buildNumber}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.newtglobal.eFmFmFleet.core</groupId>
 			<artifactId>eFmFmFleetCore</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
+			<version>0.0.1-SNAPSHOT-$\{buildNumber}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.hibernate</groupId>
