@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>com.newtglobal.eFmFmFleet</groupId>
 		<artifactId>eFmFmFleet</artifactId>
-		<version>0.0.1-SNAPSHOT-$\{buildNumber}</version>
+		<version>0.0.1-SNAPSHOT</version>
 	</parent>
 	<groupId>com.newtglobal.eFmFmFleet.web</groupId>
 	<artifactId>eFmFmFleetWeb</artifactId>
@@ -21,12 +21,12 @@
 		<dependency>
 			<groupId>com.newtglobal.eFmFmFleet.core</groupId>
 			<artifactId>eFmFmFleetCore</artifactId>
-			<version>0.0.1-SNAPSHOT-$\{buildNumber}</version>
+			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>com.newtglobal.eFmFmFleet.business</groupId>
 			<artifactId>eFmFmFleetBusiness</artifactId>
-			<version>0.0.1-SNAPSHOT-$\{buildNumber}</version>
+			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>javax.mail</groupId>
